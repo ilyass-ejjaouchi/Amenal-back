@@ -4,12 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
+import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -37,10 +36,23 @@ public class Ouvrier {
 	private int nbrJours;
 	private QualificationOuvrierEnum qualification;
 	
+	
 	private int nbFile = 0;
 	private String cin;
 	private String nom;
 	private String prenom;
+	@ManyToMany
+	private List<Projet> projets;
+	
+	public void addProjet(Projet projet) {
+		// TODO Auto-generated method stub
+		if (projets == null) {
+			projets = new ArrayList<Projet>();
+		}
+		this.projets.add(projet);
+		
+	}
+	
 	
 	
 	

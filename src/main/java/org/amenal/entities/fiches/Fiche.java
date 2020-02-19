@@ -2,6 +2,7 @@ package org.amenal.entities.fiches;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
@@ -11,11 +12,16 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.amenal.entities.Projet;
+import org.amenal.entities.designations.Designation;
+import org.amenal.entities.designations.OuvrierDesignation;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,19 +38,20 @@ public abstract class Fiche implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	private Integer id;
+	protected Integer id;
 
 	@Transient
-	private Integer count;
+	protected Integer count;
+	
 	
 	
 	@Temporal(TemporalType.DATE)
-	private Date date;
+	protected Date date;
 	
-	private Boolean isValidated = false;
+	protected Boolean isValidated = false;
 	
 	@ManyToOne
-	private Projet projet;
+	protected Projet projet;
 	
 	
 	

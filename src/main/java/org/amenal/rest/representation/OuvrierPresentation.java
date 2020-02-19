@@ -1,9 +1,9 @@
 package org.amenal.rest.representation;
 
 import java.util.Date;
+import java.util.List;
 
-import org.amenal.entities.Ouvrier;
-import org.amenal.entities.fiches.OuvrierFiche;
+
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,6 +14,7 @@ import lombok.Setter;
 
 public class OuvrierPresentation {
 
+	Integer id;
 	private Date dateNaissance;
 	private Date dateRecrutement;
 	private String tele;
@@ -24,4 +25,5 @@ public class OuvrierPresentation {
 	private String cin;
 	private String nom;
 	private String prenom;
+	private List<Integer> idProjets;
 }

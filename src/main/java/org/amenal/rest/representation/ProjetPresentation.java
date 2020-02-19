@@ -16,6 +16,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ProjetPresentation {
 	
+	Integer Id;
+	
 	private String titre;
 	
 	private List<String> fichierTypes = new ArrayList<String>();

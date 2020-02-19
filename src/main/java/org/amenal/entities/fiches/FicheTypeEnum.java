@@ -1,8 +1,10 @@
 package org.amenal.entities.fiches;
 
+import org.amenal.exception.BadRequestException;
+
 public enum FicheTypeEnum {
 
-	LOC("LOC"), MOO("MOO");
+	LOC("LOCATION"), MOO("OUVRIER");
 
 	private String code;
 
@@ -12,12 +14,13 @@ public enum FicheTypeEnum {
 
 	public static FicheTypeEnum fromCode(String code) {
 		switch (code) {
-		case "LOC":
+		case "LOCATION":
 			return FicheTypeEnum.LOC;
-		case "MOO":
+		case "OUVRIER":
 			return FicheTypeEnum.MOO;
 		default:
-			return null;
+			throw new BadRequestException("l' accronyme [" + code
+                    + "] n' est pas supporter.");
 		}
 	}
 

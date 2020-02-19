@@ -1,9 +1,10 @@
 package org.amenal.entities;
 
+import org.amenal.exception.BadRequestException;
 
 public enum QualificationOuvrierEnum {
 	
-	BSR("Boiseur"), MAC("Macon");
+	BSR("Boiseur"), MAC("Macon") , ING("Ingenieur");
 
 	private String code;
 
@@ -17,8 +18,11 @@ public enum QualificationOuvrierEnum {
 			return QualificationOuvrierEnum.BSR;
 		case "Macon":
 			return QualificationOuvrierEnum.MAC;
+		case "Ingenieur":
+			return QualificationOuvrierEnum.ING;
 		default:
-			return null;
+			throw new BadRequestException("l' accronye [" + code
+                    + "] n' est pas supporter.");
 		}
 	}
 

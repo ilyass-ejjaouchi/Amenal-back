@@ -8,14 +8,15 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.FicheTypeEnum;
-
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,11 +36,24 @@ public class Projet implements Serializable {
 	@Column(unique = true)
 	private String titre;
 
-	@ElementCollection()
+	@ElementCollection(fetch=FetchType.EAGER)
 	private List<FicheTypeEnum> fichierTypes = new ArrayList<FicheTypeEnum>();
 
 	@OneToMany(mappedBy = "projet", cascade = { CascadeType.ALL })
 	private List<Fiche> fichiers = new ArrayList<Fiche>();
+	
+	
+	@ManyToMany
+	private List<Ouvrier> ouvriers = new ArrayList<Ouvrier>();
+	
+	public void addOuvrier(Ouvrier ouvrier) {
+		// TODO Auto-generated method stub
+		if (ouvriers == null) {
+			ouvriers = new ArrayList<Ouvrier>();
+		}
+		ouvriers.add(ouvrier);
+		ouvrier.addProjet(this);
+	}
 	
 	public void addFiche(Fiche fiche) {
 		// TODO Auto-generated method stub

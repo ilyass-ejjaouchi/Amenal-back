@@ -1,7 +1,7 @@
 package org.amenal.rest.mapper;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.amenal.entities.Projet;
 import org.amenal.entities.fiches.FicheTypeEnum;
@@ -13,26 +13,27 @@ import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
 public interface ProjetMapper {
-	
+
 	@Mapping(target = "titre", source = "e.titre")
-	@Mapping(target="fichierTypes" , source="e.fichierTypes" , qualifiedByName="enum_to_string")
+	@Mapping(target = "fichierTypes", source = "e.fichierTypes", qualifiedByName = "enum_to_string")
 	ProjetPresentation toRepresentation(Projet e);
-	
+
 	@Mapping(target = "titre", source = "e.titre")
+	@Mapping(target = "fichierTypes", source = "e.fichierTypes", qualifiedByName = "string_to_enum")
 	Projet toEntity(ProjetCommande e);
-	
-	
+
+	@Named("string_to_enum")
+	default List<FicheTypeEnum> fromStringToEnum(List<String> ficheTypes){
+       return ficheTypes.stream().distinct().map(x->FicheTypeEnum.fromCode(x)).collect(Collectors.toList());
+ 
+	}
+
 	@Named("enum_to_string")
-	default  List<String> fromEnumToString(List<FicheTypeEnum> ficheType) {
+	default List<String> fromEnumToString(List<FicheTypeEnum> ficheTypes) {
 		
-		List<String> fiche_Type_String = new ArrayList<String>();
-		
-		ficheType.forEach(f->{
-			fiche_Type_String.add(f.toString());
-		});
-		
-		return fiche_Type_String;
-		
+		return ficheTypes.stream().distinct().map((x)->x.getCode()).collect(Collectors.toList());
+
+
 	}
 
 }

@@ -8,8 +8,9 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
 
-public class OuvrierDesignationPresentation {
+public class OuvrierDesignationPresentation  {
 	
+	Integer id;
 	private String cin;
 	private String nom;
 	private String prenom;

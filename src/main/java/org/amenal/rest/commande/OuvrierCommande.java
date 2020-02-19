@@ -2,9 +2,6 @@ package org.amenal.rest.commande;
 
 import java.util.Date;
 
-import org.amenal.entities.Ouvrier;
-import org.amenal.entities.fiches.OuvrierFiche;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +10,7 @@ import lombok.Setter;
 @Getter @Setter @NoArgsConstructor
 
 public class OuvrierCommande {
+	 
 	private Date dateNaissance;
 	private Date dateRecrutement;
 	private String tele;
@@ -23,4 +21,5 @@ public class OuvrierCommande {
 	private String cin;
 	private String nom;
 	private String prenom;
+	private Integer idProjet ;
 }

@@ -4,6 +4,7 @@ import org.amenal.entities.Ouvrier;
 import org.amenal.entities.QualificationOuvrierEnum;
 import org.amenal.entities.designations.OuvrierDesignation;
 import org.amenal.entities.fiches.OuvrierFiche;
+import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.OuvrierDesignationCommande;
 import org.amenal.rest.representation.OuvrierDesignationPresentation;
 import org.mapstruct.Mapper;
@@ -14,7 +15,7 @@ import org.mapstruct.Named;
 public interface OuvrierDesignationMapper {
 
 	
-	@Mapping(target = "ouvrieFichier", source = "e.idFiche" ,qualifiedByName="toFiche" )
+	@Mapping(target = "ouvrierFiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
 	@Mapping(target = "ouvrier", source = "e.idOuvrier" ,qualifiedByName="toOuvrier" )
 	OuvrierDesignation toEntity(OuvrierDesignationCommande e);
 	
@@ -26,7 +27,8 @@ public interface OuvrierDesignationMapper {
 	
 	@Named("enum_to_string")
 	public default String fromEnumToString ( QualificationOuvrierEnum qualification ){
-		
+		if(qualification == null)
+			return null;
 		
 		return qualification.getCode() ;
 		
@@ -35,7 +37,7 @@ public interface OuvrierDesignationMapper {
 	@Named("toFiche")
 	public default OuvrierFiche toFiche(Integer idFiche) {
 		if(idFiche == null)
-			return null;
+			throw new BadRequestException("Vous devez specifiez la fiche");
 		OuvrierFiche ouvFiche = new OuvrierFiche();
 		ouvFiche.setId(idFiche);
 		return ouvFiche;
@@ -44,7 +46,7 @@ public interface OuvrierDesignationMapper {
 	@Named("toOuvrier")
 	public default Ouvrier toOuvrier(Integer idOuvrier) {
 		if(idOuvrier == null)
-			return null;
+			throw new BadRequestException("Vous devez specifiez un ouvrier");
 		Ouvrier ouvrier = new Ouvrier();
 		ouvrier.setId(idOuvrier);
 		return ouvrier;

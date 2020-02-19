@@ -34,7 +34,7 @@ public class DesignationController {
 			throws URISyntaxException {
 
 		OuvrierDesignation ouvrierDesignation = ouvrierFicheMetier.addLigneDesignation(dsCmd);
-		return ResponseEntity.created(new URI("/designations/".concat(ouvrierDesignation.getId().toString()))).build();
+		return ResponseEntity.created(new URI("/designations/".concat(ouvrierDesignation.getId().toString()))).build()          ;
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
