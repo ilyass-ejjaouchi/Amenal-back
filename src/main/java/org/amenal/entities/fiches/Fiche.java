@@ -1,6 +1,7 @@
 package org.amenal.entities.fiches;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -45,8 +46,7 @@ public abstract class Fiche implements Serializable{
 	
 	
 	
-	@Temporal(TemporalType.DATE)
-	protected Date date;
+	protected LocalDate date;
 	
 	protected Boolean isValidated = false;
 	

@@ -1,5 +1,6 @@
 package org.amenal.rest.commande;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -12,7 +13,7 @@ import lombok.Setter;
 public class FicheCommande {
 	
 	Integer idProjet;
-	Date date;
+	LocalDate date;
 	String type;
 
 }

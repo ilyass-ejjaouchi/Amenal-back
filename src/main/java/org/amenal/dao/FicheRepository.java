@@ -1,5 +1,6 @@
 package org.amenal.dao;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -15,9 +16,8 @@ public interface FicheRepository<T extends Fiche> extends JpaRepository<T, Integ
 			+ " ( :dateCreation is NULL OR f.date=:dateCreation ) "
 			+ "order by date(date) asc ")
 	List<T> findByProjetAndTypeFicheAndDate(@Param("projetID")Integer projetID ,@Param("ficheType") String ficheType,
-			@Param("dateCreation") Date dateCreation);
+			@Param("dateCreation") LocalDate dateCreation);
 	
 	
 	
 }
-//AND (:ficheType IS NULL OR TYPE(F)=:ficheType )

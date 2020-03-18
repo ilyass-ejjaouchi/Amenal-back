@@ -1,6 +1,8 @@
 package org.amenal.rest.commande;
 
 
+import java.time.LocalTime;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -11,11 +13,16 @@ public class OuvrierDesignationCommande   {
 	
 	Integer idOuvrier;
 	Integer idFiche;
-	private String tempsDebut;
-	private String tempsFin;
+	private String cin;
+	private String nom;
+	private String prenom;
+	private String qualification;
+	private LocalTime tempsDebut;
+	private LocalTime tempsFin;
 	private Double jour;
 	private Double hSup;
 	private Boolean epi;
-	
+	private Boolean valid;
+
 
 }

@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 public interface OuvrierRepository extends JpaRepository<Ouvrier, Integer>{
 	
 	
+	
 
 
 }

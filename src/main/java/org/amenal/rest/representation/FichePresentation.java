@@ -1,5 +1,6 @@
 package org.amenal.rest.representation;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -10,17 +11,17 @@ import lombok.Setter;
 
 @Getter @Setter @NoArgsConstructor
 
-public class OuvrierFichePresentation {
+public class FichePresentation {
 	
 	protected Integer id;
 
 	private Integer count;
 	
-	private Date date;
+	private LocalDate date;
 	
 	private Boolean isValidated = false;
 	
-	private List<OuvrierDesignationPresentation> ouvrierDesignations;
+	private List<DesignationPresentation> designations;
 	
 	
 	

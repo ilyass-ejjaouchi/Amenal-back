@@ -16,6 +16,8 @@ import org.amenal.rest.representation.OuvrierDesignationPresentation;
 import org.amenal.rest.representation.ProjetPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -23,7 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/designations")
-public class DesignationController {
+@CrossOrigin("*")
+public class OuvrierDesignationController {
 
 	@Autowired
 	OuvrierFicheMetier ouvrierFicheMetier;
@@ -34,11 +37,22 @@ public class DesignationController {
 			throws URISyntaxException {
 
 		OuvrierDesignation ouvrierDesignation = ouvrierFicheMetier.addLigneDesignation(dsCmd);
-		return ResponseEntity.created(new URI("/designations/".concat(ouvrierDesignation.getId().toString()))).build()          ;
+		return ResponseEntity.created(new URI("/designations/".concat(ouvrierDesignation.getId().toString()))).build();
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<OuvrierDesignationPresentation> getListOuvrierDesignation() {
 		return ouvrierFicheMetier.ListOuvrierDesignation();
+	}
+
+	@RequestMapping(value = "/{OuvId}", method = RequestMethod.DELETE)
+	public void SupprimerOuvrierDesignation(@PathVariable Integer OuvId) {
+		ouvrierFicheMetier.SupprimerOuvrierDesignation(OuvId);
+
+	}
+	@RequestMapping(value = "/{OuvDsId}", method = RequestMethod.PUT)
+	public void SupprimerOuvrierDesignation(@PathVariable Integer OuvDsId , @Valid @RequestBody OuvrierDesignationCommande dsCmd) {
+		ouvrierFicheMetier.updateLigneDesignation(dsCmd ,OuvDsId);
+
 	}
 }

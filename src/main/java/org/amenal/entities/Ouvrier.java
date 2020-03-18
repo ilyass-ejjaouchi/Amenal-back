@@ -1,18 +1,18 @@
 package org.amenal.entities;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,23 +26,24 @@ public class Ouvrier {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	@Temporal(TemporalType.DATE)
-	private Date dateNaissance;
-	@Temporal(TemporalType.DATE)
-	private Date dateRecrutement;
+	private LocalDate dateNaissance;
+	private LocalDate dateRecrutement;
 	private String tele;
 	private String appreciation;
 	@Transient
 	private int nbrJours;
-	private QualificationOuvrierEnum qualification;
+	@ManyToOne
+	@JoinColumn(name="FK_QUAL")
+	private QualificationOuvrier qualification;
 	
 	
 	private int nbFile = 0;
 	private String cin;
 	private String nom;
 	private String prenom;
-	@ManyToMany
+	@ManyToMany(mappedBy="ouvriers" , cascade=CascadeType.REFRESH )
 	private List<Projet> projets;
+	
 	
 	public void addProjet(Projet projet) {
 		// TODO Auto-generated method stub

@@ -1,19 +1,9 @@
 package org.amenal;
 
-import java.lang.module.FindException;
-import java.util.ArrayList;
 
 import org.amenal.dao.OuvrierDesignationRepository;
 import org.amenal.dao.OuvrierFicheRepository;
-import org.amenal.dao.ProjetRepository;
-import org.amenal.entities.Ouvrier;
-import org.amenal.entities.Projet;
-import org.amenal.entities.designations.OuvrierDesignation;
-import org.amenal.entities.fiches.Fiche;
-import org.amenal.entities.fiches.FicheTypeEnum;
-import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.metier.ProjetMetier;
-import org.amenal.rest.commande.ProjetCommande;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

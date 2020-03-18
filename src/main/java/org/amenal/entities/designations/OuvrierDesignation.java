@@ -1,6 +1,7 @@
 package org.amenal.entities.designations;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -35,8 +36,8 @@ public class OuvrierDesignation extends Designation implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private Double hSup;
 	private Double jour;
-	private String tempsDebut;
-	private String tempsFin;
+	private LocalTime tempsDebut;
+	private LocalTime tempsFin;
 	private String cin;
 	private String nom;
 	private String qualification;
@@ -45,6 +46,7 @@ public class OuvrierDesignation extends Designation implements Serializable {
 	private Ouvrier ouvrier;
 
 	private Boolean epi;
+	private Boolean valid;
 
 	@ManyToOne
 	

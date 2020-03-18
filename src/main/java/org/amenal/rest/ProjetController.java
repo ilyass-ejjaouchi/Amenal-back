@@ -2,17 +2,19 @@ package org.amenal.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
 
 import org.amenal.entities.Projet;
+import org.amenal.metier.FournisseurMetier;
 import org.amenal.metier.ProjetMetier;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
 import org.amenal.rest.mapper.OuvrierMapper;
-import org.amenal.rest.representation.OuvrierFichePresentation;
+import org.amenal.rest.representation.FichePresentation;
 import org.amenal.rest.representation.OuvrierPresentation;
 import org.amenal.rest.representation.ProjetPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +36,8 @@ public class ProjetController {
 	@Autowired
 	ProjetMetier projetMetier;
 	
-
+	@Autowired
+	FournisseurMetier fournisseurMetier;
 	
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
@@ -49,6 +52,13 @@ public class ProjetController {
 		return ResponseEntity.created(new URI("/projet/".concat(projet.getId().toString()))).build();
 	}
 
+	@RequestMapping(value = "{idProjet}/fournisseur/{idFournisseur}/materiel/{idMat}", method = RequestMethod.PUT)
+	public ResponseEntity<Void> addMaterielFournisseurToProjet
+	(@PathVariable(name = "idFournisseur") Integer idFournisseur,@PathVariable(name = "idProjet") Integer idProjet , @PathVariable(name = "idMat") Integer idMat) throws URISyntaxException {
+		fournisseurMetier.AssosierMaterielToFournisseurToProjet(idFournisseur, idMat, idProjet);
+		return ResponseEntity.ok().build();
+	}
+	
 	@RequestMapping(value = "{idProjet}/ouvriers/{idOuvrier}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> addOuvrierToProjet(@PathVariable(name = "idOuvrier") Integer idOuvrier,
 			@PathVariable(name = "idProjet") Integer idProjet) throws URISyntaxException {
@@ -56,10 +66,10 @@ public class ProjetController {
 
 		return ResponseEntity.ok().build();
 	}
-
+	
 	@RequestMapping(value = "{idProjet}/fiche/{typeFiche}", method = RequestMethod.GET)
-	public List<OuvrierFichePresentation> getProjetFicheByType(@PathVariable(name = "idProjet") Integer idProjet, 
-			@PathVariable(name="typeFiche") String typeFiche ,@RequestParam(name="date")  Date date ) {
+	public List<FichePresentation> getProjetFicheByType(@PathVariable(name = "idProjet") Integer idProjet, 
+			@PathVariable(name="typeFiche") String typeFiche ,@RequestParam(name="date" , required = false)  LocalDate date ) {
 		
 		FicheCommande ficheCmd = new FicheCommande();
 		ficheCmd.setIdProjet(idProjet);
@@ -71,11 +81,11 @@ public class ProjetController {
 	
 	
 	
-	@RequestMapping(value = "{idProjet}/ouvriers", method = RequestMethod.GET)
+	@RequestMapping(value = "{idProjet}/fiches/{idFiche}/ouvriers", method = RequestMethod.GET)
 	public List<OuvrierPresentation> findOuvriersByProjet(
-			@PathVariable(name = "idProjet") Integer idProjet) throws URISyntaxException {
+			@PathVariable(name = "idProjet") Integer idProjet , @PathVariable(name = "idFiche") Integer idFiche) throws URISyntaxException {
 
-		return projetMetier.listerOuvrierByProjet(idProjet);
+		return projetMetier.listerOuvrierByProjet(idProjet , idFiche);
 
 	}
 	

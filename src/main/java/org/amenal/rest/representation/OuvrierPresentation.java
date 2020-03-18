@@ -1,5 +1,6 @@
 package org.amenal.rest.representation;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -15,8 +16,8 @@ import lombok.Setter;
 public class OuvrierPresentation {
 
 	Integer id;
-	private Date dateNaissance;
-	private Date dateRecrutement;
+	private LocalDate dateNaissance;
+	private LocalDate dateRecrutement;
 	private String tele;
 	private String appreciation;
 	private int nbrJours;

@@ -1,5 +1,6 @@
 package org.amenal.rest.commande;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import lombok.Getter;
@@ -11,8 +12,9 @@ import lombok.Setter;
 
 public class OuvrierCommande {
 	 
-	private Date dateNaissance;
-	private Date dateRecrutement;
+	private Integer id;
+	private LocalDate dateNaissance;
+	private LocalDate dateRecrutement;
 	private String tele;
 	private String appreciation;
 	private int nbrJours;
@@ -22,4 +24,5 @@ public class OuvrierCommande {
 	private String nom;
 	private String prenom;
 	private Integer idProjet ;
+
 }

@@ -1,7 +1,6 @@
 package org.amenal.rest.mapper;
 
 import org.amenal.entities.Ouvrier;
-import org.amenal.entities.QualificationOuvrierEnum;
 import org.amenal.entities.designations.OuvrierDesignation;
 import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.exception.BadRequestException;
@@ -19,20 +18,14 @@ public interface OuvrierDesignationMapper {
 	@Mapping(target = "ouvrier", source = "e.idOuvrier" ,qualifiedByName="toOuvrier" )
 	OuvrierDesignation toEntity(OuvrierDesignationCommande e);
 	
-	@Mapping(target="qualification" , source="e.ouvrier.qualification" , qualifiedByName="enum_to_string")
+	@Mapping(target="qualification" , source="e.qualification" )
+	@Mapping(target = "idOuvrier", source = "e.ouvrier.id" )
 	OuvrierDesignationPresentation toRepresentation(OuvrierDesignation e);
 	
 	
 	
 	
-	@Named("enum_to_string")
-	public default String fromEnumToString ( QualificationOuvrierEnum qualification ){
-		if(qualification == null)
-			return null;
-		
-		return qualification.getCode() ;
-		
-	}
+	
 	
 	@Named("toFiche")
 	public default OuvrierFiche toFiche(Integer idFiche) {
@@ -46,7 +39,7 @@ public interface OuvrierDesignationMapper {
 	@Named("toOuvrier")
 	public default Ouvrier toOuvrier(Integer idOuvrier) {
 		if(idOuvrier == null)
-			throw new BadRequestException("Vous devez specifiez un ouvrier");
+			return null;
 		Ouvrier ouvrier = new Ouvrier();
 		ouvrier.setId(idOuvrier);
 		return ouvrier;
