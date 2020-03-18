@@ -25,37 +25,5 @@ class AmenalBackApplication {
 		System.out.println("ggg");
 	}
 
-	@Bean
-	@Transactional
-	CommandLineRunner start(ProjetMetier repo, OuvrierDesignationRepository orepo , OuvrierFicheRepository Orepo) {
-
-		return args -> {
-			
-			
-			
-			
-			
-			
-			
-			/*
-			 * System.out.println("start.............."); ArrayList<String> types = new
-			 * ArrayList<String>(); types.add(FicheTypeEnum.MOO.getCode());
-			 * 
-			 * 
-			 * 
-			 * Ouvrier o = new Ouvrier(); o.setId(1);
-			 * 
-			 * OuvrierDesignation l = new OuvrierDesignation(); l.setCin("eeeeeeeeeeee");
-			 * 
-			 * orepo.save(l);
-			 * 
-			 * ProjetCommande p_cmd = new ProjetCommande(); p_cmd.setTitre("title1");
-			 * p_cmd.setFichierTypes(types); pm.addProjet(p_cmd);
-			 */
-				
-
-
-		};
-	}
-
+	
 }
