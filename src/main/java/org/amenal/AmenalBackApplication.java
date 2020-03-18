@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 class AmenalBackApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AmenalBackApplication.class, args);
+		//SpringApplication.run(AmenalBackApplication.class, args);
 		
 		
 		System.out.println("ggg");
