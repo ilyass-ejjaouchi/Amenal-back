@@ -20,7 +20,7 @@ public class QualificationOuvrierMetier {
 	public Integer AjouterQualificationOuvrier(String Qualification){
 		
 		 QualificationOuvrier qual = qualificationOuvrierRepository.findByCode(Qualification); 
-		 if(qual == null) 
+		 if(qual != null) 
 			 throw new NotFoundException("La qualification[ "+Qualification+" ] est deja existante!");
 
 		QualificationOuvrier qualif = new QualificationOuvrier();
