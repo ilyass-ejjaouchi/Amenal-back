@@ -66,8 +66,19 @@ public class OuvrierMetier {
 
 		if (!ouvrierRepository.findById(id).isPresent())
 			throw new NotFoundException("cet ouvrier est inexistant");
+		
+		QualificationOuvrier qualification = qualificationOuvrierRepository
+				.findByCode(ouvrier.getQualification().getCode());
+
+		if (qualification == null)
+			throw new NotFoundException(
+					"La qualification [ " + ouvrier.getQualification().getCode() + " ] est introuvable!");
+
 
 		ouvrier.setId(id);
+		ouvrier.setQualification(qualification);
+		
+		Ouvrier ouv = ouvrierRepository.save(ouvrier);
 
 		List<OuvrierDesignation> ouvDs = ouvrierDesignationRepository.findDesignationByOuvrierID(id);
 		ouvDs.stream().forEach(des -> {
@@ -75,7 +86,7 @@ public class OuvrierMetier {
 			des.setNom(ouvrier.getNom() + " " + ouvrier.getPrenom());
 			des.setQualification(ouvrier.getQualification().getCode());
 		});
-		return ouvrierRepository.save(ouvrier);
+		return ouv;
 
 	}
 
