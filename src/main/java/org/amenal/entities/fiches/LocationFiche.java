@@ -19,6 +19,9 @@ import lombok.Setter;
 @Setter@Getter
 @NoArgsConstructor
 public class LocationFiche extends Fiche implements Serializable{
+	
+	private String type = FicheTypeEnum.LOC.getCode();
+
 
 	
 	private static final long serialVersionUID = 1L;
