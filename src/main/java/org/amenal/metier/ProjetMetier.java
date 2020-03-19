@@ -73,6 +73,22 @@ public class ProjetMetier {
 		projet.setFichiers(CreateFiches(fichetype, projet));
 		return projetDao.save(projet);
 	}
+	
+	public Projet modifierProjet(ProjetCommande p_cmd , Integer id) {
+		Projet projet = projetMapper.toEntity(p_cmd);
+		List<FicheTypeEnum> fichetype = projet.getFichierTypes();
+		
+		Projet p = projetDao.findByTitre(projet.getTitre());
+
+		if (p  == null)
+			throw new BadRequestException("Le projet " + projet.getTitre() + " n'est existant.");
+		
+		 fichetype.removeAll(p.getFichierTypes());
+		 projet.setId(id);
+
+		projet.setFichiers(CreateFiches(fichetype, projet));
+		return projetDao.save(projet);
+	}
 
 	public List<ProjetPresentation> ListProjet() {
 
