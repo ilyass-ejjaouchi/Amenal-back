@@ -72,6 +72,7 @@ public class ProjetMetier {
 
 		projet.setFichiers(CreateFiches(fichetype, projet));
 		return projetDao.save(projet);
+		
 	}
 	
 	public Projet modifierProjet(ProjetCommande p_cmd , Integer id) {
