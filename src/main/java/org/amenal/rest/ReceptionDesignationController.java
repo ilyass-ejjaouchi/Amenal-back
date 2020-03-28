@@ -30,6 +30,8 @@ public class ReceptionDesignationController {
 	
 	@Autowired
 	ReceptionFicheMetier receptionFicheMetier;
+
+	
 	
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
