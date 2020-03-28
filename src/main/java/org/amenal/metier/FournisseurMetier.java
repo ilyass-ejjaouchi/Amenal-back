@@ -53,7 +53,6 @@ public class FournisseurMetier {
 
 		Fournisseur fr = fournisseurMapper.toEntity(frCmd);
 
-		System.out.println(fr.getFournisseurNom());
 
 		return fournisseurRepository.save(fr);
 
@@ -193,13 +192,13 @@ public class FournisseurMetier {
 	public void supprimerFourniseur(Integer fourID) {
 		Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
 
-		/*if (!f.isPresent())
+		if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
 		List<LocationAsso> locs = locationAssoRepository.findByFourniseur(f.get());
 
 		if (!locs.isEmpty())
 			throw new BadRequestException("le fournisseur [" + fourID + "] est associer a ");
-			fournisseurRepository.deleteById(fourID);*/
+			fournisseurRepository.deleteById(fourID);
 	}
 
 	private List<MaterielPresentation> smtg(Fournisseur f, Integer idProjet) {

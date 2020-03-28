@@ -26,6 +26,7 @@ import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
+import org.amenal.rest.commande.FournisseurCommande;
 import org.amenal.rest.commande.ReceptionDesignationCommande;
 import org.amenal.rest.mapper.ArticleMapper;
 import org.amenal.rest.mapper.FournisseurArticleMapper;
@@ -83,7 +84,14 @@ public class ReceptionFicheMetier {
 
 	}
 
-	public void addFournisseur(Integer id) {
+	public void addFournisseur(Integer id, FournisseurCommande frCmd) {
+
+		if (id == -1) {
+			Fournisseur fr = fournisseurMapper.toEntity(frCmd);
+
+			id = fournisseurRepository.save(fr).getId();
+
+		}
 
 		Optional<Fournisseur> Fournisseur = fournisseurRepository.findById(id);
 
@@ -326,8 +334,8 @@ public class ReceptionFicheMetier {
 		receptionDesignationRepository.save(recDs);
 
 	}
-	
-	public void UpdateLigneDesignationReception(ReceptionDesignationCommande recCmd , Integer id) {
+
+	public void UpdateLigneDesignationReception(ReceptionDesignationCommande recCmd, Integer id) {
 
 		Integer ficheId = recCmd.getIdFiche();
 
@@ -343,7 +351,7 @@ public class ReceptionFicheMetier {
 			throw new NotFoundException("Le fournisseur [ " + recCmd.getIdFournisseur() + " ] est introuvable !");
 
 		ReceptionDesignation recDs = receptionDesignationMapper.toEntity(recCmd);
-		
+
 		recDs.setId(id);
 		recDs.setLibelle(article.get().getDesignation());
 		recDs.setUnite(article.get().getUnite().getUnite());
@@ -355,7 +363,7 @@ public class ReceptionFicheMetier {
 		receptionDesignationRepository.save(recDs);
 
 	}
-	
+
 	public void SupprimerRecDesignation(Integer Rec) {
 		// TODO Auto-generated method stub
 		Optional<ReceptionDesignation> ds = receptionDesignationRepository.findById(Rec);

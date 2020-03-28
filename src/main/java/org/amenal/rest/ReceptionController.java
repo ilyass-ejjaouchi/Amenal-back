@@ -4,13 +4,17 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.amenal.metier.ReceptionFicheMetier;
+import org.amenal.rest.commande.FournisseurCommande;
 import org.amenal.rest.representation.FournisseurArticlePresentation;
 import org.amenal.rest.representation.FournisseurPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,8 +35,8 @@ public class ReceptionController {
 
 	@RequestMapping(value = "/fournisseurs/{idFr}", method = RequestMethod.POST)
 
-	public ResponseEntity<Void> addFournisseur(@PathVariable Integer idFr) throws URISyntaxException {
-		receptionFicheMetier.addFournisseur(idFr);
+	public ResponseEntity<Void> addFournisseur(@PathVariable Integer idFr , @Valid @RequestBody FournisseurCommande frCmd) throws URISyntaxException {
+		receptionFicheMetier.addFournisseur(idFr ,frCmd);
 		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
 	}
 

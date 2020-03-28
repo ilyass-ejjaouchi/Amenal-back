@@ -22,47 +22,48 @@ public interface FicheReceptionMapper {
 
 	@Named("toCat")
 	default List<CategorieReceptionDesignationPresentation> toCat(List<ReceptionDesignation> receptionDss) {
-
-		List<ReceptionDesignation> receptionDs = receptionDss.stream()
-				.sorted(Comparator.comparing(ReceptionDesignation::getCategorie)).collect(Collectors.toList());
-
-
 		List<CategorieReceptionDesignationPresentation> cats = new ArrayList<CategorieReceptionDesignationPresentation>();
 
-		CategorieReceptionDesignationPresentation c = new CategorieReceptionDesignationPresentation();
-		c.setCategorie(receptionDs.get(0).getCategorie());
+		if (!receptionDss.isEmpty()) {
+			List<ReceptionDesignation> receptionDs = receptionDss.stream()
+					.sorted(Comparator.comparing(ReceptionDesignation::getCategorie)).collect(Collectors.toList());
 
-		cats.add(c);
+			CategorieReceptionDesignationPresentation c = new CategorieReceptionDesignationPresentation();
+			c.setCategorie(receptionDs.get(0).getCategorie());
 
-		int i = 0;
-		for (ReceptionDesignation d : receptionDs) {
-			if (d.getCategorie().equals(cats.get(i).getCategorie())) {
+			cats.add(c);
 
-				ReceptionDesignationPresentation ds = new ReceptionDesignationPresentation();
-				ds.setDesignation(d.getLibelle());
-				ds.setUnite(d.getUnite());
-				ds.setQuantite(d.getQuantite());
-				ds.setFournisseurNom(d.getFournisseurNom());
-				ds.setObservation(d.getObservation());
-				ds.setId(d.getId());
-				cats.get(i).getReceptionDesignation().add(ds);
+			int i = 0;
+			for (ReceptionDesignation d : receptionDs) {
+				if (d.getCategorie().equals(cats.get(i).getCategorie())) {
 
-			} else {
+					ReceptionDesignationPresentation ds = new ReceptionDesignationPresentation();
+					ds.setDesignation(d.getLibelle());
+					ds.setUnite(d.getUnite());
+					ds.setQuantite(d.getQuantite());
+					ds.setFournisseurNom(d.getFournisseurNom());
+					ds.setObservation(d.getObservation());
+					ds.setId(d.getId());
+					cats.get(i).getReceptionDesignation().add(ds);
 
-				ReceptionDesignationPresentation ds = new ReceptionDesignationPresentation();
+				} else {
 
-				c = new CategorieReceptionDesignationPresentation();
-				c.setCategorie(d.getCategorie());
-				cats.add(c);
-				i++;
+					ReceptionDesignationPresentation ds = new ReceptionDesignationPresentation();
 
-				ds.setDesignation(d.getLibelle());
-				ds.setUnite(d.getUnite());
-				ds.setQuantite(d.getQuantite());
-				ds.setFournisseurNom(d.getFournisseurNom());
-				ds.setObservation(d.getObservation());
-				ds.setId(d.getId());
-				cats.get(i).getReceptionDesignation().add(ds);
+					c = new CategorieReceptionDesignationPresentation();
+					c.setCategorie(d.getCategorie());
+					cats.add(c);
+					i++;
+
+					ds.setDesignation(d.getLibelle());
+					ds.setUnite(d.getUnite());
+					ds.setQuantite(d.getQuantite());
+					ds.setFournisseurNom(d.getFournisseurNom());
+					ds.setObservation(d.getObservation());
+					ds.setId(d.getId());
+					cats.get(i).getReceptionDesignation().add(ds);
+
+				}
 
 			}
 
