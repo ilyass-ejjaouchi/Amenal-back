@@ -230,6 +230,11 @@ public class ProjetMetier {
 				locFiche.setDate(LocalDate.now());
 				locFiche.setProjet(p);
 				fiches.add(locFiche);
+			case RCP:
+				ReceptionFiche recf = new ReceptionFiche();
+				recf.setDate(LocalDate.now());
+				recf.setProjet(p);
+				fiches.add(recf);
 			default:
 				break;
 			}
