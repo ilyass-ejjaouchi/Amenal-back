@@ -21,6 +21,7 @@ public interface LocationAssoRepository extends JpaRepository<LocationAsso, Inte
 	List<LocationAsso> findByFourniseur( Fournisseur fr);
 	List<LocationAsso> findByArticle(Article mat);
 	
+	
 	@Query("SELECT loc FROM LocationAsso loc WHERE loc.projet.id=:projetId and loc.article is not null")
 	List<LocationAsso> findByProjet(@Param("projetId")Integer projet);
 	

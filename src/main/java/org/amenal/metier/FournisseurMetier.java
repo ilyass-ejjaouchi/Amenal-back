@@ -8,11 +8,14 @@ import java.util.stream.Collectors;
 import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.FournisseurRepository;
 import org.amenal.dao.LocationAssoRepository;
+import org.amenal.dao.LocationDesignationRepository;
 import org.amenal.dao.ProjetRepository;
+import org.amenal.dao.ReceptionAssoRepository;
 import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.LocationAsso;
 import org.amenal.entities.Projet;
+import org.amenal.entities.designations.LocationDesignation;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.FournisseurCommande;
@@ -45,14 +48,20 @@ public class FournisseurMetier {
 	ProjetRepository projetRepository;
 
 	@Autowired
+	ReceptionAssoRepository receptionAssoRepository;
+
+	@Autowired
 	FournisseurMapper fournisseurMapper;
+
 	@Autowired
 	MaterielMapper materielMapper;
+
+	@Autowired
+	LocationDesignationRepository locationDesignationRepository;
 
 	public Fournisseur AjouterFournisseur(FournisseurCommande frCmd) {
 
 		Fournisseur fr = fournisseurMapper.toEntity(frCmd);
-
 
 		return fournisseurRepository.save(fr);
 
@@ -183,22 +192,40 @@ public class FournisseurMetier {
 		if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
 
-		fourCmd.setId(fourID);
-
 		fournisseurRepository.save(fournisseurMapper.toEntity(fourCmd));
 
 	}
 
-	public void supprimerFourniseur(Integer fourID) {
+	public void supprimerFourniseurFromFicheLocation(Integer fourID, Boolean ctn) {
 		Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
 
 		if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
-		List<LocationAsso> locs = locationAssoRepository.findByFourniseur(f.get());
 
-		if (!locs.isEmpty())
-			throw new BadRequestException("le fournisseur [" + fourID + "] est associer a ");
-			fournisseurRepository.deleteById(fourID);
+		List<LocationAsso> ass = locationAssoRepository.findByFourniseur(f.get());
+		List<LocationDesignation> ds = locationDesignationRepository.findFournisseurAssoToFiche(f.get());
+
+		if (!ds.isEmpty())
+			throw new BadRequestException("vous ne pouvez pas supprimer ce fournisseur [" + fourID + "] il est deja "
+					+ "associer a une fiche non valide! ");
+
+		if (!f.get().getReceptionAsso().isEmpty() && !ctn)
+			throw new BadRequestException("Est ce que vous etes sure de vouloire supprimer ce fournisseur [" + fourID
+					+ "] il est deja " + "associer dans la partie Reception ");
+
+		f.get().getReceptionAsso().forEach(l -> {
+
+			receptionAssoRepository.deleteById(l.getId());
+		});
+
+		ass.forEach(l -> {
+
+			locationAssoRepository.deleteById(l.getId());
+		});
+		f.get().setLocationAssos(null);
+		f.get().setReceptionAsso(null);
+
+		fournisseurRepository.deleteById(fourID);
 	}
 
 	private List<MaterielPresentation> smtg(Fournisseur f, Integer idProjet) {

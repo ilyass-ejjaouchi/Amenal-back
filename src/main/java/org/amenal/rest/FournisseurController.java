@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.models.auth.In;
@@ -73,9 +74,9 @@ public class FournisseurController {
 	
 	@RequestMapping(value = "/{fourID}", method = RequestMethod.DELETE)
 
-	public ResponseEntity<Void> deleteFournisseur(@PathVariable Integer fourID)
+	public ResponseEntity<Void> deleteFournisseur(@PathVariable Integer fourID ,@RequestParam Boolean ctn)
 			throws URISyntaxException {
-		fournisseurMetier.supprimerFourniseur(fourID);
+		fournisseurMetier.supprimerFourniseurFromFicheLocation(fourID , ctn);
 		return ResponseEntity.ok().build();
 	}
 	
