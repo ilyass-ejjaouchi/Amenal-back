@@ -12,7 +12,7 @@ public interface FournisseurRepository extends JpaRepository<Fournisseur, Intege
 	@Query("select distinct f from Fournisseur f left join fetch f.locationAssos loc where loc.projet.id=:idProjet or loc.projet.id is null or loc is null ")
 	List<Fournisseur> findByProjetId(@Param("idProjet") Integer idProjet);
 	
-	@Query("select distinct f from Fournisseur f join fetch f.locationAssos loc where loc.projet.id=:idProjet and loc.materiel.id=:idMateriel ")
+	@Query("select distinct f from Fournisseur f join fetch f.locationAssos loc where loc.projet.id=:idProjet and loc.article.id=:idMateriel ")
 	List<Fournisseur> findByProjetIdAndMaterielId(@Param("idProjet") Integer idProjet , @Param("idMateriel") Integer idMateriel);
-
+	
 }

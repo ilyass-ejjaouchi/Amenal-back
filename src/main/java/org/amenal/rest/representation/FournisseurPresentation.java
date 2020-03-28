@@ -14,14 +14,15 @@ public class FournisseurPresentation {
 
 	
 	private Integer id;
-	private String libelle;
-	List<MaterielPresentation> materiel;
+	private String fournisseurNom;
+	MaterielPresentation materiel;
+	List<MaterielPresentation> materiels;
 	private Boolean isAssoWithProjet;
-	public FournisseurPresentation(Integer id, String libelle, List<MaterielPresentation> materiel) {
+	public FournisseurPresentation(Integer id, String fournisseurNom, List<MaterielPresentation> materiels) {
 		super();
 		this.id = id;
-		this.libelle = libelle;
-		this.materiel = materiel;
+		this.fournisseurNom = fournisseurNom;
+		this.materiels = materiels;
 	}
 	
 	

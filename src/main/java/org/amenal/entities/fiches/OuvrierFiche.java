@@ -22,11 +22,7 @@ public class OuvrierFiche extends Fiche implements Serializable {
 	private String type = FicheTypeEnum.MOO.getCode();
 
 	
-	@Override
-	public String toString() {
-		return "OuvrierFiche [id : "+ id +" type "+ type+ "  date "+ date +" ouvrierDesignation=" + ouvrierDesignation + "]";
-	}
-
+	
 
 
 	
@@ -42,4 +38,9 @@ public class OuvrierFiche extends Fiche implements Serializable {
 		ouvrierDesignation.add(Designation);
 		Designation.setOuvrierFiche(this);
 	}
+	@Override
+	public String toString() {
+		return "OuvrierFiche [id : "+ id +" type "+ type+ "  date "+ date +" ouvrierDesignation=" + ouvrierDesignation + "]";
+	}
+
 }

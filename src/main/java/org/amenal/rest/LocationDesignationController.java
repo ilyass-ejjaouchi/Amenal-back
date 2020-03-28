@@ -12,6 +12,8 @@ import org.amenal.entities.designations.LocationDesignation;
 import org.amenal.metier.LocationFicheMetier;
 import org.amenal.rest.commande.OuvrierCommande;
 import org.amenal.rest.commande.LocationDesignationCommande;
+import org.amenal.rest.representation.FournisseurArticlePresentation;
+import org.amenal.rest.representation.FournisseurPresentation;
 import org.amenal.rest.representation.LocationDesignationPresentation;
 import org.amenal.rest.representation.ProjetPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,13 @@ public class LocationDesignationController {
 	@Autowired
 	LocationFicheMetier locationFicheMetier;
 
+	@RequestMapping(value = "/projets/{projetId}/fournisseurs", method = RequestMethod.GET)
+
+	public List<FournisseurPresentation> ListerFournisseurAssoToProjet(@PathVariable Integer projetId)
+			throws URISyntaxException {
+		return locationFicheMetier.ListMaterielAssoToProjet(projetId);
+	}
+
 	@RequestMapping(value = "", method = RequestMethod.POST)
 
 	public ResponseEntity<Void> addLocationDesignation(@Valid @RequestBody LocationDesignationCommande dsCmd)
@@ -40,21 +49,18 @@ public class LocationDesignationController {
 		return ResponseEntity.created(new URI("/designations/".concat(LocationDesignation.getId().toString()))).build();
 	}
 
-	@RequestMapping(value = "", method = RequestMethod.GET)
-	public List<LocationDesignationPresentation> getListLocationDesignation() {
-		return locationFicheMetier.ListLocationDesignation();
-	}
-
 	@RequestMapping(value = "/{locDsId}", method = RequestMethod.DELETE)
-	public void SupprimerLocationDesignation(@PathVariable Integer locDsId) {
+	public void SupprimerLocationDesignation(@PathVariable Integer locDsId) throws URISyntaxException {
 		locationFicheMetier.SupprimerLocationDesignation(locDsId);
 
 	}
+
 	@RequestMapping(value = "/{locDsId}", method = RequestMethod.PUT)
-	public void SupprimerLocationDesignation(@PathVariable Integer locDsId , @Valid @RequestBody LocationDesignationCommande dsCmd) {
-		System.out.println("ssssssssssssssssssssss");
-		locationFicheMetier.updateLigneDesignation(dsCmd ,locDsId);
+	public void ModifierLocationDesignation(@Valid @RequestBody LocationDesignationCommande dsCmd,
+			@PathVariable Integer locDsId) throws URISyntaxException {
+		
+		locationFicheMetier.updateLigneDesignationLocation(dsCmd, locDsId);
 
 	}
-	
+
 }

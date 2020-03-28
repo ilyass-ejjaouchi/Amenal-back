@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.FournisseurRepository;
 import org.amenal.dao.LocationAssoRepository;
-import org.amenal.dao.MaterielRepository;
 import org.amenal.dao.ProjetRepository;
+import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.LocationAsso;
-import org.amenal.entities.Materiel;
 import org.amenal.entities.Projet;
+import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.FournisseurCommande;
 import org.amenal.rest.mapper.FournisseurMapper;
@@ -35,7 +36,7 @@ public class FournisseurMetier {
 	FournisseurRepository fournisseurRepository;
 
 	@Autowired
-	MaterielRepository materielRepository;
+	ArticleRepository articleRepository;
 
 	@Autowired
 	LocationAssoRepository locationAssoRepository;
@@ -52,21 +53,22 @@ public class FournisseurMetier {
 
 		Fournisseur fr = fournisseurMapper.toEntity(frCmd);
 
-		System.out.println(fr.getLibelle());
+		System.out.println(fr.getFournisseurNom());
 
 		return fournisseurRepository.save(fr);
 
 	}
-	
-	public List<FournisseurPresentation> ListerFournisseurByProjetAndMateriel(Integer idProjet , Integer idMat) {
 
-		List<FournisseurPresentation> frPrs = fournisseurRepository.findByProjetIdAndMaterielId(idProjet , idMat).stream().map(o -> {
-			FournisseurPresentation frs = fournisseurMapper.toRepresentation(o);
-			frs.setMateriel(null);
-			frs.setIsAssoWithProjet(true);
+	public List<FournisseurPresentation> ListerFournisseurByProjetAndMateriel(Integer idProjet, Integer idMat) {
 
-			return frs;
-		}).collect(Collectors.toList());
+		List<FournisseurPresentation> frPrs = fournisseurRepository.findByProjetIdAndMaterielId(idProjet, idMat)
+				.stream().map(o -> {
+					FournisseurPresentation frs = fournisseurMapper.toRepresentation(o);
+					frs.setMateriel(null);
+					frs.setIsAssoWithProjet(true);
+
+					return frs;
+				}).collect(Collectors.toList());
 
 		return frPrs;
 	}
@@ -75,7 +77,7 @@ public class FournisseurMetier {
 
 		List<FournisseurPresentation> frPrs = fournisseurRepository.findByProjetId(idProjet).stream().map(o -> {
 			FournisseurPresentation frs = fournisseurMapper.toRepresentation(o);
-			frs.setMateriel(smtg(o, idProjet));
+			frs.setMateriels(smtg(o, idProjet));
 			frs.setIsAssoWithProjet(this.isAsso);
 
 			return frs;
@@ -87,7 +89,7 @@ public class FournisseurMetier {
 	public void AssosierMaterielToFournisseur(Integer idFourniseur, Integer idMateriel) {
 
 		Optional<Fournisseur> f = fournisseurRepository.findById(idFourniseur);
-		Optional<Materiel> mtr = materielRepository.findById(idMateriel);
+		Optional<Article> mtr = articleRepository.findById(idMateriel);
 		LocationAsso loc = new LocationAsso();
 
 		if (!f.isPresent())
@@ -95,11 +97,11 @@ public class FournisseurMetier {
 		if (!mtr.isPresent())
 			throw new NotFoundException("l'article [" + idMateriel + "] est inexistant");
 
-		LocationAsso locationAssos = locationAssoRepository.findByMaterielAndFourniseurAndProjet(mtr.get(), f.get(),
+		LocationAsso locationAssos = locationAssoRepository.findByArticleAndFourniseurAndProjet(mtr.get(), f.get(),
 				null);
 
 		if (locationAssos == null) {
-			loc.setMateriel(mtr.get());
+			loc.setArticle(mtr.get());
 			loc.setFourniseur(f.get());
 			locationAssoRepository.save(loc);
 		}
@@ -124,15 +126,14 @@ public class FournisseurMetier {
 			if (!locationAssos.isEmpty()) {
 				locationAssos.forEach(l -> {
 					LocationAsso loc1 = new LocationAsso();
-					loc1.setMateriel(l.getMateriel());
+					loc1.setArticle(l.getArticle());
 					loc1.setFourniseur(f.get());
 					loc1.setProjet(projet.get());
 					locationAssoRepository.save(loc1);
-					
 
 				});
 			} else {
-				
+
 				loc.setFourniseur(f.get());
 				loc.setProjet(projet.get());
 				locationAssoRepository.save(loc);
@@ -149,7 +150,7 @@ public class FournisseurMetier {
 	public void AssosierMaterielToFournisseurToProjet(Integer idFourniseur, Integer idMateriel, Integer idProjet) {
 
 		Optional<Fournisseur> f = fournisseurRepository.findById(idFourniseur);
-		Optional<Materiel> mtr = materielRepository.findById(idMateriel);
+		Optional<Article> mtr = articleRepository.findById(idMateriel);
 		Optional<Projet> p = projetRepository.findById(idProjet);
 
 		if (!f.isPresent())
@@ -161,13 +162,13 @@ public class FournisseurMetier {
 		if (!p.isPresent())
 			throw new NotFoundException(" le projet [" + idProjet + "] est inexistant");
 
-		LocationAsso loc = locationAssoRepository.findByMaterielAndFourniseurAndProjet(mtr.get(), f.get(), p.get());
+		LocationAsso loc = locationAssoRepository.findByArticleAndFourniseurAndProjet(mtr.get(), f.get(), p.get());
 
 		if (loc == null) {
 			AssosierMaterielToFournisseur(idFourniseur, idMateriel);
 
 			loc = new LocationAsso();
-			loc.setMateriel(mtr.get());
+			loc.setArticle(mtr.get());
 			loc.setFourniseur(f.get());
 			loc.setProjet(p.get());
 			locationAssoRepository.save(loc);
@@ -175,34 +176,30 @@ public class FournisseurMetier {
 			locationAssoRepository.delete(loc);
 
 	}
-	
+
 	public void modifierFourniseur(FournisseurCommande fourCmd, Integer fourID) {
-		
+
 		Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
-		
+
 		if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
-		
+
 		fourCmd.setId(fourID);
-		
+
 		fournisseurRepository.save(fournisseurMapper.toEntity(fourCmd));
 
-		
 	}
-	
+
 	public void supprimerFourniseur(Integer fourID) {
-Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
-		
-		if (!f.isPresent())
+		Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
+
+		/*if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
 		List<LocationAsso> locs = locationAssoRepository.findByFourniseur(f.get());
-		
-		locs.forEach(l->{
-			locationAssoRepository.delete(l);
-		});
-		
-		
-		fournisseurRepository.deleteById(fourID);
+
+		if (!locs.isEmpty())
+			throw new BadRequestException("le fournisseur [" + fourID + "] est associer a ");
+			fournisseurRepository.deleteById(fourID);*/
 	}
 
 	private List<MaterielPresentation> smtg(Fournisseur f, Integer idProjet) {
@@ -214,13 +211,13 @@ Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
 
 		f.getLocationAssos().stream().forEach(l -> {
 
-			if (l.getMateriel() != null) {
-				MaterielPresentation mp = materielMapper.toRepresentation(l.getMateriel());
+			if (l.getArticle() != null) {
+				MaterielPresentation mp = materielMapper.toRepresentation(l.getArticle());
 				if (l.getProjet() != null) {
 					if (l.getProjet().getId() == idProjet)
 						this.isAsso = true;
 					mp.setIsAssoWithProjet(l.getProjet().getId() == idProjet);
-					ids.add(l.getMateriel().getId());
+					ids.add(l.getArticle().getId());
 				} else
 					mp.setIsAssoWithProjet(false);
 				ms.add(mp);

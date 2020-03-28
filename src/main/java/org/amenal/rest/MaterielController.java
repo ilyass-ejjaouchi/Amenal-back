@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.amenal.entities.Materiel;
 import org.amenal.entities.Ouvrier;
 import org.amenal.metier.MaterielMetier;
 import org.amenal.rest.commande.MaterielCommande;
@@ -34,8 +33,8 @@ public class MaterielController {
 	@RequestMapping(value = "", method = RequestMethod.POST)
 
 	public ResponseEntity<Void> addMateriel(@Valid @RequestBody MaterielCommande matCmd) throws URISyntaxException {
-		Materiel mat = materielMetier.ajouterMateriel(matCmd);
-		return ResponseEntity.created(new URI("/materiels/".concat(mat.getId().toString()))).build();
+		 materielMetier.ajouterMateriel(matCmd);
+		return ResponseEntity.created(new URI("/materiels/")).build();
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
@@ -46,8 +45,8 @@ public class MaterielController {
 
 	
 	  @RequestMapping(value = "/{matId}", method = RequestMethod.DELETE) 
-	  public void deleteMateriel(@PathVariable Integer matId , @RequestParam(name="ctn") Boolean ctn) {
-		  materielMetier.SupprimerMateriel(matId , ctn);
+	  public void deleteMateriel(@PathVariable Integer matId ) throws URISyntaxException {
+		  materielMetier.SupprimerMateriel(matId);
 	  
 	  }
 	 
@@ -59,9 +58,6 @@ public class MaterielController {
 		materielMetier.modifierMateriel(matCmd, matID);
 		return ResponseEntity.ok().build();
 	}
-	@RequestMapping(value = "/projets/{projetID}", method = RequestMethod.GET)
-	public List<MaterielPresentation> ListeMaterielByProjet(@PathVariable(name="projetID") Integer projetID) throws URISyntaxException {
-		return materielMetier.ListerMaterielByProjet(projetID);
-	}
+
 
 }

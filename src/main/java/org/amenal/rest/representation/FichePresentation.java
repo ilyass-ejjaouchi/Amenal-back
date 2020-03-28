@@ -23,6 +23,8 @@ public class FichePresentation {
 	
 	private List<DesignationPresentation> designations;
 	
+	private List<CategorieReceptionDesignationPresentation> categories;
+	
 	
 	
 

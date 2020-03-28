@@ -9,6 +9,6 @@ import lombok.Setter;
 public class FournisseurCommande {
 
 	private Integer id;
-	private String libelle;
+	private String fournisseurNom;
 
 }

@@ -2,7 +2,6 @@ package org.amenal.rest.representation;
 
 
 
-import javax.persistence.Entity;
 
 
 
@@ -17,6 +16,8 @@ public class ArticlePresentation {
 	private Integer id;
   	private String designation;
   	private Boolean stockable; 
+	private Boolean isAssoWithProjet;
+	private String categorie;
   	private String unite;
   	
 }

@@ -2,6 +2,7 @@ package org.amenal.metier;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -11,17 +12,23 @@ import org.amenal.dao.OuvrierDesignationRepository;
 import org.amenal.dao.OuvrierFicheRepository;
 import org.amenal.dao.OuvrierRepository;
 import org.amenal.dao.ProjetRepository;
+import org.amenal.dao.ReceptionFicheRepository;
+import org.amenal.entities.Article;
+import org.amenal.entities.Fournisseur;
 import org.amenal.entities.Ouvrier;
 import org.amenal.entities.Projet;
+import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.FicheTypeEnum;
 import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.OuvrierFiche;
+import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
 import org.amenal.rest.mapper.FicheLocationMapper;
 import org.amenal.rest.mapper.FicheOuvrierMapper;
+import org.amenal.rest.mapper.FicheReceptionMapper;
 import org.amenal.rest.mapper.LocationDesignationMapper;
 import org.amenal.rest.mapper.OuvrierMapper;
 import org.amenal.rest.mapper.ProjetMapper;
@@ -46,6 +53,9 @@ public class ProjetMetier {
 	LocationFicheRepository locationFicheRepository;
 
 	@Autowired
+	ReceptionFicheRepository receptionFicheRepository;
+
+	@Autowired
 	OuvrierRepository ouvrierDao;
 
 	@Autowired
@@ -63,6 +73,9 @@ public class ProjetMetier {
 	@Autowired
 	FicheLocationMapper ficheLocationMapper;
 
+	@Autowired
+	FicheReceptionMapper ficheReceptionMapper;
+
 	public Projet addProjet(ProjetCommande p_cmd) {
 		Projet projet = projetMapper.toEntity(p_cmd);
 		List<FicheTypeEnum> fichetype = projet.getFichierTypes();
@@ -72,24 +85,24 @@ public class ProjetMetier {
 
 		projet.setFichiers(CreateFiches(fichetype, projet));
 		return projetDao.save(projet);
-		
+
 	}
-	
-	public Projet modifierProjet(ProjetCommande p_cmd , Integer id) {
+
+	public Projet modifierProjet(ProjetCommande p_cmd, Integer id) {
 		Projet projet = projetMapper.toEntity(p_cmd);
 		List<FicheTypeEnum> fichetypes = projet.getFichierTypes();
-		
+
 		Projet p = projetDao.findByTitre(projet.getTitre());
 
-		if (p  == null)
+		if (p == null)
 			throw new BadRequestException("Le projet " + projet.getTitre() + " n'est pas existant.");
-		
-		 projet.setId(id);
+
+		projet.setId(id);
 		projet.setFichiers(CreateFiches(fichetypes, projet));
 		fichetypes.addAll(p.getFichierTypes());
 		projet.setFichierTypes(fichetypes);
 		return projetDao.save(projet);
-		
+
 	}
 
 	public List<ProjetPresentation> ListProjet() {
@@ -149,6 +162,7 @@ public class ProjetMetier {
 			List<OuvrierFiche> fs = OuvFicheDao.findByProjetAndTypeFicheAndDate(1, type, date);
 			List<OuvrierFiche> fiches = fs.stream().map(x -> {
 				x.setCount(fs.indexOf(x));
+
 				return x;
 			}).collect(Collectors.toList());
 
@@ -158,10 +172,25 @@ public class ProjetMetier {
 			List<LocationFiche> fs = locationFicheRepository.findByProjetAndTypeFicheAndDate(1, type, date);
 			List<LocationFiche> fiches = fs.stream().map(x -> {
 				x.setCount(fs.indexOf(x));
+				if (!x.getIsValidated()) {
+					x.getLocationDesignations().forEach(ds -> {
+						Article ar = ds.getArticle();
+						Fournisseur fr = ds.getFournisseur();
+						ds.setLibelle(ar.getDesignation());
+						ds.setUnite(ds.getUnite());
+						ds.setFournisseurNom(fr.getFournisseurNom());
+					});
+				}
 				return x;
 			}).collect(Collectors.toList());
 
 			return fiches.stream().map(o -> ficheLocationMapper.toRepresentation(o)).collect(Collectors.toList());
+		}
+		case "RECEPTION": {
+			List<ReceptionFiche> fs = receptionFicheRepository.findByProjetAndTypeFicheAndDate(1, type, date);
+
+			return fs.stream().map(o -> ficheReceptionMapper.toRepresentation(o)).collect(Collectors.toList());
+
 		}
 		default:
 			break;

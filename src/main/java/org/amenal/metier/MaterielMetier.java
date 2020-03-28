@@ -4,12 +4,16 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.LocationAssoRepository;
-import org.amenal.dao.MaterielRepository;
+import org.amenal.dao.LocationDesignationRepository;
 import org.amenal.dao.ProjetRepository;
+import org.amenal.dao.UniteRepository;
+import org.amenal.entities.Article;
 import org.amenal.entities.LocationAsso;
-import org.amenal.entities.Materiel;
 import org.amenal.entities.Projet;
+import org.amenal.entities.Unite;
+import org.amenal.entities.designations.LocationDesignation;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.MaterielCommande;
@@ -24,86 +28,87 @@ import org.springframework.transaction.annotation.Transactional;
 public class MaterielMetier {
 
 	@Autowired
-	MaterielRepository materielRepository;
+	ArticleRepository articleRepository;
 
 	@Autowired
 	MaterielMapper materielMapper;
-	
+
 	@Autowired
 	LocationAssoRepository locationAssoRepository;
-	
+
 	@Autowired
 	ProjetRepository projetRepository;
 
-	public Materiel ajouterMateriel(MaterielCommande materielCmd) {
+	@Autowired
+	LocationDesignationRepository locationDesignationRepository;
 
-		Materiel materiel = materielMapper.toEntity(materielCmd);
-		return this.materielRepository.save(materiel);
+	@Autowired
+	UniteRepository uniteRepository;
 
-	}
-	
-	public List<MaterielPresentation> ListerMaterielByProjet(Integer projetID){
-		
-		Optional<Projet> projet = projetRepository.findById(projetID);
-		
-		if (!projet.isPresent())
-			throw new NotFoundException("le projet [" + projetID + "] est inexistant");
-		
-		return this.locationAssoRepository.findMaterilByProjet(projet.get()).stream().map(o -> materielMapper.toRepresentation(o))
-				.collect(Collectors.toList());
+	public void ajouterMateriel(MaterielCommande materielCmd) {
+
+		Unite unite = uniteRepository.findByUnite(materielCmd.getUnite());
+
+		if (unite == null)
+			throw new NotFoundException("l' unité  [ " + materielCmd.getUnite() + " ] est inexistante!");
+
+		Article materiel = materielMapper.toEntity(materielCmd);
+		materiel.setUnite(unite);
+		this.articleRepository.save(materiel);
+
 	}
 
 	public List<MaterielPresentation> ListerMateriel() {
 
-		return this.materielRepository.findAll().stream().map(o -> materielMapper.toRepresentation(o))
+		return this.articleRepository.findAllMateriels().stream().map(o -> materielMapper.toRepresentation(o))
 				.collect(Collectors.toList());
 
 	}
-	public void modifierMateriel(MaterielCommande matCmd,Integer matID){
-		
-		Optional<Materiel> mtr = materielRepository.findById(matID);
 
+	public void modifierMateriel(MaterielCommande matCmd, Integer matID) {
+
+		Optional<Article> mtr = articleRepository.findById(matID);
+		Unite unite = uniteRepository.findByUnite(matCmd.getUnite());
+
+		if (unite == null)
+			throw new NotFoundException("l' unité  [ " + matCmd.getUnite() + " ] est inexistante!");
 		if (!mtr.isPresent())
 			throw new NotFoundException("l'article [" + matID + "] est inexistant");
-		
+
 		matCmd.setId(matID);
-		
-		this.materielRepository.save(materielMapper.toEntity(matCmd));
-	}
-	
-	public void SupprimerMateriel(Integer matID , Boolean ctn) {
-		
-		Optional<Materiel> mtr = materielRepository.findById(matID);
+		Article a = materielMapper.toEntity(matCmd);
+		a.setUnite(unite);
 
+		/*****/
+		List<LocationDesignation> ds = locationDesignationRepository.findDesignationByArticleIDAndFicheNotValid(matID);
+		if (!ds.isEmpty())
+			ds.forEach(d -> {
+				d.setLibelle(a.getDesignation());
+				d.setUnite(a.getUnite().getUnite());
+			});
+		/*****/
+
+		this.articleRepository.save(a);
+	}
+
+	public void SupprimerMateriel(Integer matID) {
+
+		Optional<Article> mtr = articleRepository.findById(matID);
+		
 		if (!mtr.isPresent())
 			throw new NotFoundException("l'article [" + matID + "] est inexistant");
-		List<LocationAsso> locs = locationAssoRepository.findByMateriel(mtr.get());
-		
-		if(!locs.isEmpty()) {
-			if(ctn) {
-				
-				locs.forEach(l->{
-					locationAssoRepository.delete(l);
-				});
-				materielRepository.delete(mtr.get());
-				
-			}else {
-				String fours="";
-				for (LocationAsso l : locs) {
-					
-					fours+=l.getFourniseur().getLibelle()+" , ";
 
-					
-				}
-				throw new BadRequestException("Ce materiel est deja associer au fournisseur: "+fours);
-			}
-		
+		List<LocationAsso> locs = locationAssoRepository.findByArticle(mtr.get());
+
+		if (!locs.isEmpty()) {
+			System.out.println("ddddd"+locs);
+			throw new BadRequestException(
+					"Vous ne pouvez pas supprimer le materiel [ " + mtr.get().getDesignation() + " ] !");
 		}else {
-			materielRepository.delete(mtr.get());
-
+			mtr.get().setUnite(null);
+			articleRepository.delete(mtr.get());
 		}
-		
-		
+
 	}
 
 }

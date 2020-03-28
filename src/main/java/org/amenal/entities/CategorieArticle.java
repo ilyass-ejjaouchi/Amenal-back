@@ -1,5 +1,6 @@
 package org.amenal.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,5 +26,15 @@ public class CategorieArticle {
 	private String categorie;
 	
 	@OneToMany( mappedBy="categorie")
-	private List<Article> articles  ;
+	private List<Article> articles =new  ArrayList<Article>() ;
+	
+	@Transient
+	private Boolean isAssoWithProjet = false;
+
+	@Override
+	public String toString() {
+		return "CategorieArticle [categorie=" + categorie + ", articles=" + articles + "]";
+	}
+
+	
 }

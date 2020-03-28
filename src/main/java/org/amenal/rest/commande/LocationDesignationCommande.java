@@ -16,9 +16,8 @@ import lombok.Setter;
 public class LocationDesignationCommande {
 	
 
-	private String libelle;
-
-	private String unite;
+	private Integer idMateriel;
+	private Integer fournisseurId;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
 	private Double quantite;

@@ -1,5 +1,6 @@
 package org.amenal.rest.representation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -12,5 +13,6 @@ import lombok.Setter;
 public class CategorieArticlePresentation {
 	private Integer id;
 	private String categorie;
-	List<ArticlePresentation> articles;
+	private Boolean isAssoWithProjet;
+	private List<ArticlePresentation> articles = new ArrayList<ArticlePresentation>();
 }

@@ -10,7 +10,10 @@ import org.mapstruct.Mapping;
 public interface ArticleMapper {
 	
 	@Mapping(source = "e.unite.unite", target = "unite")
+	@Mapping(source ="e.categorie.categorie" , target = "categorie")
 	ArticlePresentation toRepresentation(Article e);
+	
+	
 
 	@Mapping(source = "e.categorieID", target = "categorie.id")
 	@Mapping(source = "e.unite", target = "unite.unite")

@@ -6,7 +6,10 @@ import java.time.LocalTime;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
+import org.amenal.entities.Article;
+import org.amenal.entities.Fournisseur;
 import org.amenal.entities.fiches.LocationFiche;
 
 import lombok.Getter;
@@ -29,8 +32,24 @@ public class LocationDesignation extends Designation {
 	private Double quantite;
 	private String fournisseurNom;
 	private String observation;
+	
+	@OneToOne
+	private Article article;
+	
+	@OneToOne
+	private Fournisseur fournisseur;
 
 	@ManyToOne
 	private LocationFiche locationFiche;
+
+	@Override
+	public String toString() {
+		return "LocationDesignation [libelle=" + libelle + ", unite=" + unite + ", tempsDebut=" + tempsDebut
+				+ ", tempsFin=" + tempsFin + ", quantite=" + quantite + ", fournisseurNom=" + fournisseurNom
+				+ ", observation=" + observation + ", article=" + article.getId() + ", fournisseur=" + fournisseur.getId()
+				+ ", locationFiche=" + locationFiche.getId() + "]";
+	}
+	
+	
 
 }

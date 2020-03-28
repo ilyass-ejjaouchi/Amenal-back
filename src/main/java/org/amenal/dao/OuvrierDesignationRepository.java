@@ -15,5 +15,10 @@ public interface OuvrierDesignationRepository extends JpaRepository<OuvrierDesig
 	List<Ouvrier> findOuvrierByFiche(@Param("ficheID")Integer ficheID);
 	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier.id=:ouvID ")
 	List<OuvrierDesignation> findDesignationByOuvrierID(@Param("ouvID")Integer ouvID);
+	
+	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier.id=:ouvID and OuvrierFiche.isValidated = false ")
+	List<OuvrierDesignation> findDesignationByOuvrierIDAndFicheNotValid(@Param("ouvID")Integer ouvID);
+	
+	
 
 }

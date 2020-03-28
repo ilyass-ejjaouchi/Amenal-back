@@ -12,6 +12,7 @@ import org.amenal.entities.Ouvrier;
 import org.amenal.entities.Projet;
 import org.amenal.entities.QualificationOuvrier;
 import org.amenal.entities.designations.OuvrierDesignation;
+import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.OuvrierCommande;
 import org.amenal.rest.mapper.OuvrierMapper;
@@ -47,8 +48,7 @@ public class OuvrierMetier {
 		/*
 		 * exception...
 		 */
-		QualificationOuvrier qualification = qualificationOuvrierRepository
-				.findByCode(ouvrierCmd.getQualification());
+		QualificationOuvrier qualification = qualificationOuvrierRepository.findByCode(ouvrierCmd.getQualification());
 
 		if (qualification == null)
 			throw new NotFoundException(
@@ -56,6 +56,7 @@ public class OuvrierMetier {
 
 		Ouvrier ouvrier = ouvrierMapper.toEntity(ouvrierCmd);
 		ouvrier.setQualification(qualification);
+
 		return ouvrierRepository.save(ouvrier);
 
 	}
@@ -66,7 +67,7 @@ public class OuvrierMetier {
 
 		if (!ouvrierRepository.findById(id).isPresent())
 			throw new NotFoundException("cet ouvrier est inexistant");
-		
+
 		QualificationOuvrier qualification = qualificationOuvrierRepository
 				.findByCode(ouvrier.getQualification().getCode());
 
@@ -74,18 +75,19 @@ public class OuvrierMetier {
 			throw new NotFoundException(
 					"La qualification [ " + ouvrier.getQualification().getCode() + " ] est introuvable!");
 
-
 		ouvrier.setId(id);
 		ouvrier.setQualification(qualification);
-		
+
 		Ouvrier ouv = ouvrierRepository.save(ouvrier);
 
-		List<OuvrierDesignation> ouvDs = ouvrierDesignationRepository.findDesignationByOuvrierID(id);
-		ouvDs.stream().forEach(des -> {
-			des.setCin(ouvrier.getCin());
-			des.setNom(ouvrier.getNom() + " " + ouvrier.getPrenom());
-			des.setQualification(ouvrier.getQualification().getCode());
-		});
+		List<OuvrierDesignation> Dss = ouvrierDesignationRepository.findDesignationByOuvrierIDAndFicheNotValid(id);
+		if (!Dss.isEmpty())
+			Dss.forEach(d -> {
+				d.setCin(ouvrier.getCin());
+				d.setNom(ouvrier.getNom() + " " + ouvrier.getPrenom());
+				d.setQualification(ouvrier.getQualification().getCode());
+			});
+
 		return ouv;
 
 	}
@@ -101,7 +103,12 @@ public class OuvrierMetier {
 
 		Optional<Ouvrier> ouv = this.ouvrierRepository.findById(OuvId);
 		if (!ouv.isPresent())
-			throw (new NotFoundException());
+			throw (new NotFoundException("L'ouvrier ["+OuvId+"] introuvable"));
+		
+		List<OuvrierDesignation> Dss = ouvrierDesignationRepository.findDesignationByOuvrierIDAndFicheNotValid(OuvId);
+		
+		if(!Dss.isEmpty())
+			throw new BadRequestException("L'ouvrier [ "+ ouv.get().getNom() + " "+  ouv.get().getPrenom() + " ] est deja associer a des fiche non valide");
 
 		List<OuvrierDesignation> ouvDSs = ouvrierDesignationRepository.findDesignationByOuvrierID(OuvId);
 		ouvDSs.forEach(ouvDs -> {
