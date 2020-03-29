@@ -1,5 +1,6 @@
 package org.amenal.metier;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -194,7 +195,7 @@ public class FournisseurMetier {
 		
 		Fournisseur fr = fournisseurMapper.toEntity(fourCmd);
 		fr.setId(fourID);
-
+		
 		fournisseurRepository.save(fr);
 
 	}
