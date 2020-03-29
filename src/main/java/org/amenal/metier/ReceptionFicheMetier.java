@@ -212,6 +212,7 @@ public class ReceptionFicheMetier {
 							break;
 						}
 					
+					
 					frs.get(i).setIsAssoWithProjet(FourIsAssoWithProjet);
 
 				} else {
