@@ -31,7 +31,7 @@ public class Fournisseur  {
     @OneToMany(mappedBy="fournisseur")
     List<ReceptionAsso> receptionAsso;
     @Transient
-	private Boolean isAssoWithProjet;
+	private Boolean isAssoWithProjet = false;
     
     
 

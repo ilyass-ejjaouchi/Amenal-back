@@ -211,6 +211,8 @@ public class ReceptionFicheMetier {
 							frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
 							break;
 						}
+					
+					frs.get(i).setIsAssoWithProjet(FourIsAssoWithProjet);
 
 				} else {
 
@@ -245,6 +247,7 @@ public class ReceptionFicheMetier {
 					fr.setCategories(new ArrayList<CategorieArticle>());
 
 					fr.getCategories().add(cat);
+	
 					frs.add(fr);
 					i++;
 					j = 0;
