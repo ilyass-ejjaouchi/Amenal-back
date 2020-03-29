@@ -101,7 +101,6 @@ public class MaterielMetier {
 		List<LocationAsso> locs = locationAssoRepository.findByArticle(mtr.get());
 
 		if (!locs.isEmpty()) {
-			System.out.println("ddddd"+locs);
 			throw new BadRequestException(
 					"Vous ne pouvez pas supprimer le materiel [ " + mtr.get().getDesignation() + " ] !");
 		}else {
