@@ -13,6 +13,7 @@ import org.amenal.rest.commande.OuvrierCommande;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -41,7 +42,7 @@ public class UniteController {
 	
 	@RequestMapping(value = "/{unite}", method = RequestMethod.DELETE)
 
-	public void deleteUnite(@PathParam("unite") String unite) throws URISyntaxException {
+	public void deleteUnite(@PathVariable("unite") String unite) throws URISyntaxException {
 		 uniteMetier.deleteUnite(unite);
 	}
 
