@@ -34,7 +34,7 @@ public class UniteController {
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
 
-	public List<String> getUnite(@Valid @RequestBody String unite) throws URISyntaxException {
+	public List<String> getUnite() throws URISyntaxException {
 		return uniteMetier.getUnite();
 	}
 
