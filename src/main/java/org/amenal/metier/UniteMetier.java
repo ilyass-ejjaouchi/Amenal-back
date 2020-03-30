@@ -1,5 +1,8 @@
 package org.amenal.metier;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.amenal.dao.UniteRepository;
 import org.amenal.entities.Unite;
 import org.amenal.exception.BadRequestException;
@@ -10,18 +13,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class UniteMetier {
-	
+
 	@Autowired
 	UniteRepository uniteRepository;
-	
-	
+
 	public void AddUnite(String name) {
-		
+
 		Unite u = new Unite();
-		if(name.trim() == "")
+		if (name.trim() == "")
 			throw new BadRequestException("l'unite ne doit pas etre vide! ");
 		u.setUnite(name);
 		uniteRepository.save(u);
+	}
+
+	public List<String> getUnite() {
+
+		return uniteRepository.findAll().stream().map(u -> u.getUnite()).collect(Collectors.toList());
 	}
 
 }

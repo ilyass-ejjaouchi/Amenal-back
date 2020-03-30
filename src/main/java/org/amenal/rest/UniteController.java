@@ -2,6 +2,7 @@ package org.amenal.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -20,15 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/unites")
 @CrossOrigin(origins = "*")
 public class UniteController {
-	
+
 	@Autowired
 	UniteMetier uniteMetier;
-	
+
 	@RequestMapping(value = "", method = RequestMethod.POST)
 
 	public ResponseEntity<Void> addUnite(@Valid @RequestBody String unite) throws URISyntaxException {
-		 uniteMetier.AddUnite(unite);
+		uniteMetier.AddUnite(unite);
 		return ResponseEntity.created(new URI("/unites")).build();
+	}
+
+	@RequestMapping(value = "", method = RequestMethod.GET)
+
+	public List<String> getUnite(@Valid @RequestBody String unite) throws URISyntaxException {
+		return uniteMetier.getUnite();
 	}
 
 }
