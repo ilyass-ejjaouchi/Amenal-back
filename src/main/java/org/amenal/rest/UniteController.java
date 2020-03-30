@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.websocket.server.PathParam;
 
 import org.amenal.entities.Ouvrier;
 import org.amenal.metier.UniteMetier;
@@ -36,6 +37,12 @@ public class UniteController {
 
 	public List<String> getUnite() throws URISyntaxException {
 		return uniteMetier.getUnite();
+	}
+	
+	@RequestMapping(value = "/{unite}", method = RequestMethod.DELETE)
+
+	public void deleteUnite(@PathParam("unite") String unite) throws URISyntaxException {
+		 uniteMetier.deleteUnite(unite);
 	}
 
 }
