@@ -28,20 +28,17 @@ public class UniteController {
 	UniteMetier uniteMetier;
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
-
 	public ResponseEntity<Void> addUnite(@Valid @RequestBody String unite) throws URISyntaxException {
 		uniteMetier.AddUnite(unite);
 		return ResponseEntity.created(new URI("/unites")).build();
 	}
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
-
 	public List<String> getUnite() throws URISyntaxException {
 		return uniteMetier.getUnite();
 	}
 	
 	@RequestMapping(value = "/{unite}", method = RequestMethod.DELETE)
-
 	public void deleteUnite(@PathVariable("unite") String unite) throws URISyntaxException {
 		 uniteMetier.deleteUnite(unite);
 	}

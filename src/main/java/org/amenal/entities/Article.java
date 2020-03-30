@@ -25,6 +25,7 @@ public class Article {
 	  	private String designation;
 	  	private Boolean stockable; 
 	  	@ManyToOne
+		@JoinColumn(name="FK_UNITE_ID")
 	  	private Unite unite;
 	  	@ManyToOne
 		@JoinColumn(name="FK_CAT_ID")
