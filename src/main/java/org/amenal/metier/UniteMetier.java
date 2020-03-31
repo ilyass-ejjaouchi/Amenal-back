@@ -38,8 +38,9 @@ public class UniteMetier {
 
 		if (u == null)
 			throw new NotFoundException("l'unite est introuvable");
-		if (!u.getArticles().isEmpty())
-			throw new BadRequestException("l'unite [ +" + unite + "Est deja associer a des articles!");
+		if (!u.getArticles().isEmpty()) {
+			throw new BadRequestException("l'unite [ " + unite + " ] Est deja associer a des articles!");
+		}
 
 		uniteRepository.delete(u);
 

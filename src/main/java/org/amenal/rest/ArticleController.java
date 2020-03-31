@@ -35,11 +35,12 @@ public class ArticleController {
 		return ResponseEntity.created(new URI("/Articles/categories".concat(id.toString()))).build();
 
 	}
+
 	@RequestMapping(value = "/categories/{id}", method = RequestMethod.PUT)
-	public void editerCategorie(@Valid @RequestBody CategorieArticleCommande categorieCmd , @PathVariable Integer id)
+	public void editerCategorie(@Valid @RequestBody CategorieArticleCommande categorieCmd, @PathVariable Integer id)
 			throws URISyntaxException {
 
-		this.articleMetier.editCategorieArticle(categorieCmd , id);
+		this.articleMetier.editCategorieArticle(categorieCmd, id);
 
 	}
 
@@ -50,12 +51,26 @@ public class ArticleController {
 		return ResponseEntity.created(new URI("/Articles/".concat(id.toString()))).build();
 
 	}
-	
+
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-	public void editerArticle(@Valid @RequestBody ArticleCommande articleCmd , @PathVariable Integer id)
+	public void editerArticle(@Valid @RequestBody ArticleCommande articleCmd, @PathVariable Integer id)
 			throws URISyntaxException {
 
-		this.articleMetier.EditArticle(articleCmd , id);
+		this.articleMetier.EditArticle(articleCmd, id);
+
+	}
+
+	@RequestMapping(value = "/categories/{id}", method = RequestMethod.DELETE)
+	public void supprimerCategorieWithArticles(@PathVariable Integer id) throws URISyntaxException {
+
+		this.articleMetier.supprimerCategorie(id);
+
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void supprimerArticle(@PathVariable Integer id) throws URISyntaxException {
+
+		this.articleMetier.supprimerArticle(id);
 
 	}
 

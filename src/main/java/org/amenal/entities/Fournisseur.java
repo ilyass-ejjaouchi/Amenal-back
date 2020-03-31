@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.amenal.entities.designations.ReceptionDesignation;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +32,11 @@ public class Fournisseur  {
     
     @OneToMany(mappedBy="fournisseur")
     List<ReceptionAsso> receptionAsso;
+    
+    @OneToMany(mappedBy="recFournisseur")
+    List<ReceptionDesignation> receptionDesignations;
+    
+    
     @Transient
 	private Boolean isAssoWithProjet = false;
     

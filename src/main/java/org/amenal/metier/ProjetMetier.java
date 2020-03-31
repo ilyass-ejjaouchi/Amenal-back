@@ -159,7 +159,7 @@ public class ProjetMetier {
 
 		switch (type) {
 		case "OUVRIER": {
-			List<OuvrierFiche> fs = OuvFicheDao.findByProjetAndTypeFicheAndDate(1, type, date);
+			List<OuvrierFiche> fs = OuvFicheDao.findByProjetAndTypeFicheAndDate(idProjet, type, date);
 			List<OuvrierFiche> fiches = fs.stream().map(x -> {
 				x.setCount(fs.indexOf(x));
 
@@ -169,12 +169,12 @@ public class ProjetMetier {
 			return fiches.stream().map(o -> ficheOuvrierMapper.toRepresentation(o)).collect(Collectors.toList());
 		}
 		case "LOCATION": {
-			List<LocationFiche> fs = locationFicheRepository.findByProjetAndTypeFicheAndDate(1, type, date);
+			List<LocationFiche> fs = locationFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
 			List<LocationFiche> fiches = fs.stream().map(x -> {
 				x.setCount(fs.indexOf(x));
 				if (!x.getIsValidated()) {
 					x.getLocationDesignations().forEach(ds -> {
-						Article ar = ds.getArticle();
+						Article ar = ds.getMateriel();
 						Fournisseur fr = ds.getFournisseur();
 						ds.setLibelle(ar.getDesignation());
 						ds.setUnite(ds.getUnite());
@@ -187,7 +187,7 @@ public class ProjetMetier {
 			return fiches.stream().map(o -> ficheLocationMapper.toRepresentation(o)).collect(Collectors.toList());
 		}
 		case "RECEPTION": {
-			List<ReceptionFiche> fs = receptionFicheRepository.findByProjetAndTypeFicheAndDate(1, type, date);
+			List<ReceptionFiche> fs = receptionFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
 
 			return fs.stream().map(o -> ficheReceptionMapper.toRepresentation(o)).collect(Collectors.toList());
 

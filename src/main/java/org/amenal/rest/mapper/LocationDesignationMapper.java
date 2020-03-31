@@ -20,7 +20,7 @@ public interface LocationDesignationMapper {
 	LocationDesignationPresentation toRepresentation(LocationDesignation o);
 	
 	@Mapping(target = "locationFiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
-	@Mapping(target = "article", source = "e.idMateriel" ,qualifiedByName="toArticle" )
+	@Mapping(target = "materiel", source = "e.idMateriel" ,qualifiedByName="toMateriel" )
 	@Mapping(target = "fournisseur", source = "e.fournisseurId" ,qualifiedByName="toFournisseur" )
 	LocationDesignation toEntity(LocationDesignationCommande e);
 
@@ -34,7 +34,7 @@ public interface LocationDesignationMapper {
 		return locFiche;
 	}
 	
-	@Named("toArticle")
+	@Named("toMateriel")
 	public default Article toArticle(Integer idArticle) {
 		if(idArticle == null)
 			throw new BadRequestException("Vous devez specifiez un article valide!");

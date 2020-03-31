@@ -51,13 +51,13 @@ public class LocationFicheMetier {
 		LocationDesignation locDs = locationDesignationMapper.toEntity(dsCmd);
 		Integer ficheId = locDs.getLocationFiche().getId();
 		Optional<LocationFiche> fiche = locationFicheRepository.findById(ficheId);
-		Optional<Article> article = articleRepository.findById(locDs.getArticle().getId());
+		Optional<Article> article = articleRepository.findById(locDs.getMateriel().getId());
 		Optional<Fournisseur> fr = fournisseurRepository.findById(locDs.getFournisseur().getId());
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
 		if (!article.isPresent())
-			throw new NotFoundException("L' article [ " + locDs.getArticle().getId() + " ] est introuvable !");
+			throw new NotFoundException("L' article [ " + locDs.getMateriel().getId() + " ] est introuvable !");
 		if (!fr.isPresent())
 			throw new NotFoundException("Le fournisseur [ " + locDs.getFournisseur().getId() + " ] est introuvable !");
 
@@ -65,7 +65,7 @@ public class LocationFicheMetier {
 		locDs.setUnite(article.get().getUnite().getUnite());
 		locDs.setFournisseurNom(fr.get().getFournisseurNom());
 		locDs.setLocationFiche(fiche.get());
-		locDs.setArticle(article.get());
+		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
 		return locationDesignationRepository.save(locDs);
@@ -81,7 +81,7 @@ public class LocationFicheMetier {
 			Fournisseur f = new Fournisseur();
 			f.setId(asso.getFourniseur().getId());
 			f.setFournisseurNom(asso.getFourniseur().getFournisseurNom());
-			f.setMateriel(asso.getArticle());
+			f.setMateriel(asso.getMateriel());
 
 			frs.add(f);
 		});
@@ -105,13 +105,13 @@ public class LocationFicheMetier {
 		LocationDesignation locDs = locationDesignationMapper.toEntity(dsCmd);
 		Integer ficheId = locDs.getLocationFiche().getId();
 		Optional<LocationFiche> fiche = locationFicheRepository.findById(ficheId);
-		Optional<Article> article = articleRepository.findById(locDs.getArticle().getId());
+		Optional<Article> article = articleRepository.findById(locDs.getMateriel().getId());
 		Optional<Fournisseur> fr = fournisseurRepository.findById(locDs.getFournisseur().getId());
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
 		if (!article.isPresent())
-			throw new NotFoundException("L' article [ " + locDs.getArticle().getId() + " ] est introuvable !");
+			throw new NotFoundException("L' article [ " + locDs.getMateriel().getId() + " ] est introuvable !");
 		if (!fr.isPresent())
 			throw new NotFoundException("Le fournisseur [ " + locDs.getFournisseur().getId() + " ] est introuvable !");
 		locDs.setId(locDsId);
@@ -119,7 +119,7 @@ public class LocationFicheMetier {
 		locDs.setUnite(article.get().getUnite().getUnite());
 		locDs.setFournisseurNom(fr.get().getFournisseurNom());
 		locDs.setLocationFiche(fiche.get());
-		locDs.setArticle(article.get());
+		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
 		 locationDesignationRepository.save(locDs);

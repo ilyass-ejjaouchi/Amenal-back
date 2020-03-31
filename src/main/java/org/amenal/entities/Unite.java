@@ -25,6 +25,6 @@ public class Unite {
 	
 	private String unite;
 	
-	@OneToMany
+    @OneToMany(mappedBy="unite")
 	List<Article> articles;
 }

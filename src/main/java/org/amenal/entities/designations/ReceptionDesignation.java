@@ -34,10 +34,17 @@ public class ReceptionDesignation extends Designation {
 	@OneToOne
 	private Article article;
 
-	@OneToOne
-	private Fournisseur fournisseur;
+	@ManyToOne
+	private Fournisseur recFournisseur;
 	
 	@ManyToOne
 	private ReceptionFiche receptionfiche;
+
+	@Override
+	public String toString() {
+		return "ReceptionDesignation [id=" + id + ", libelle=" + libelle + ", unite=" + unite + "]";
+	}
+	
+	
 
 }

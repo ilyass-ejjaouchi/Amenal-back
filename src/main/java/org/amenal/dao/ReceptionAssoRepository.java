@@ -19,6 +19,9 @@ public interface ReceptionAssoRepository extends JpaRepository<ReceptionAsso, In
 	List<ReceptionAsso> findByFournisseurAndArticle(Fournisseur f, Article a);
 
 	List<ReceptionAsso> findByFournisseur(Fournisseur fr);
+	
+	List<ReceptionAsso> findByArticle(Article ar);
+
 
 	@Query("SELECT rec FROM ReceptionAsso rec where rec.fournisseur =:fr and rec.categorie is null and rec.article is null")
 	ReceptionAsso findByFournisseurAndOthersNull(@Param("fr") Fournisseur fr);
@@ -34,5 +37,10 @@ public interface ReceptionAssoRepository extends JpaRepository<ReceptionAsso, In
 
 	@Query("SELECT rec FROM ReceptionAsso rec ORDER BY rec.fournisseur , rec.categorie")
 	List<ReceptionAsso> findByOrderByFournisseurAndCategorie();
+	
+	@Query("SELECT distinct p.titre FROM ReceptionAsso loc join loc.projets p WHERE loc.fournisseur=:f")
+	List<String> findProjetByfournisseur(@Param("f")Fournisseur f);
+	
+	
 
 }

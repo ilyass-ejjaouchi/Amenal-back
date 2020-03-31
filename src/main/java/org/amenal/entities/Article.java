@@ -1,12 +1,15 @@
 package org.amenal.entities;
 
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import lombok.Getter;
@@ -25,7 +28,7 @@ public class Article {
 	  	private String designation;
 	  	private Boolean stockable; 
 	  	@ManyToOne
-		@JoinColumn(name="FK_UNITE_ID")
+		@JoinColumn(name="UNITE_ID")
 	  	private Unite unite;
 	  	@ManyToOne
 		@JoinColumn(name="FK_CAT_ID")
@@ -33,6 +36,9 @@ public class Article {
 	  	
 	  	@Transient
 		private Boolean isAssoWithProjet;
+	  	
+	  	@OneToMany(mappedBy="materiel")
+	  	List<LocationAsso> locationAsso;
 
 	  	
 	  	

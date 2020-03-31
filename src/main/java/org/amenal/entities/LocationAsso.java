@@ -22,7 +22,7 @@ public class LocationAsso {
 	Integer id;
 	
 	@ManyToOne
-	Article article;
+	Article materiel;
 
 	@ManyToOne
 	Fournisseur fourniseur;
@@ -34,7 +34,7 @@ public class LocationAsso {
 	
 	@Override
 	public String toString() {
-		return "LocationAsso [materiel=" + article.getId() + "]";
+		return "LocationAsso [materiel=" + materiel.getId() + "]";
 	}
 	
 	

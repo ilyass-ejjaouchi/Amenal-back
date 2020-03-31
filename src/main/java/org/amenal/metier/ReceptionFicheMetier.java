@@ -143,145 +143,146 @@ public class ReceptionFicheMetier {
 
 		List<ReceptionAsso> assos = receptionAssoRepository.findByOrderByFournisseurAndCategorie();
 		CategorieArticle cat = null;
+		if (!assos.isEmpty()) {
+			if (assos.get(0).getCategorie() != null) {
+				cat = new CategorieArticle();
+				cat.setId(assos.get(0).getCategorie().getId());
+				cat.setCategorie(assos.get(0).getCategorie().getCategorie());
+			}
+			fr.setId(assos.get(0).getFournisseur().getId());
+			fr.setFournisseurNom(assos.get(0).getFournisseur().getFournisseurNom());
+			fr.setIsAssoWithProjet(false);
+			fr.setCategories(new ArrayList<CategorieArticle>());
+			if (cat != null) {
+				fr.getCategories().add(cat);
 
-		if (assos.get(0).getCategorie() != null) {
-			cat = new CategorieArticle();
-			cat.setId(assos.get(0).getCategorie().getId());
-			cat.setCategorie(assos.get(0).getCategorie().getCategorie());
-		}
-		fr.setId(assos.get(0).getFournisseur().getId());
-		fr.setFournisseurNom(assos.get(0).getFournisseur().getFournisseurNom());
-		fr.setIsAssoWithProjet(false);
-		fr.setCategories(new ArrayList<CategorieArticle>());
-		if (cat != null) {
-			fr.getCategories().add(cat);
+			}
+			frs.add(fr);
 
-		}
-		frs.add(fr);
+			Integer i = 0;
+			Integer j = 0;
+			Boolean FourIsAssoWithProjet = false;
 
-		Integer i = 0;
-		Integer j = 0;
-		Boolean FourIsAssoWithProjet = false;
+			for (ReceptionAsso ass : assos) {
 
-		for (ReceptionAsso ass : assos) {
+				if (ass.getArticle() != null) {
+					Article ar = new Article();
+					ar.setId(ass.getArticle().getId());
+					ar.setCategorie(ass.getArticle().getCategorie());
+					ar.setDesignation(ass.getArticle().getDesignation());
+					ar.setStockable(ass.getArticle().getStockable());
+					ar.setUnite(ass.getArticle().getUnite());
+					ar.setIsAssoWithProjet(false);
+					List<Integer> projetIds = ass.getProjets().stream().map(a -> a.getId())
+							.collect(Collectors.toList());
 
-			if (ass.getArticle() != null) {
-				Article ar = new Article();
-				ar.setId(ass.getArticle().getId());
-				ar.setCategorie(ass.getArticle().getCategorie());
-				ar.setDesignation(ass.getArticle().getDesignation());
-				ar.setStockable(ass.getArticle().getStockable());
-				ar.setUnite(ass.getArticle().getUnite());
-				ar.setIsAssoWithProjet(false);
-				List<Integer> projetIds = ass.getProjets().stream().map(a -> a.getId()).collect(Collectors.toList());
+					if (ass.getFournisseur().getId() == frs.get(i).getId()) {
 
-				if (ass.getFournisseur().getId() == frs.get(i).getId()) {
+						ass.getArticle().setIsAssoWithProjet(false);
 
-					ass.getArticle().setIsAssoWithProjet(false);
+						if (projetIds.contains(idProjet)) {
 
-					if (projetIds.contains(idProjet)) {
+							FourIsAssoWithProjet = true;
+							ar.setIsAssoWithProjet(true);
 
-						FourIsAssoWithProjet = true;
-						ar.setIsAssoWithProjet(true);
+						}
 
-					}
+						if (ar.getCategorie().getId() != frs.get(i).getCategories().get(j).getId()) {
 
-					if (ar.getCategorie().getId() != frs.get(i).getCategories().get(j).getId()) {
+							for (Article a : frs.get(i).getCategories().get(j).getArticles()) {
+
+								if (a.getIsAssoWithProjet()) {
+									frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
+									break;
+								}
+							}
+
+							CategorieArticle cat2 = new CategorieArticle();
+							cat2.setId(ass.getCategorie().getId());
+							cat2.setCategorie(ass.getCategorie().getCategorie());
+
+							frs.get(i).getCategories().add(cat2);
+
+							j++;
+
+						}
+						frs.get(i).getCategories().get(j).getArticles().add(ar);
+						for (Article a : frs.get(i).getCategories().get(j).getArticles())
+							if (a.getIsAssoWithProjet()) {
+								frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
+								break;
+							}
+
+						frs.get(i).setIsAssoWithProjet(FourIsAssoWithProjet);
+
+					} else {
+
+						frs.get(i).setIsAssoWithProjet(FourIsAssoWithProjet);
+						FourIsAssoWithProjet = false;
 
 						for (Article a : frs.get(i).getCategories().get(j).getArticles()) {
 
 							if (a.getIsAssoWithProjet()) {
 								frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
 								break;
+
 							}
 						}
 
-						CategorieArticle cat2 = new CategorieArticle();
-						cat2.setId(ass.getCategorie().getId());
-						cat2.setCategorie(ass.getCategorie().getCategorie());
+						if (projetIds.contains(idProjet)) {
+							FourIsAssoWithProjet = true;
 
-						frs.get(i).getCategories().add(cat2);
+							ar.setIsAssoWithProjet(true);
 
-						j++;
+						}
+
+						cat = new CategorieArticle();
+						fr = new FournisseurArticleBsn();
+
+						cat.setId(ass.getCategorie().getId());
+						cat.setCategorie(ass.getCategorie().getCategorie());
+
+						fr.setId(ass.getFournisseur().getId());
+						fr.setFournisseurNom(ass.getFournisseur().getFournisseurNom());
+						fr.setIsAssoWithProjet(FourIsAssoWithProjet);
+						fr.setCategories(new ArrayList<CategorieArticle>());
+
+						fr.getCategories().add(cat);
+
+						frs.add(fr);
+						i++;
+						j = 0;
+						frs.get(i).getCategories().get(j).getArticles().add(ar);
+						for (Article a : frs.get(i).getCategories().get(j).getArticles()) {
+
+							if (a.getIsAssoWithProjet()) {
+								frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
+								break;
+
+							}
+						}
 
 					}
-					frs.get(i).getCategories().get(j).getArticles().add(ar);
-					for (Article a : frs.get(i).getCategories().get(j).getArticles())
-						if (a.getIsAssoWithProjet()) {
-							frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
-							break;
-						}
-					
-					
-					frs.get(i).setIsAssoWithProjet(FourIsAssoWithProjet);
 
 				} else {
+					if (frs.get(i).getId() != ass.getFournisseur().getId()) {
 
-					frs.get(i).setIsAssoWithProjet(FourIsAssoWithProjet);
-					FourIsAssoWithProjet = false;
+						fr = new FournisseurArticleBsn();
 
-					for (Article a : frs.get(i).getCategories().get(j).getArticles()) {
+						fr.setId(ass.getFournisseur().getId());
+						fr.setFournisseurNom(ass.getFournisseur().getFournisseurNom());
+						fr.setIsAssoWithProjet(false);
+						fr.setCategories(new ArrayList<CategorieArticle>());
 
-						if (a.getIsAssoWithProjet()) {
-							frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
-							break;
-
-						}
+						frs.add(fr);
+						FourIsAssoWithProjet = false;
+						i++;
+						j = 0;
 					}
 
-					if (projetIds.contains(idProjet)) {
-						FourIsAssoWithProjet = true;
-
-						ar.setIsAssoWithProjet(true);
-
-					}
-
-					cat = new CategorieArticle();
-					fr = new FournisseurArticleBsn();
-
-					cat.setId(ass.getCategorie().getId());
-					cat.setCategorie(ass.getCategorie().getCategorie());
-
-					fr.setId(ass.getFournisseur().getId());
-					fr.setFournisseurNom(ass.getFournisseur().getFournisseurNom());
-					fr.setIsAssoWithProjet(FourIsAssoWithProjet);
-					fr.setCategories(new ArrayList<CategorieArticle>());
-
-					fr.getCategories().add(cat);
-	
-					frs.add(fr);
-					i++;
-					j = 0;
-					frs.get(i).getCategories().get(j).getArticles().add(ar);
-					for (Article a : frs.get(i).getCategories().get(j).getArticles()) {
-
-						if (a.getIsAssoWithProjet()) {
-							frs.get(i).getCategories().get(j).setIsAssoWithProjet(true);
-							break;
-
-						}
-					}
-
-				}
-
-			} else {
-				if (frs.get(i).getId() != ass.getFournisseur().getId()) {
-
-					fr = new FournisseurArticleBsn();
-
-					fr.setId(ass.getFournisseur().getId());
-					fr.setFournisseurNom(ass.getFournisseur().getFournisseurNom());
-					fr.setIsAssoWithProjet(false);
-					fr.setCategories(new ArrayList<CategorieArticle>());
-
-					frs.add(fr);
-					FourIsAssoWithProjet = false;
-					i++;
-					j = 0;
 				}
 
 			}
-
 		}
 
 		return frs.stream().map(o -> fournisseurArticleMapper.toRepresentation(o)).collect(Collectors.toList());
@@ -332,7 +333,7 @@ public class ReceptionFicheMetier {
 		recDs.setUnite(article.get().getUnite().getUnite());
 		recDs.setArticle(article.get());
 		recDs.setCategorie(article.get().getCategorie().getCategorie());
-		recDs.setFournisseur(fr.get());
+		recDs.setRecFournisseur(fr.get());
 		recDs.setFournisseurNom(fr.get().getFournisseurNom());
 
 		receptionDesignationRepository.save(recDs);
@@ -361,7 +362,7 @@ public class ReceptionFicheMetier {
 		recDs.setUnite(article.get().getUnite().getUnite());
 		recDs.setArticle(article.get());
 		recDs.setCategorie(article.get().getCategorie().getCategorie());
-		recDs.setFournisseur(fr.get());
+		recDs.setRecFournisseur(fr.get());
 		recDs.setFournisseurNom(fr.get().getFournisseurNom());
 
 		receptionDesignationRepository.save(recDs);

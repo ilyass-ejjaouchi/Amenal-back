@@ -98,7 +98,7 @@ public class MaterielMetier {
 		if (!mtr.isPresent())
 			throw new NotFoundException("l'article [" + matID + "] est inexistant");
 
-		List<LocationAsso> locs = locationAssoRepository.findByArticle(mtr.get());
+		List<LocationAsso> locs = locationAssoRepository.findByMateriel(mtr.get());
 
 		if (!locs.isEmpty()) {
 			throw new BadRequestException(

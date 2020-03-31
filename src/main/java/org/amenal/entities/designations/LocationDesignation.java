@@ -34,7 +34,7 @@ public class LocationDesignation extends Designation {
 	private String observation;
 	
 	@OneToOne
-	private Article article;
+	private Article materiel;
 	
 	@OneToOne
 	private Fournisseur fournisseur;
@@ -46,7 +46,7 @@ public class LocationDesignation extends Designation {
 	public String toString() {
 		return "LocationDesignation [libelle=" + libelle + ", unite=" + unite + ", tempsDebut=" + tempsDebut
 				+ ", tempsFin=" + tempsFin + ", quantite=" + quantite + ", fournisseurNom=" + fournisseurNom
-				+ ", observation=" + observation + ", article=" + article.getId() + ", fournisseur=" + fournisseur.getId()
+				+ ", observation=" + observation + ", article=" + materiel.getId() + ", fournisseur=" + fournisseur.getId()
 				+ ", locationFiche=" + locationFiche.getId() + "]";
 	}
 	

@@ -55,6 +55,16 @@ public class FournisseurController {
 		return ResponseEntity.ok().build();
 	}
 	
+	@RequestMapping(value = "/{idFournisseur}/materiels/{idMateriel}", method = RequestMethod.DELETE)
+	
+
+	public ResponseEntity<Void> DesassosierMaterielToFournisseur(@PathVariable(name = "idFournisseur") Integer idFourniseur , @PathVariable(name = "idMateriel")Integer idMateriel  ) throws URISyntaxException {
+		
+		fournisseurMetier.DesassosierMaterielToFournisseur(idFourniseur, idMateriel);
+		
+		return ResponseEntity.ok().build();
+	}
+	
 	@RequestMapping(value = "/{idFournisseur}/projets/{idProjet}", method = RequestMethod.PUT)
 
 	public ResponseEntity<Void> AssosierFournisseurToProjet(@PathVariable(name = "idFournisseur") Integer idFourniseur , @PathVariable(name = "idProjet")Integer idProjet  ) throws URISyntaxException {
@@ -74,9 +84,17 @@ public class FournisseurController {
 	
 	@RequestMapping(value = "/{fourID}", method = RequestMethod.DELETE)
 
-	public ResponseEntity<Void> deleteFournisseur(@PathVariable Integer fourID ,@RequestParam Boolean ctn)
+	public ResponseEntity<Void> deleteFournisseurFromLocation(@PathVariable Integer fourID ,@RequestParam Boolean ctn)
 			throws URISyntaxException {
 		fournisseurMetier.supprimerFourniseurFromFicheLocation(fourID , ctn);
+		return ResponseEntity.ok().build();
+	}
+	
+	@RequestMapping(value = "/{fourID}/receptions", method = RequestMethod.DELETE)
+
+	public ResponseEntity<Void> deleteFournisseurFromReception(@PathVariable Integer fourID )
+			throws URISyntaxException {
+		fournisseurMetier.supprimerFourniseurFromFicheReception(fourID);
 		return ResponseEntity.ok().build();
 	}
 	
