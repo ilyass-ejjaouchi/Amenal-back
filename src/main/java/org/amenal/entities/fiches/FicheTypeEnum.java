@@ -11,6 +11,7 @@ public enum FicheTypeEnum {
 	private FicheTypeEnum(String code) {
 		this.code = code;
 	}
+	
 
 	public static FicheTypeEnum fromCode(String code) {
 		switch (code) {
