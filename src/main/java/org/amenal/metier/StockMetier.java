@@ -40,7 +40,6 @@ public class StockMetier {
 
 		List<StockPresentation> listDs = new ArrayList<StockPresentation>();
 		
-		 locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 
 		/************** OUVRIER **************************/
@@ -65,8 +64,9 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
+		List<Map<String, Object>> stockLoc= locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
-	/*	if (!stockLoc.isEmpty()) {
+		if (!stockLoc.isEmpty()) {
 			index++;
 			StockPresentation d2 = new StockPresentation();
 			d2.setCategorie("LOCATION");
@@ -75,17 +75,17 @@ public class StockMetier {
 
 				StockDesignationPresentation dp = new StockDesignationPresentation();
 				dp.setType(((String)l.get("lib")).toUpperCase());
-				dp.setQuantite(MinToHrMin(((Double)l.get("sum"))));
-				dp.setUnite(((String)l.get("u")).toUpperCase());
+				dp.setQuantite(MinToHrMin(((Double)l.get("somme"))));
+				dp.setUnite(((String)l.get("unt")).toUpperCase());
 				d2.getStockDesignations().add(dp);
 			});
 			listDs.add(d2);
 		}
 		/********************* RECEPTION **********************************/
 
-		//List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
-	/*	if (!stockRec.isEmpty()) {
+		if (!stockRec.isEmpty()) {
 			StockPresentation d2 = new StockPresentation();
 			d2.setCategorie(stockRec.get(0).getCategorie().toUpperCase());
 			listDs.add(d2);
@@ -111,7 +111,7 @@ public class StockMetier {
 					listDs.get(index).getStockDesignations().add(dp);
 				}
 			}
-		}*/
+		}
 
 		return listDs;
 

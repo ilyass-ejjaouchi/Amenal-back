@@ -21,7 +21,7 @@ public interface LocationDesignationRepository extends JpaRepository<LocationDes
 	List<LocationDesignation> findDesignationByfournisseurIDAndFicheNotValid(@Param("fr")Fournisseur fr);
 	
 	
-	@Query("select loc.unite as unt , sum(loc.travailleLoc) as somme "
+	@Query("select loc.libelle as lib , loc.unite as unt , sum(loc.travailleLoc) as somme "
 			+ "from LocationDesignation loc WHERE"
 			+ " loc.locationFiche.projet.id=:projetID AND loc.locationFiche.date =:date group by loc.libelle , loc.unite")
 	List<Map<String, Object>> findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
