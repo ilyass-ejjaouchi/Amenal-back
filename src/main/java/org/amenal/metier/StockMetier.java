@@ -40,6 +40,7 @@ public class StockMetier {
 
 		List<StockPresentation> listDs = new ArrayList<StockPresentation>();
 		
+		System.out.println("debut");
 
 		/************** OUVRIER **************************/
 		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
