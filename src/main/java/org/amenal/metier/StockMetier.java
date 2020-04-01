@@ -45,7 +45,6 @@ public class StockMetier {
 		/************** OUVRIER **************************/
 		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 		
-		
 
 		if (!dd.isEmpty()) {
 			index++;
