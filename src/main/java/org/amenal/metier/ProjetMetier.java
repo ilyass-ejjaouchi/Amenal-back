@@ -244,6 +244,7 @@ public class ProjetMetier {
 
 		createStck = false;
 
+		
 		ficheTypes.forEach(type -> {
 			switch (type) {
 			case MOO:
