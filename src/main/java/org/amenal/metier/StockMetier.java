@@ -66,7 +66,7 @@ public class StockMetier {
 
 		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
-		if (!stockLoc.isEmpty()) {
+	/*	if (!stockLoc.isEmpty()) {
 			index++;
 			StockPresentation d2 = new StockPresentation();
 			d2.setCategorie("LOCATION");
