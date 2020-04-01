@@ -75,7 +75,7 @@ public class StockMetier {
 
 				StockDesignationPresentation dp = new StockDesignationPresentation();
 				dp.setType(((String)l.get("lib")).toUpperCase());
-				dp.setQuantite(MinToHrMin(((Double)l.get("somme"))));
+				dp.setQuantite(MinToHrMin(((Long)l.get("somme")).doubleValue()));
 				dp.setUnite(((String)l.get("unt")).toUpperCase());
 				d2.getStockDesignations().add(dp);
 			});
