@@ -64,7 +64,7 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		/*List<StockDs> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<StockDs> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		if (!stockLoc.isEmpty()) {
 			index++;
