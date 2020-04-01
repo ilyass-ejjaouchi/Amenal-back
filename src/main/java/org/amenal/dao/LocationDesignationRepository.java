@@ -20,7 +20,7 @@ public interface LocationDesignationRepository extends JpaRepository<LocationDes
 			+ "and ds.locationFiche.isValidated = false  ")
 	List<LocationDesignation> findDesignationByfournisseurIDAndFicheNotValid(@Param("fr")Fournisseur fr);
 	
-	@Query("select new org.amenal.dao.pojo.StockDs(loc.libelle  , loc.unite , SUM(loc.travailleLoc)  )"
+	@Query("select new org.amenal.dao.pojo.StockDs(loc.libelle  , loc.unite , sum(loc.travailleLoc)  )"
 			+ "from LocationDesignation loc WHERE"
 			+ " loc.locationFiche.projet.id=:projetID AND loc.locationFiche.date =:date group by loc.libelle")
 	List<StockDs> findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
