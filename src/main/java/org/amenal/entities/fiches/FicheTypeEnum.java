@@ -4,7 +4,7 @@ import org.amenal.exception.BadRequestException;
 
 public enum FicheTypeEnum {
 
-	LOC("LOCATION"), MOO("OUVRIER"), RCP("RECEPTION"), STK("STOCK");
+	LOC("LOCATION"), MOO("OUVRIER"), RCP("RECEPTION"), STK("STOCK") , BSN("BESION");
 
 	private String code;
 
@@ -22,6 +22,8 @@ public enum FicheTypeEnum {
 			return FicheTypeEnum.RCP;
 		case "STOCK":
 			return FicheTypeEnum.STK;
+		case "BESION":
+			return FicheTypeEnum.BSN;
 		default:
 			throw new BadRequestException("l' accronyme [" + code + "] n' est pas supporter.");
 		}

@@ -1,25 +1,23 @@
 package org.amenal.rest.representation;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.List;
+
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
 @Setter
+@Getter
 @NoArgsConstructor
-public class LocationDesignationPresentation extends DesignationPresentation{
+public class BesionDesignationPresentation extends DesignationPresentation {
 
-	private String libelle;
+	private String designation;
 	private String unite;
-	private LocalTime tempsDebut;
-	private LocalTime tempsFin;
 	private Double quantite;
-	private String fournisseurNom;
+	private LocalDate dateDemande;
+	private LocalDate datePrevu;
+	private Boolean satisfaction;
 	private String observation;
-
 
 }
