@@ -22,7 +22,7 @@ public interface OuvrierDesignationRepository extends JpaRepository<OuvrierDesig
 	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier.id=:ouvID and OuvrierFiche.isValidated = false ")
 	List<OuvrierDesignation> findDesignationByOuvrierIDAndFicheNotValid(@Param("ouvID") Integer ouvID);
 
-	@Query("select ds.qualification as qual , SUM(ds.travail) as qt from OuvrierDesignation ds WHERE"
+	@Query("select ds.qualification as qual , sum(ds.travail) as qt from OuvrierDesignation ds WHERE"
 			+ " ds.OuvrierFiche.projet.id=:projetID AND ds.OuvrierFiche.date =:date group by ds.qualification")
 	List<Map<String, Object>> findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
 			@Param("date") LocalDate date);
