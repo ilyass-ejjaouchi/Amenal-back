@@ -108,6 +108,7 @@ public class ProjetMetier {
 			throw new BadRequestException("Le projet " + projet.getTitre() + " n'est pas existant.");
 
 		projet.setId(id);
+		
 		projet.setFichiers(CreateFiches(fichetypes, projet));
 		fichetypes.addAll(p.getFichierTypes());
 		projet.setFichierTypes(fichetypes);
