@@ -67,6 +67,8 @@ public class OuvrierFicheMetier {
 		
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
 		
+		
+		
 		if(this.ouvrierDesignationRepository.findById(OuvDsId).get().getOuvrierFiche().getIsValidated()) {
 			throw (new BadRequestException("La fiche associer a cette ligne est deja validé!"));
 

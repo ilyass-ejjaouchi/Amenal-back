@@ -3,6 +3,7 @@ package org.amenal.rest.commande;
 
 import java.time.LocalTime;
 
+import io.swagger.models.auth.In;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +20,7 @@ public class OuvrierDesignationCommande   {
 	private String qualification;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
+	private Integer travail;
 	private Double jour;
 	private Double hSup;
 	private Boolean epi;

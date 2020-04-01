@@ -13,6 +13,7 @@ import org.amenal.dao.OuvrierFicheRepository;
 import org.amenal.dao.OuvrierRepository;
 import org.amenal.dao.ProjetRepository;
 import org.amenal.dao.ReceptionFicheRepository;
+import org.amenal.dao.StockFicheRepository;
 import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.Ouvrier;
@@ -23,6 +24,7 @@ import org.amenal.entities.fiches.FicheTypeEnum;
 import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
+import org.amenal.entities.fiches.StockFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
@@ -66,6 +68,12 @@ public class ProjetMetier {
 
 	@Autowired
 	OuvrierMapper ouvrierMapper;
+	
+	@Autowired 
+	StockMetier stockMetier;
+	
+	@Autowired
+	StockFicheRepository stockFicheRepository;
 
 	@Autowired
 	FicheOuvrierMapper ficheOuvrierMapper;
@@ -75,6 +83,8 @@ public class ProjetMetier {
 
 	@Autowired
 	FicheReceptionMapper ficheReceptionMapper;
+
+	private static Boolean createStck;
 
 	public Projet addProjet(ProjetCommande p_cmd) {
 		Projet projet = projetMapper.toEntity(p_cmd);
@@ -190,6 +200,21 @@ public class ProjetMetier {
 			List<ReceptionFiche> fs = receptionFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
 
 			return fs.stream().map(o -> ficheReceptionMapper.toRepresentation(o)).collect(Collectors.toList());
+		}
+		case "STOCK": {
+
+			List<StockFiche> fs = stockFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
+			
+			List<FichePresentation> fsPrs = fs.stream().map(o -> {
+				FichePresentation ff=  new FichePresentation();
+				ff.setId(o.getId());
+				ff.setDate(o.getDate());
+				ff.setStockDesignations(stockMetier.getStockLigneDesignation(idProjet, ff.getDate()));
+				return ff;
+			}).collect(Collectors.toList());
+			;
+			
+			return fsPrs;
 
 		}
 		default:
@@ -217,6 +242,8 @@ public class ProjetMetier {
 
 		List<Fiche> fiches = new ArrayList<Fiche>();
 
+		createStck = false;
+
 		ficheTypes.forEach(type -> {
 			switch (type) {
 			case MOO:
@@ -224,21 +251,31 @@ public class ProjetMetier {
 				OuvFiche.setDate(LocalDate.now());
 				OuvFiche.setProjet(p);
 				fiches.add(OuvFiche);
+				createStck = true;
 				break;
 			case LOC:
 				LocationFiche locFiche = new LocationFiche();
 				locFiche.setDate(LocalDate.now());
 				locFiche.setProjet(p);
 				fiches.add(locFiche);
+				createStck = true;
+
 			case RCP:
 				ReceptionFiche recf = new ReceptionFiche();
 				recf.setDate(LocalDate.now());
 				recf.setProjet(p);
 				fiches.add(recf);
+				createStck = true;
 			default:
 				break;
 			}
 		});
+		if (createStck) {
+			StockFiche stockFiche = new StockFiche();
+			stockFiche.setDate(LocalDate.now());
+			stockFiche.setProjet(p);
+			fiches.add(stockFiche);
+		}
 
 		return fiches;
 

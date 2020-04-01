@@ -39,6 +39,8 @@ public class Article {
 	  	
 	  	@OneToMany(mappedBy="materiel")
 	  	List<LocationAsso> locationAsso;
+	  	
+	  	
 
 	  	
 	  	

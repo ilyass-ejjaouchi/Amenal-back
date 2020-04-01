@@ -41,7 +41,8 @@ public class OuvrierDesignation extends Designation implements Serializable {
 	private String cin;
 	private String nom;
 	private String qualification;
-
+	
+	private Integer travail;
 	@ManyToOne
 	private Ouvrier ouvrier;
 

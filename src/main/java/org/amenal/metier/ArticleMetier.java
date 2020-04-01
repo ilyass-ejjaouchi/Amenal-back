@@ -7,11 +7,13 @@ import java.util.stream.Collectors;
 import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.CategorieArticleRepository;
 import org.amenal.dao.ReceptionAssoRepository;
+import org.amenal.dao.ReceptionDesignationRepository;
 import org.amenal.dao.UniteRepository;
 import org.amenal.entities.Article;
 import org.amenal.entities.CategorieArticle;
 import org.amenal.entities.ReceptionAsso;
 import org.amenal.entities.Unite;
+import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.ArticleCommande;
@@ -37,6 +39,9 @@ public class ArticleMetier {
 	UniteRepository uniteRepository;
 
 	@Autowired
+	ReceptionDesignationRepository receptionDesignationRepository;
+
+	@Autowired
 	ReceptionAssoRepository receptionAssoRepository;
 
 	@Autowired
@@ -59,6 +64,14 @@ public class ArticleMetier {
 		if (!cat.isPresent())
 			throw new NotFoundException("La categorie dont l' id [ " + id + " ] est inexistante!");
 
+		List<ReceptionDesignation> dss = receptionDesignationRepository.findDesignationByCategorieAndFicheNotValid(id);
+
+		if (!dss.isEmpty()) {
+			dss.forEach(l -> {
+				l.setCategorie(CatCmd.getCategorie());
+			});
+		}
+
 		CatCmd.setId(id);
 
 		categorieArticleRepository.save(categorieArticleMapper.toEntity(CatCmd));
@@ -76,6 +89,15 @@ public class ArticleMetier {
 			throw new NotFoundException("l' unité  [ " + articleCmd.getUnite() + " ] est inexistante!");
 
 		Article article = articleMapper.toEntity(articleCmd);
+
+		List<ReceptionDesignation> dss = receptionDesignationRepository.findDesignationByArticleIDAndFicheNotValid(id);
+
+		if (!dss.isEmpty()) {
+			dss.forEach(l -> {
+				l.setLibelle(article.getDesignation());
+				l.setUnite(unite.getUnite());
+			});
+		}
 
 		article.setUnite(unite);
 
@@ -98,7 +120,7 @@ public class ArticleMetier {
 		categorieArticleRepository.delete(cat.get());
 
 	}
-	
+
 	public void supprimerArticle(Integer artId) {
 		Optional<Article> ar = articleRepository.findById(artId);
 

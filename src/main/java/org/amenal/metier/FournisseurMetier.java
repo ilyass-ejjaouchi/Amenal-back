@@ -199,6 +199,20 @@ public class FournisseurMetier {
 
 		Fournisseur fr = fournisseurMapper.toEntity(fourCmd);
 		fr.setId(fourID);
+		
+		List<ReceptionDesignation> dsRc= receptionDesignationRepository.findDesignationByfournisseurIDAndFicheNotValid(fourID);
+		List<LocationDesignation> dsLoc= locationDesignationRepository.findDesignationByfournisseurIDAndFicheNotValid(f.get());
+		
+		if(!dsRc.isEmpty()) {
+			dsRc.forEach(l->{
+				l.setFournisseurNom(fr.getFournisseurNom());
+			});
+		}
+		if(!dsLoc.isEmpty()) {
+			dsLoc.forEach(l->{
+				l.setFournisseurNom(fr.getFournisseurNom());
+			});
+		}
 
 		fournisseurRepository.save(fr);
 
@@ -245,7 +259,7 @@ public class FournisseurMetier {
 		if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
 
-		List<LocationDesignation> ds = locationDesignationRepository.findFournisseurAssoToFiche(f.get());
+		List<LocationDesignation> ds = locationDesignationRepository.findDesignationByfournisseurIDAndFicheNotValid(f.get());
 
 		if (!ds.isEmpty())
 			throw new BadRequestException("vous ne pouvez pas supprimer ce fournisseur [" + f.get().getFournisseurNom()

@@ -29,6 +29,7 @@ public class LocationDesignation extends Designation {
 	private String unite;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
+	private Integer travailleLoc;
 	private Double quantite;
 	private String fournisseurNom;
 	private String observation;

@@ -25,6 +25,10 @@ public class FichePresentation {
 	
 	private List<CategorieReceptionDesignationPresentation> categories;
 	
+	private List<StockPresentation> stockDesignations;
+	
+	
+	
 	
 	
 
