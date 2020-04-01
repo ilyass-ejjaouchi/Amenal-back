@@ -39,9 +39,12 @@ public class StockMetier {
 		int index = -1;
 
 		List<StockPresentation> listDs = new ArrayList<StockPresentation>();
+		
 
 		/************** OUVRIER **************************/
 		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		
+		
 
 		if (!dd.isEmpty()) {
 			index++;
