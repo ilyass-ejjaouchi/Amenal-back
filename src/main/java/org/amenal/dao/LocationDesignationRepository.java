@@ -28,8 +28,7 @@ public interface LocationDesignationRepository extends JpaRepository<LocationDes
 			@Param("date") LocalDate date);
 	
 	@Query("select loc.unite from LocationDesignation ")
-	List<String> findDesignationByDateAndProjets(@Param("projetID") Integer projetID,
-			@Param("date") LocalDate date);
+	List<String> findDesignationByDateAndProjets();
 	
 	
 	

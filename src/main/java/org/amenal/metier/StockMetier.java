@@ -40,7 +40,7 @@ public class StockMetier {
 
 		List<StockPresentation> listDs = new ArrayList<StockPresentation>();
 		
-		 locationDesignationRepository.findDesignationByDateAndProjets(projetId, date);
+		 locationDesignationRepository.findDesignationByDateAndProjets();
 
 
 		/************** OUVRIER **************************/
