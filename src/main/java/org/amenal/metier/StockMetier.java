@@ -84,7 +84,7 @@ public class StockMetier {
 
 		/********************* RECEPTION **********************************/
 
-	/*	List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		if (!stockRec.isEmpty()) {
 			StockPresentation d2 = new StockPresentation();
@@ -112,7 +112,7 @@ public class StockMetier {
 					listDs.get(index).getStockDesignations().add(dp);
 				}
 			}
-		}*/
+		}
 
 		return listDs;
 
