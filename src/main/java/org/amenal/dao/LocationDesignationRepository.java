@@ -23,8 +23,9 @@ public interface LocationDesignationRepository extends JpaRepository<LocationDes
 	@Query("select loc.libelle as lib  , loc.unite as u , sum(loc.travailleLoc) as sum "
 			+ "from LocationDesignation loc WHERE"
 			+ " loc.locationFiche.projet.id=:projetID AND loc.locationFiche.date =:date group by loc.libelle")
-	List<Map<String, Object>>  findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
+	List<Map<String, Object>> findDesignationByDateAndProjets(@Param("projetID") Integer projetID,
 			@Param("date") LocalDate date);
+	
 	
 	
 	

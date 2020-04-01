@@ -64,7 +64,7 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		//List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjets(projetId, date);
 
 	/*	if (!stockLoc.isEmpty()) {
 			index++;
@@ -140,7 +140,7 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjets(projetId, date);
 
 		if (!stockLoc.isEmpty()) {
 
