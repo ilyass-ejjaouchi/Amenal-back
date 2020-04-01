@@ -43,7 +43,7 @@ public class StockMetier {
 		System.out.println("debut");
 
 		/************** OUVRIER **************************/
-		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		/*List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 		
 		
 
@@ -65,7 +65,7 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		List<StockDs> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		/*List<StockDs> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		if (!stockLoc.isEmpty()) {
 			index++;
@@ -85,7 +85,7 @@ public class StockMetier {
 
 		/********************* RECEPTION **********************************/
 
-		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+	/*	List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		if (!stockRec.isEmpty()) {
 			StockPresentation d2 = new StockPresentation();
@@ -113,7 +113,7 @@ public class StockMetier {
 					listDs.get(index).getStockDesignations().add(dp);
 				}
 			}
-		}
+		}*/
 
 		return listDs;
 
