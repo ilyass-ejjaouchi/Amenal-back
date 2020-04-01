@@ -40,8 +40,7 @@ public class StockMetier {
 
 		List<StockPresentation> listDs = new ArrayList<StockPresentation>();
 		
-		System.out.println("debut");
-		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjets(projetId, date);
+		 locationDesignationRepository.findDesignationByDateAndProjets(projetId, date);
 
 
 		/************** OUVRIER **************************/
@@ -141,7 +140,7 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjets(projetId, date);
+		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		if (!stockLoc.isEmpty()) {
 
