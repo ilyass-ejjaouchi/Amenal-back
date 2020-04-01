@@ -64,9 +64,9 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		List<StockDs> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
-		/*if (!stockLoc.isEmpty()) {
+		if (!stockLoc.isEmpty()) {
 			index++;
 			StockPresentation d2 = new StockPresentation();
 			d2.setCategorie("LOCATION");
@@ -74,16 +74,16 @@ public class StockMetier {
 			stockLoc.forEach(l -> {
 
 				StockDesignationPresentation dp = new StockDesignationPresentation();
-				dp.setType(l.getType().toUpperCase());
-				dp.setQuantite(MinToHrMin(l.getQuantite()));
-				dp.setUnite(l.getUnite());
+				dp.setType(((String)l.get("lib")).toUpperCase());
+				dp.setQuantite(MinToHrMin(((Double)l.get("sum"))));
+				dp.setUnite(((String)l.get("u")).toUpperCase());
 				d2.getStockDesignations().add(dp);
 			});
 			listDs.add(d2);
-		}*/
+		}
 		/********************* RECEPTION **********************************/
 
-		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		//List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 	/*	if (!stockRec.isEmpty()) {
 			StockPresentation d2 = new StockPresentation();
@@ -140,17 +140,18 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		List<StockDs> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		if (!stockLoc.isEmpty()) {
 
 			stockLoc.forEach(l -> {
 
 				StockDesignationPresentation dp = new StockDesignationPresentation();
-				dp.setType(l.getType().toUpperCase());
-				dp.setQuantite(MinToHrMin(l.getQuantite()));
-				dp.setUnite(l.getUnite());
+				dp.setType(((String)l.get("lib")).toUpperCase());
+				dp.setQuantite(MinToHrMin(((Double)l.get("sum"))));
+				dp.setUnite(((String)l.get("sum")).toUpperCase());
 				listDs.add(dp);
+
 			});
 		}
 
