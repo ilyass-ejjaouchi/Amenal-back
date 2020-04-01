@@ -43,7 +43,7 @@ public class StockMetier {
 		System.out.println("debut");
 
 		/************** OUVRIER **************************/
-		/*List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 		
 		
 
