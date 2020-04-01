@@ -95,7 +95,7 @@ public class ArticleMetier {
 		if (!dss.isEmpty()) {
 			dss.forEach(l -> {
 				l.setLibelle(article.getDesignation());
-				l.setUnite(unite.getUnite());
+				l.setUnitee(unite.getUnite());
 			});
 		}
 

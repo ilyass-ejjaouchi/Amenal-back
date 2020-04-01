@@ -39,7 +39,7 @@ public interface FicheReceptionMapper {
 
 					ReceptionDesignationPresentation ds = new ReceptionDesignationPresentation();
 					ds.setDesignation(d.getLibelle());
-					ds.setUnite(d.getUnite());
+					ds.setUnite(d.getUnitee());
 					ds.setQuantite(d.getQuantite());
 					ds.setFournisseurNom(d.getFournisseurNom());
 					ds.setObservation(d.getObservation());
@@ -56,7 +56,7 @@ public interface FicheReceptionMapper {
 					i++;
 
 					ds.setDesignation(d.getLibelle());
-					ds.setUnite(d.getUnite());
+					ds.setUnite(d.getUnitee());
 					ds.setQuantite(d.getQuantite());
 					ds.setFournisseurNom(d.getFournisseurNom());
 					ds.setObservation(d.getObservation());

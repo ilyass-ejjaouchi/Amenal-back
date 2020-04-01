@@ -25,7 +25,7 @@ public class ReceptionDesignation extends Designation {
 
 	private Integer id;
 	private String libelle;
-	private String unite;
+	private String unitee;
 	private  String categorie; 
 	private Double quantite;
 	private String fournisseurNom;
@@ -42,7 +42,7 @@ public class ReceptionDesignation extends Designation {
 
 	@Override
 	public String toString() {
-		return "ReceptionDesignation [id=" + id + ", libelle=" + libelle + ", unite=" + unite + "]";
+		return "ReceptionDesignation [id=" + id + ", libelle=" + libelle + ", unite=" + unitee + "]";
 	}
 	
 	

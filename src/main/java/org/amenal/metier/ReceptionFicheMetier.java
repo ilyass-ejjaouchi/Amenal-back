@@ -330,7 +330,7 @@ public class ReceptionFicheMetier {
 		ReceptionDesignation recDs = receptionDesignationMapper.toEntity(recCmd);
 
 		recDs.setLibelle(article.get().getDesignation());
-		recDs.setUnite(article.get().getUnite().getUnite());
+		recDs.setUnitee(article.get().getUnite().getUnite());
 		recDs.setArticle(article.get());
 		recDs.setCategorie(article.get().getCategorie().getCategorie());
 		recDs.setRecFournisseur(fr.get());
@@ -359,7 +359,7 @@ public class ReceptionFicheMetier {
 
 		recDs.setId(id);
 		recDs.setLibelle(article.get().getDesignation());
-		recDs.setUnite(article.get().getUnite().getUnite());
+		recDs.setUnitee(article.get().getUnite().getUnite());
 		recDs.setArticle(article.get());
 		recDs.setCategorie(article.get().getCategorie().getCategorie());
 		recDs.setRecFournisseur(fr.get());
