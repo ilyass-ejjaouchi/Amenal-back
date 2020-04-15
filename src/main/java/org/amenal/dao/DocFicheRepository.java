@@ -10,4 +10,5 @@ public interface DocFicheRepository extends FicheRepository<DocFiche>{
 	@Query("SELECT f from DocFiche f where f.isValidated=false and f.projet=:projet")
 	DocFiche findLastDocFicheByProjet(@Param("projet") Projet p);
 
+	
 }

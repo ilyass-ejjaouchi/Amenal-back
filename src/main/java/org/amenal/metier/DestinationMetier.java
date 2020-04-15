@@ -115,7 +115,7 @@ public class DestinationMetier {
 			d.get().getLivraisonDesignations().forEach(l -> {
 				if (!l.getLivraisonFiche().getIsValidated() && l.getLivraisonFiche().getProjet() == projet.get())
 					throw new BadRequestException(
-							"La desitnation ne peut pas etre supprimé , elle est deja associer a une fiche du projet qui ' est pas valide");
+							"La destination ne peut pas etre supprimé , elle est deja associer a une fiche du projet qui ' est pas valide");
 			});
 
 			projet.get().getDestinations().remove(d.get());
