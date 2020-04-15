@@ -41,7 +41,7 @@ public class Stock {
 	@ManyToOne
 	private StockFiche stockFiche;
 
-	@OneToMany(mappedBy = "stock",fetch=FetchType.EAGER ,
+	@OneToMany(mappedBy = "stock" ,
 			cascade = 
 		{ CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE  , CascadeType.DETACH ,CascadeType.MERGE , })
 	private List<StockDesignation> stockDesignations = new ArrayList<StockDesignation>();
