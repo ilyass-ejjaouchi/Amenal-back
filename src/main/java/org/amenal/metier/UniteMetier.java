@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.amenal.dao.UniteRepository;
+import org.amenal.entities.Article;
 import org.amenal.entities.Unite;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
@@ -20,16 +21,28 @@ public class UniteMetier {
 
 	public void AddUnite(String name) {
 
-		Unite u = new Unite();
 		if (name.trim() == "")
 			throw new BadRequestException("l'unite ne doit pas etre vide! ");
-		u.setUnite(name);
-		uniteRepository.save(u);
+
+		Unite u = uniteRepository.findByUnite(name.trim().toUpperCase());
+
+		if (u != null)
+			if (u.getShowUnite())
+				throw new BadRequestException("cette Unite est deja ajouté!");
+			else
+				u.setShowUnite(true);
+		else {
+			u = new Unite();
+			u.setShowUnite(true);
+			u.setUnite(name.trim().toUpperCase());
+			uniteRepository.save(u);
+		}
+
 	}
 
 	public List<String> getUnite() {
 
-		return uniteRepository.findAll().stream().map(u -> u.getUnite()).collect(Collectors.toList());
+		return uniteRepository.findByShowUnite(true).stream().map(u -> u.getUnite()).collect(Collectors.toList());
 	}
 
 	public void deleteUnite(String unite) {
@@ -39,11 +52,20 @@ public class UniteMetier {
 		if (u == null)
 			throw new NotFoundException("l'unite est introuvable");
 		if (!u.getArticles().isEmpty()) {
-			throw new BadRequestException("l'unite [ " + unite + " ] Est deja associer a des articles!");
-		}
+			Boolean dlt = false;
+			for (Article a : u.getArticles()) {
+				if (a.getShowArt()) {
+					dlt = true;
+					break;
+				}
+			}
+			if (dlt)
+				throw new BadRequestException("l'unite [ " + unite + " ] Est deja associer a des articles!");
+			else
+				u.setShowUnite(false);
+		} else
 
-		uniteRepository.delete(u);
-
+			u.setShowUnite(false);
 	}
 
 }

@@ -9,13 +9,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.amenal.entities.Article;
+import org.amenal.entities.QualificationOuvrier;
 import org.amenal.entities.fiches.BesionFiche;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "Designation")
 @Entity
 @DiscriminatorValue("BsnDesignation")
 @Setter
@@ -26,13 +26,18 @@ public class BesionDesignation extends Designation {
 	private String designation;
 	private String unite;
 	
-	@OneToOne
-	private Article article;
+	
 	private Double quantite;
 	private LocalDate dateDemande;
 	private LocalDate datePrevu;
 	private Boolean satisfaction;
 	private String observation;
+	
+	@OneToOne
+	private Article article;
+	
+	@OneToOne
+	private QualificationOuvrier qualification;
 
 	@ManyToOne
 	private BesionFiche besionFiche;

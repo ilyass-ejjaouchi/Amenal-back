@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.amenal.dao.ArticleRepository;
+import org.amenal.dao.CategorieArticleRepository;
 import org.amenal.dao.FournisseurRepository;
 
 import org.amenal.dao.ProjetRepository;
@@ -20,9 +21,12 @@ import org.amenal.entities.Article;
 import org.amenal.entities.CategorieArticle;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.Projet;
+import org.amenal.entities.QualificationOuvrier;
 import org.amenal.entities.ReceptionAsso;
 import org.amenal.entities.designations.LocationDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
+import org.amenal.entities.designations.Stock;
+import org.amenal.entities.designations.StockDesignation;
 import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
@@ -69,6 +73,9 @@ public class ReceptionFicheMetier {
 	FournisseurArticleMapper fournisseurArticleMapper;
 
 	@Autowired
+	CategorieArticleRepository categorieArticleRepository;
+
+	@Autowired
 	FournisseurMapper fournisseurMapper;
 
 	@Autowired
@@ -109,6 +116,85 @@ public class ReceptionFicheMetier {
 
 	}
 
+	public void DeAssoCategorieWithFournisseur(Integer idFr, Integer idCat) {
+
+		Optional<Fournisseur> Fournisseur = fournisseurRepository.findById(idFr);
+
+		if (!Fournisseur.isPresent())
+			throw new NotFoundException("le fournisseur est introuvable");
+
+		Optional<CategorieArticle> cat = categorieArticleRepository.findById(idCat);
+
+		List<ReceptionDesignation> ds = receptionDesignationRepository
+				.findFournisseurArticleCategorieAssoToFicheReception(Fournisseur.get(), cat.get());
+
+		if (!ds.isEmpty()) {
+			throw new BadRequestException("le couple categorie/fournisseur  [" + Fournisseur.get().getFournisseurNom()
+					+ " / " + cat.get().getCategorie() + "] ne peut pas etre supprimé , "
+					+ "il est associer a une fiche non valide");
+		}
+
+		List<ReceptionAsso> reces = receptionAssoRepository.findByFournisseurAndCategorie(Fournisseur.get(), cat.get());
+		List<String> projets = new ArrayList<String>();
+		reces.forEach(r -> {
+			projets.addAll(r.getProjets().stream().map(o -> o.getAbreveation()).collect(Collectors.toList()));
+		});
+
+		if (!projets.isEmpty()) {
+			String ps = "";
+			for (String p : projets)
+				ps = ps + " " + p;
+			throw new BadRequestException("le couple categorie/fournisseur  [" + Fournisseur.get().getFournisseurNom()
+					+ " / " + cat.get().getCategorie() + "] ne peut pas etre supprimé , "
+					+ "il est associer aux projet suivant : " + ps);
+		} else {
+			reces.forEach(r -> {
+				receptionAssoRepository.delete(r);
+			});
+
+		}
+
+	}
+
+	public void DeAssoArticleWithFournisseur(Integer idFr, Integer idArt) {
+
+		Optional<Fournisseur> Fournisseur = fournisseurRepository.findById(idFr);
+
+		if (!Fournisseur.isPresent())
+			throw new NotFoundException("le fournisseur est introuvable");
+
+		Optional<Article> article = articleRepository.findById(idArt);
+
+		if (!article.isPresent())
+			throw new NotFoundException("l' article est introuvable");
+
+		List<ReceptionDesignation> ds = receptionDesignationRepository
+				.findFournisseurArticleAssoToFicheReception(Fournisseur.get(), article.get());
+
+		if (!ds.isEmpty()) {
+			throw new BadRequestException("le couple article/fournisseur  [" + Fournisseur.get().getFournisseurNom()
+					+ " / " + article.get().getDesignation() + "] ne peut pas etre supprimé , "
+					+ "il est associer a une fiche non valide");
+		}
+
+		ReceptionAsso reces = receptionAssoRepository.findByFournisseurAndArticle(Fournisseur.get(), article.get());
+
+		List<String> projets = reces.getProjets().stream().map(r -> r.getAbreveation()).collect(Collectors.toList());
+
+		if (!projets.isEmpty()) {
+			String ps = "";
+			for (String p : projets)
+				ps = ps + " " + p;
+			throw new BadRequestException("le couple article/fournisseur  [" + Fournisseur.get().getFournisseurNom()
+					+ " / " + article.get().getDesignation() + "] ne peut pas etre supprimé , "
+					+ "il est associer aux projet suivant : " + ps);
+		} else {
+			receptionAssoRepository.delete(reces);
+
+		}
+
+	}
+
 	public void assoArticleToFournisseur(Integer idFr, Integer idArt) {
 
 		Optional<Fournisseur> f = fournisseurRepository.findById(idFr);
@@ -125,9 +211,9 @@ public class ReceptionFicheMetier {
 		if (rr != null)
 			receptionAssoRepository.delete(rr);
 
-		List<ReceptionAsso> receptionAssos = receptionAssoRepository.findByFournisseurAndArticle(f.get(), art.get());
+		ReceptionAsso receptionAssos = receptionAssoRepository.findByFournisseurAndArticle(f.get(), art.get());
 
-		if (receptionAssos.isEmpty()) {
+		if (receptionAssos == null) {
 			rec.setArticle(art.get());
 			rec.setFournisseur(f.get());
 			rec.setCategorie(art.get().getCategorie());
@@ -294,9 +380,18 @@ public class ReceptionFicheMetier {
 		if (!p.isPresent())
 			throw new NotFoundException("Le projet [ " + idProjet + " ] innexsistant");
 
-		ReceptionAsso ass = receptionAssoRepository.findByFournisseurIdAndArticleId(idFour, IdArticle);
+		Optional<Fournisseur> fr = fournisseurRepository.findById(idFour);
+		if (!fr.isPresent())
+			throw new NotFoundException("Le fournisseur [ " + idFour + " ] est introuvable !");
+		Optional<Article> art = articleRepository.findById(IdArticle);
 
-		if (ass.getProjets().contains(p.get())) {
+		ReceptionAsso ass = receptionAssoRepository.findByFournisseurIdAndArticleId(fr.get(), art.get() , p.get());
+		if (ass == null) {
+			throw new NotFoundException(
+					"La article [ " + art.get().getDesignation() + " ] fournit par [ " + fr.get().getFournisseurNom()
+							+ " ] " + "est associer a une fiche non valide du projet " + p.get().getAbreveation());
+
+		} else if (ass.getProjets().contains(p.get())) {
 			List<Projet> ps = ass.getProjets();
 			ps.remove(p.get());
 			ass.setProjets(ps);
@@ -306,7 +401,59 @@ public class ReceptionFicheMetier {
 			ass.setProjets(ps);
 		}
 
-		receptionAssoRepository.save(ass);
+	}
+
+	public void assoFournisseurToProjet(Integer idProjet, Integer idFour) {
+
+		Optional<Projet> p = projetRepository.findById(idProjet);
+		if (!p.isPresent())
+			throw new NotFoundException("Le projet [ " + idProjet + " ] innexsistant");
+
+		Optional<Fournisseur> fr = fournisseurRepository.findById(idFour);
+		if (!fr.isPresent())
+			throw new NotFoundException("Le fournisseur [ " + idFour + " ] est introuvable !");
+
+		List<ReceptionAsso> assos = receptionAssoRepository.findByFournisseurAndArticleNotAssoToFiche(fr.get(),
+				p.get());
+
+		List<Projet> projets = new ArrayList<Projet>();
+		projets.addAll(assos.stream().map(ass -> ass.getProjets()).flatMap(List::stream).collect(Collectors.toList()));
+
+		if (projets.contains(p.get()))
+			for (ReceptionAsso ass : assos)
+				ass.getProjets().remove(p.get());
+		else
+			for (ReceptionAsso ass : assos)
+				ass.getProjets().add(p.get());
+
+	}
+
+	public void assoCategorieFournisseurToProjet(Integer idProjet, Integer idFour, Integer idCat) {
+
+		Optional<Projet> p = projetRepository.findById(idProjet);
+		if (!p.isPresent())
+			throw new NotFoundException("Le projet [ " + idProjet + " ] innexsistant");
+
+		Optional<CategorieArticle> c = categorieArticleRepository.findById(idCat);
+		if (!c.isPresent())
+			throw new NotFoundException("La categorie [ " + idCat + " ] est introuvable !");
+
+		Optional<Fournisseur> fr = fournisseurRepository.findById(idFour);
+		if (!fr.isPresent())
+			throw new NotFoundException("Le fournisseur [ " + idFour + " ] est introuvable !");
+
+		List<ReceptionAsso> assos = receptionAssoRepository.findByCategorieAndArticleNotAssoToFiche(fr.get(), c.get(),
+				p.get());
+
+		List<Projet> projets = new ArrayList<Projet>();
+		projets.addAll(assos.stream().map(ass -> ass.getProjets()).flatMap(List::stream).collect(Collectors.toList()));
+
+		if (projets.contains(p.get()))
+			for (ReceptionAsso ass : assos)
+				ass.getProjets().remove(p.get());
+		else
+			for (ReceptionAsso ass : assos)
+				ass.getProjets().add(p.get());
 
 	}
 
@@ -406,5 +553,7 @@ public class ReceptionFicheMetier {
 
 		return frs;
 	}
+	
+	
 
 }

@@ -1,5 +1,8 @@
 package org.amenal.dao.pojo;
 
+import org.amenal.entities.Article;
+import org.amenal.entities.CategorieArticle;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,28 +12,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class StockDs {
 
-	private String type;
-	private String unite;
 	private Double quantite;
-	private String categorie;
+	private Article article;
+	private CategorieArticle categorie;
 
-
-
-
-	public StockDs(String type, String unite, Long quantite) {
+	public StockDs(Article article, Double quantite, CategorieArticle categorie) {
 		super();
-		this.type = type;
-		this.unite = unite;
-		this.quantite = quantite.doubleValue();
-	}
-
-	public StockDs(String type, String unite, Double quantite, String categorie) {
-		super();
-		this.type = type;
-		this.unite = unite;
+		this.article = article;
 		this.quantite = quantite;
 		this.categorie = categorie;
 	}
 
-	
 }

@@ -2,6 +2,7 @@ package org.amenal.entities.fiches;
 
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -20,7 +21,7 @@ public class ReceptionFiche extends Fiche {
 
 	private String type = FicheTypeEnum.RCP.getCode();
 
-	@OneToMany(mappedBy = "receptionfiche")
+	@OneToMany(mappedBy = "receptionfiche" , cascade=CascadeType.REMOVE)
 	private List<ReceptionDesignation> receptionDesignations;
 
 }

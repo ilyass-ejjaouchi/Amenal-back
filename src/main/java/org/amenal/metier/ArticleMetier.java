@@ -54,12 +54,32 @@ public class ArticleMetier {
 
 		CategorieArticle cat = categorieArticleMapper.toEntity(CatCmd);
 
-		return categorieArticleRepository.save(cat).getId();
+		CategorieArticle cc = categorieArticleRepository.findByCategorie(cat.getCategorie());
+
+		if (cc != null)
+			if (cc.getShowCat())
+				throw new NotFoundException("l' acategorie  [ " + cat.getCategorie() + " ] est deja existante!");
+			else {
+				cc.setShowCat(true);
+				return cc.getId();
+			}
+
+		else {
+			cat.setShowCat(true);
+			return categorieArticleRepository.save(cat).getId();
+		}
 	}
 
 	public void editCategorieArticle(CategorieArticleCommande CatCmd, Integer id) {
+		CategorieArticle cc = categorieArticleMapper.toEntity(CatCmd);
+		
+		CategorieArticle ca = categorieArticleRepository.findByCategorie(cc.getCategorie());
+		
+
 
 		Optional<CategorieArticle> cat = categorieArticleRepository.findById(id);
+		
+		
 
 		if (!cat.isPresent())
 			throw new NotFoundException("La categorie dont l' id [ " + id + " ] est inexistante!");
@@ -74,7 +94,10 @@ public class ArticleMetier {
 
 		CatCmd.setId(id);
 
-		categorieArticleRepository.save(categorieArticleMapper.toEntity(CatCmd));
+
+		cc.setShowCat(true);
+
+		categorieArticleRepository.save(cc);
 
 	}
 
@@ -98,7 +121,7 @@ public class ArticleMetier {
 				l.setUnitee(unite.getUnite());
 			});
 		}
-
+		article.setShowArt(true);
 		article.setUnite(unite);
 
 		article.setId(id);
@@ -117,7 +140,13 @@ public class ArticleMetier {
 		if (!articles.isEmpty())
 			throw new BadRequestException("Cette categorie est deja associer des fournisseur!");
 
-		categorieArticleRepository.delete(cat.get());
+		articles.forEach(a -> {
+			a.setShowArt(false);
+		});
+
+		cat.get().setShowCat(false);
+
+		// categorieArticleRepository.delete(cat.get());
 
 	}
 
@@ -132,7 +161,9 @@ public class ArticleMetier {
 		if (!assos.isEmpty())
 			throw new BadRequestException("Cette categorie est deja associer des fournisseur!");
 
-		articleRepository.delete(ar.get());
+		ar.get().setShowArt(false);
+
+		// articleRepository.delete(ar.get());
 
 	}
 
@@ -150,13 +181,48 @@ public class ArticleMetier {
 
 		article.setUnite(unite);
 
-		return articleRepository.save(article).getId();
+		Article art = articleRepository.findByDesignation(article.getDesignation());
+
+		if (art != null) {
+			if (art.getShowArt())
+				throw new NotFoundException("l' article  [" + art.getDesignation() + " ] est deja existant!");
+			else {
+				art.setCategorie(cat.get());
+				art.setShowArt(true);
+				return art.getId();
+			}
+
+		} else {
+			article.setShowArt(true);
+
+			return articleRepository.save(article).getId();
+		}
+
 	}
 
 	public List<CategorieArticlePresentation> ListerArticle() {
 
-		return categorieArticleRepository.findAll().stream().map(c -> categorieArticleMapper.toRepresentation(c))
-				.collect(Collectors.toList());
+		List<CategorieArticle> cats = categorieArticleRepository.findByShow(true);
+
+		return cats.stream().map(c -> {
+			CategorieArticle cc = new CategorieArticle();
+			cc.setId(c.getId());
+			cc.setCategorie(c.getCategorie());
+			cc.setIsAssoWithProjet(c.getIsAssoWithProjet());
+			c.getArticles().forEach(a -> {
+				if (a.getShowArt()) {
+					Article aa = new Article();
+					aa.setId(a.getId());
+					aa.setDesignation(a.getDesignation());
+					aa.setIsAssoWithProjet(a.getIsAssoWithProjet());
+					aa.setShowArt(true);
+					aa.setUnite(a.getUnite());
+					aa.setStockable(a.getStockable());
+					cc.getArticles().add(aa);
+				}
+			});
+			return categorieArticleMapper.toRepresentation(cc);
+		}).collect(Collectors.toList());
 
 	}
 

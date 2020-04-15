@@ -1,8 +1,9 @@
 package org.amenal.entities;
 
-
 import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,40 +17,43 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
-@Getter @Setter @NoArgsConstructor
-
+@NoArgsConstructor
+@Getter
+@Setter
 public class Article {
-	
-	  @Id
-	    @GeneratedValue(strategy = GenerationType.IDENTITY)
-	    private Integer id;
-	  	private String designation;
-	  	private Boolean stockable; 
-	  	@ManyToOne
-		@JoinColumn(name="UNITE_ID")
-	  	private Unite unite;
-	  	@ManyToOne
-		@JoinColumn(name="FK_CAT_ID")
-	  	private CategorieArticle categorie;
-	  	
-	  	@Transient
-		private Boolean isAssoWithProjet;
-	  	
-	  	@OneToMany(mappedBy="materiel")
-	  	List<LocationAsso> locationAsso;
-	  	
-	  	
 
-	  	
-	  	
-		@Override
-		public String toString() {
-			return "Article [designation=" + designation + "]";
-		}
-		
-		
-	  	
-	  	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
+	private String designation;
+	private Boolean stockable;
+	@ManyToOne
+	@JoinColumn(name = "UNITE_ID")
+	private Unite unite;
+	@ManyToOne(cascade=CascadeType.DETACH)
+	@JoinColumn(name = "FK_CAT_ID")
+	private CategorieArticle categorie;
+
+	@Transient
+	private Boolean isAssoWithProjet;
+
+	@OneToMany(mappedBy = "materiel")
+	List<LocationAsso> locationAsso;
+
+	private Boolean showArt;
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation.trim().toUpperCase();
+	}
+
+	@Override
+	public String toString() {
+		return "Article [designation=" + designation + "]";
+	}
+
 }

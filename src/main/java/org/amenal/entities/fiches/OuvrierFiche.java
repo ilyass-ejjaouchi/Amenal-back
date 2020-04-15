@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -22,11 +23,7 @@ public class OuvrierFiche extends Fiche implements Serializable {
 	private String type = FicheTypeEnum.MOO.getCode();
 
 	
-	
-
-
-	
-	@OneToMany(mappedBy="OuvrierFiche" )
+	@OneToMany(mappedBy="OuvrierFiche",cascade=CascadeType.REMOVE )
 	private List<OuvrierDesignation> ouvrierDesignation;
 	
 	

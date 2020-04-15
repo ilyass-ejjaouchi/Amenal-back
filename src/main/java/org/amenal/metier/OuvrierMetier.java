@@ -57,6 +57,17 @@ public class OuvrierMetier {
 		Ouvrier ouvrier = ouvrierMapper.toEntity(ouvrierCmd);
 		ouvrier.setQualification(qualification);
 
+		Ouvrier oo = ouvrierRepository.findByCin(ouvrier.getCin());
+
+		if (oo != null)
+			throw new NotFoundException("Il existe deja un ouvrier dont le CIN est [ " + oo + " ] !");
+
+		oo = ouvrierRepository.findByNomAndPrenom(ouvrier.getNom(), ouvrier.getPrenom());
+
+		if (oo != null)
+			throw new NotFoundException("Il existe deja un ouvrier qui porte le nom/prenom est [ " + ouvrier.getNom()
+					+ "/" + ouvrier.getPrenom() + " ] !");
+
 		return ouvrierRepository.save(ouvrier);
 
 	}
@@ -64,6 +75,17 @@ public class OuvrierMetier {
 	public Ouvrier modifierOuvrier(OuvrierCommande ouvrierCmd, Integer id) {
 
 		Ouvrier ouvrier = ouvrierMapper.toEntity(ouvrierCmd);
+		
+		Ouvrier oo = ouvrierRepository.findByCin(ouvrier.getCin());
+
+		if (oo != null)
+			throw new NotFoundException("Il existe deja un ouvrier dont le CIN est [ " + oo + " ] !");
+
+		oo = ouvrierRepository.findByNomAndPrenom(ouvrier.getNom(), ouvrier.getPrenom());
+
+		if (oo != null)
+			throw new NotFoundException("Il existe deja un ouvrier qui porte le nom/prenom est [ " + ouvrier.getNom()
+					+ "/" + ouvrier.getPrenom() + " ] !");
 
 		if (!ouvrierRepository.findById(id).isPresent())
 			throw new NotFoundException("cet ouvrier est inexistant");
@@ -74,6 +96,7 @@ public class OuvrierMetier {
 		if (qualification == null)
 			throw new NotFoundException(
 					"La qualification [ " + ouvrier.getQualification().getCode() + " ] est introuvable!");
+		
 
 		ouvrier.setId(id);
 		ouvrier.setQualification(qualification);
@@ -103,12 +126,13 @@ public class OuvrierMetier {
 
 		Optional<Ouvrier> ouv = this.ouvrierRepository.findById(OuvId);
 		if (!ouv.isPresent())
-			throw (new NotFoundException("L'ouvrier ["+OuvId+"] introuvable"));
-		
+			throw (new NotFoundException("L'ouvrier [" + OuvId + "] introuvable"));
+
 		List<OuvrierDesignation> Dss = ouvrierDesignationRepository.findDesignationByOuvrierIDAndFicheNotValid(OuvId);
-		
-		if(!Dss.isEmpty())
-			throw new BadRequestException("L'ouvrier [ "+ ouv.get().getNom() + " "+  ouv.get().getPrenom() + " ] est deja associer a des fiche non valide");
+
+		if (!Dss.isEmpty())
+			throw new BadRequestException("L'ouvrier [ " + ouv.get().getNom() + " " + ouv.get().getPrenom()
+					+ " ] est deja associer a des fiche non valide");
 
 		List<OuvrierDesignation> ouvDSs = ouvrierDesignationRepository.findDesignationByOuvrierID(OuvId);
 		ouvDSs.forEach(ouvDs -> {

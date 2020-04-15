@@ -9,8 +9,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class StockDesignationPresentation {
 
-	private String type;
+	private String designation;
+	private Integer articleId;
 	private String unite;
-	private String quantite;
+	private String BesionType;
+	private Double quantite;
+	private Boolean stockable;
+
 
 }

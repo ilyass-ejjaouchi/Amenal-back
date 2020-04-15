@@ -29,19 +29,22 @@ public class LocationDesignation extends Designation {
 	private String unite;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
-	private Integer travailleLoc;
-	private Double quantite;
+	private Double travailleLoc;
+	private Integer quantite;
 	private String fournisseurNom;
 	private String observation;
 	
-	@OneToOne
+	@ManyToOne
 	private Article materiel;
 	
-	@OneToOne
+	@ManyToOne
 	private Fournisseur fournisseur;
 
 	@ManyToOne
 	private LocationFiche locationFiche;
+	
+	@ManyToOne()
+	ReceptionDesignation receptionDesignationLoc;
 
 	@Override
 	public String toString() {

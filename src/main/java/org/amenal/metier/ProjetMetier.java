@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.dao.DocFicheRepository;
+import org.amenal.dao.FicheRepository;
+import org.amenal.dao.LivraisonFicheRepository;
 import org.amenal.dao.LocationFicheRepository;
 import org.amenal.dao.OuvrierDesignationRepository;
 import org.amenal.dao.OuvrierFicheRepository;
@@ -18,9 +21,12 @@ import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.Ouvrier;
 import org.amenal.entities.Projet;
+import org.amenal.entities.designations.OuvrierDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
+import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.FicheTypeEnum;
+import org.amenal.entities.fiches.LivraisonFiche;
 import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
@@ -28,12 +34,15 @@ import org.amenal.entities.fiches.StockFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
+import org.amenal.rest.mapper.FicheDocumentMapper;
+import org.amenal.rest.mapper.FicheLivraisonMapper;
 import org.amenal.rest.mapper.FicheLocationMapper;
 import org.amenal.rest.mapper.FicheOuvrierMapper;
 import org.amenal.rest.mapper.FicheReceptionMapper;
 import org.amenal.rest.mapper.LocationDesignationMapper;
 import org.amenal.rest.mapper.OuvrierMapper;
 import org.amenal.rest.mapper.ProjetMapper;
+import org.amenal.rest.mapper.StockMapper;
 import org.amenal.rest.representation.FichePresentation;
 import org.amenal.rest.representation.OuvrierPresentation;
 import org.amenal.rest.representation.ProjetPresentation;
@@ -41,9 +50,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+
 @Service
 @Transactional
 public class ProjetMetier {
+	@Autowired
+	StockMapper stockMapper;
 
 	@Autowired
 	ProjetRepository projetDao;
@@ -58,7 +71,13 @@ public class ProjetMetier {
 	ReceptionFicheRepository receptionFicheRepository;
 
 	@Autowired
+	LivraisonFicheRepository livraisonFicheRepository;
+
+	@Autowired
 	OuvrierRepository ouvrierDao;
+
+	@Autowired
+	FicheLivraisonMapper ficheLivraisonMapper;
 
 	@Autowired
 	OuvrierDesignationRepository OuvrierDesignationDao;
@@ -68,12 +87,15 @@ public class ProjetMetier {
 
 	@Autowired
 	OuvrierMapper ouvrierMapper;
-	
-	@Autowired 
+
+	@Autowired
 	StockMetier stockMetier;
-	
+
 	@Autowired
 	StockFicheRepository stockFicheRepository;
+
+	@Autowired
+	DocFicheRepository docFicheRepository;
 
 	@Autowired
 	FicheOuvrierMapper ficheOuvrierMapper;
@@ -84,14 +106,22 @@ public class ProjetMetier {
 	@Autowired
 	FicheReceptionMapper ficheReceptionMapper;
 
+	@Autowired
+	FicheDocumentMapper ficheDocumentMapper;
+
+	@Autowired
+	FicheRepository<Fiche> ficheRepository;
+
 	private static Boolean createStck;
 
 	public Projet addProjet(ProjetCommande p_cmd) {
 		Projet projet = projetMapper.toEntity(p_cmd);
 		List<FicheTypeEnum> fichetype = projet.getFichierTypes();
+		if (projet.getDebut() == null)
+			projet.setDebut(LocalDate.now());
 
-		if (projetDao.findByTitre(projet.getTitre()) != null)
-			throw new BadRequestException("Le projet " + projet.getTitre() + " déjà existant.");
+		if (projetDao.findByAbreveation(projet.getAbreveation()) != null)
+			throw new BadRequestException("Le projet " + projet.getAbreveation() + " déjà existant.");
 
 		projet.setFichiers(CreateFiches(fichetype, projet));
 		return projetDao.save(projet);
@@ -102,13 +132,13 @@ public class ProjetMetier {
 		Projet projet = projetMapper.toEntity(p_cmd);
 		List<FicheTypeEnum> fichetypes = projet.getFichierTypes();
 
-		Projet p = projetDao.findByTitre(projet.getTitre());
+		Projet p = projetDao.findByAbreveation(projet.getAbreveation());
 
 		if (p == null)
-			throw new BadRequestException("Le projet " + projet.getTitre() + " n'est pas existant.");
+			throw new BadRequestException("Le projet " + projet.getAbreveation() + " n'est pas existant.");
 
 		projet.setId(id);
-		
+
 		projet.setFichiers(CreateFiches(fichetypes, projet));
 		fichetypes.addAll(p.getFichierTypes());
 		projet.setFichierTypes(fichetypes);
@@ -120,6 +150,10 @@ public class ProjetMetier {
 
 		return projetDao.findAll().stream().map(o -> projetMapper.toRepresentation(o)).collect(Collectors.toList());
 
+	}
+
+	public void DeleteProjet(Integer id) {
+		projetDao.deleteById(id);
 	}
 
 	public void AssocierOuvrierProjet(Integer idOuvrier, Integer idProjet) {
@@ -140,6 +174,14 @@ public class ProjetMetier {
 		if (ouvs.isEmpty())
 			projet.get().addOuvrier(ouvrier.get());
 		else {
+			List<OuvrierDesignation> Dss = OuvrierDesignationDao
+					.findDesignationByOuvrierIDAndProjetAndFicheNotValid(ouvrier.get(), projet.get());
+
+			if (!Dss.isEmpty())
+				throw new BadRequestException("L'ouvrier [ " + ouvrier.get().getNom() + " " + ouvrier.get().getPrenom()
+						+ " ] est deja associer a une fiche non valide " + "du projet "
+						+ projet.get().getAbreveation());
+
 			projet.get().setOuvriers(projet.get().getOuvriers().stream().filter(ouv -> ouv.getId() != idOuvrier)
 					.collect(Collectors.toList()));
 			ouvrier.get().setProjets(ouvrier.get().getProjets().stream().filter(p -> p.getId() != idProjet)
@@ -164,20 +206,61 @@ public class ProjetMetier {
 		List<FicheTypeEnum> list = projet.get().getFichierTypes().stream()
 				.filter((typeEnum) -> typeEnum.getCode().equals(type)).collect(Collectors.toList());
 
-		if (list.isEmpty())
+		/*if (list.isEmpty() && type != "TOUS")
 			throw new BadRequestException(
-					"Le type [" + type + "] n' existe pas pour le projet [" + projet.get().getTitre() + "]");
+					"Le type [" + type + "] n' existe pas pour le projet [" + projet.get().getAbreveation() + "]");*/
 
 		switch (type) {
-		case "OUVRIER": {
-			List<OuvrierFiche> fs = OuvFicheDao.findByProjetAndTypeFicheAndDate(idProjet, type, date);
-			List<OuvrierFiche> fiches = fs.stream().map(x -> {
-				x.setCount(fs.indexOf(x));
+		case "TOUS": {
+			List<Fiche> fs = ficheRepository.findByProjetAndAndDate(idProjet, date);
 
-				return x;
+			return fs.stream().map(x -> {
+
+				if (x instanceof OuvrierFiche)
+					return ficheOuvrierMapper.toRepresentation((OuvrierFiche) x);
+				else if (x instanceof LocationFiche)
+					return ficheLocationMapper.toRepresentation((LocationFiche) x);
+				else if (x instanceof ReceptionFiche)
+					return ficheReceptionMapper.toRepresentation((ReceptionFiche) x);
+				else if (x instanceof StockFiche) {
+					FichePresentation ff = new FichePresentation();
+					ff.setType("STOCK");
+					ff.setId(x.getId());
+					ff.setDate(x.getDate());
+					if (x.getIsValidated())
+						ff.setStockDesignations(((StockFiche) x).getStocks().stream()
+								.map(v -> stockMapper.toRepresentation(v)).collect(Collectors.toList()));
+					else
+						ff.setStockDesignations(stockMetier.getStockLigneDesignation(idProjet, ff.getDate()).stream()
+								.map(v -> stockMapper.toRepresentation(v)).collect(Collectors.toList()));
+
+					return ff;
+				} else if (x instanceof LivraisonFiche) {
+					FichePresentation ff = new FichePresentation();
+
+					if (!x.getIsValidated()) {
+						((LivraisonFiche) x).getLivraisonDesignations().stream().forEach(oo -> {
+							oo.setDesignation(oo.getArticleLvr().getDesignation());
+							oo.setDestinationNom(oo.getDestination().getDestination());
+							oo.setUnite(oo.getArticleLvr().getUnite().getUnite());
+						});
+					}
+					ff = ficheLivraisonMapper.toRepresentation((LivraisonFiche) x);
+
+					return ff;
+				} else if (x instanceof DocFiche) {
+					return ficheDocumentMapper.toRepresentation((DocFiche) x);
+
+				} else
+					return null;
+
 			}).collect(Collectors.toList());
 
-			return fiches.stream().map(o -> ficheOuvrierMapper.toRepresentation(o)).collect(Collectors.toList());
+		}
+		case "OUVRIER": {
+			List<OuvrierFiche> fs = OuvFicheDao.findByProjetAndTypeFicheAndDate(idProjet, type, date);
+
+			return fs.stream().map(o -> ficheOuvrierMapper.toRepresentation(o)).collect(Collectors.toList());
 		}
 		case "LOCATION": {
 			List<LocationFiche> fs = locationFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
@@ -205,18 +288,51 @@ public class ProjetMetier {
 		case "STOCK": {
 
 			List<StockFiche> fs = stockFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
-			
+
 			List<FichePresentation> fsPrs = fs.stream().map(o -> {
-				FichePresentation ff=  new FichePresentation();
+				FichePresentation ff = new FichePresentation();
 				ff.setId(o.getId());
 				ff.setDate(o.getDate());
-				ff.setStockDesignations(stockMetier.getStockLigneDesignation(idProjet, ff.getDate()));
+				if (o.getIsValidated())
+					ff.setStockDesignations(o.getStocks().stream().map(v -> stockMapper.toRepresentation(v))
+							.collect(Collectors.toList()));
+				else
+					ff.setStockDesignations(stockMetier.getStockLigneDesignation(idProjet, ff.getDate()).stream()
+							.map(v -> stockMapper.toRepresentation(v)).collect(Collectors.toList()));
+
 				return ff;
 			}).collect(Collectors.toList());
 			;
-			
+
 			return fsPrs;
 
+		}
+		case "LIVRAISON": {
+
+			List<LivraisonFiche> fs = livraisonFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
+
+			List<FichePresentation> fsPrs = fs.stream().map(o -> {
+
+				FichePresentation ff = new FichePresentation();
+
+				if (!o.getIsValidated()) {
+					o.getLivraisonDesignations().stream().forEach(oo -> {
+						oo.setDesignation(oo.getArticleLvr().getDesignation());
+						oo.setDestinationNom(oo.getDestination().getDestination());
+						oo.setUnite(oo.getArticleLvr().getUnite().getUnite());
+					});
+				}
+				ff = ficheLivraisonMapper.toRepresentation(o);
+
+				return ff;
+			}).collect(Collectors.toList());
+
+			return fsPrs;
+		}
+		case "DOCUMENT": {
+			List<DocFiche> fs = docFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
+
+			return fs.stream().map(o -> ficheDocumentMapper.toRepresentation(o)).collect(Collectors.toList());
 		}
 		default:
 			break;
@@ -245,7 +361,6 @@ public class ProjetMetier {
 
 		createStck = false;
 
-		
 		ficheTypes.forEach(type -> {
 			switch (type) {
 			case MOO:
@@ -261,13 +376,21 @@ public class ProjetMetier {
 				locFiche.setProjet(p);
 				fiches.add(locFiche);
 				createStck = true;
-
+				break;
 			case RCP:
 				ReceptionFiche recf = new ReceptionFiche();
 				recf.setDate(LocalDate.now());
 				recf.setProjet(p);
 				fiches.add(recf);
 				createStck = true;
+				break;
+			case LVR:
+				LivraisonFiche liv = new LivraisonFiche();
+				liv.setDate(LocalDate.now());
+				liv.setProjet(p);
+				fiches.add(liv);
+				createStck = true;
+				break;
 			default:
 				break;
 			}

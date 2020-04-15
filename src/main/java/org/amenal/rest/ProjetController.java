@@ -96,5 +96,9 @@ public class ProjetController {
 		return projetMetier.listerOuvrierByProjet(idProjet, idFiche);
 
 	}
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void deleteProjet(Integer id) {
+		 projetMetier.DeleteProjet(id);
+	}
 
 }

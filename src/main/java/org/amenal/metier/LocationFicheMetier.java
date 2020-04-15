@@ -12,11 +12,15 @@ import org.amenal.dao.FournisseurRepository;
 import org.amenal.dao.LocationAssoRepository;
 import org.amenal.dao.LocationDesignationRepository;
 import org.amenal.dao.LocationFicheRepository;
+import org.amenal.dao.ReceptionDesignationRepository;
+import org.amenal.dao.ReceptionFicheRepository;
 import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.LocationAsso;
 import org.amenal.entities.designations.LocationDesignation;
+import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.LocationFiche;
+import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.LocationDesignationCommande;
 import org.amenal.rest.mapper.FournisseurMapper;
@@ -37,6 +41,13 @@ public class LocationFicheMetier {
 	private LocationDesignationRepository locationDesignationRepository;
 	@Autowired
 	private LocationDesignationMapper locationDesignationMapper;
+
+	@Autowired
+	ReceptionDesignationRepository receptionDesignationRepository;
+
+	@Autowired
+	ReceptionFicheRepository receptionFicheRepository;
+
 	@Autowired
 	private ArticleRepository articleRepository;
 	@Autowired
@@ -68,6 +79,25 @@ public class LocationFicheMetier {
 		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("LOCATION"  , fiche.get().getProjet());
+
+		if (rec == null) {
+			rec = new ReceptionDesignation();
+			rec.setCategorie("LOCATION");
+			rec.getLocationDesignations().add(locDs);
+
+			ReceptionFiche f = receptionFicheRepository.findByDate(fiche.get().getDate());
+
+			rec.setReceptionfiche(f);
+
+			receptionDesignationRepository.save(rec);
+			locDs.setReceptionDesignationLoc(rec);
+
+		} else {
+			rec.getLocationDesignations().add(locDs);
+			locDs.setReceptionDesignationLoc(rec);
+		}
+
 		return locationDesignationRepository.save(locDs);
 	}
 
@@ -95,13 +125,15 @@ public class LocationFicheMetier {
 		if (!ds.isPresent())
 			throw new NotFoundException("La ligne [ " + locDsId + " ] est introuvable !");
 
-		this.locationDesignationRepository.delete(ds.get());
-
+		if (ds.get().getReceptionDesignationLoc().getOuvrierDesignations().size() == 1) {
+			receptionDesignationRepository.delete(ds.get().getReceptionDesignationLoc());
+		} else
+			this.locationDesignationRepository.delete(ds.get());
 	}
 
-	public void updateLigneDesignationLocation( LocationDesignationCommande dsCmd, Integer locDsId) {
+	public void updateLigneDesignationLocation(LocationDesignationCommande dsCmd, Integer locDsId) {
 		// TODO Auto-generated method stub
-		
+
 		LocationDesignation locDs = locationDesignationMapper.toEntity(dsCmd);
 		Integer ficheId = locDs.getLocationFiche().getId();
 		Optional<LocationFiche> fiche = locationFicheRepository.findById(ficheId);
@@ -122,9 +154,26 @@ public class LocationFicheMetier {
 		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
-		 locationDesignationRepository.save(locDs);
-		
-		
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("LOCATION" , fiche.get().getProjet());
+
+		if (rec == null) {
+			rec = new ReceptionDesignation();
+			rec.setCategorie("LOCATION");
+			rec.getLocationDesignations().add(locDs);
+
+			ReceptionFiche f = receptionFicheRepository.findByDate(fiche.get().getDate());
+
+			rec.setReceptionfiche(f);
+
+			receptionDesignationRepository.save(rec);
+			locDs.setReceptionDesignationLoc(rec);
+
+		} else {
+			rec.getLocationDesignations().add(locDs);
+			locDs.setReceptionDesignationLoc(rec);
+		}
+
+		locationDesignationRepository.save(locDs);
 
 	}
 

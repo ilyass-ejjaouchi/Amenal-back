@@ -46,6 +46,18 @@ public class ReceptionController {
 		receptionFicheMetier.assoArticleToFournisseur(idFr, idArt);
 		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
 	}
+	@RequestMapping(value = "/fournisseurs/{idFr}/categories/{idCat}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> DeAssoCategorieWithFournisseur(@PathVariable Integer idFr, @PathVariable Integer idCat)
+			throws URISyntaxException {
+		receptionFicheMetier.DeAssoCategorieWithFournisseur(idFr, idCat);
+		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
+	}
+	@RequestMapping(value = "/fournisseurs/{idFr}/articles/{idArt}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> DeAssoArticleWithFournisseur(@PathVariable Integer idFr, @PathVariable Integer idArt)
+			throws URISyntaxException {
+		receptionFicheMetier.DeAssoArticleWithFournisseur(idFr, idArt);
+		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
+	}
 
 	@RequestMapping(value = "/fournisseurs/{projetId}", method = RequestMethod.GET)
 	public List<FournisseurArticlePresentation> getFounrnisseurWithCategieAndArticleByProjet(
@@ -57,6 +69,18 @@ public class ReceptionController {
 	public ResponseEntity<Void> assoArticleFournisseurToProjet(@PathVariable Integer idProjet,
 			@PathVariable Integer idFr, @PathVariable Integer idArt) throws URISyntaxException {
 		receptionFicheMetier.assoArticleFournisseurToProjet(idProjet,idArt, idFr);
+		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
+	}
+	@RequestMapping(value = "/fournisseurs/{idFr}/categories/{idCat}/projets/{idProjet}", method = RequestMethod.PUT)
+	public ResponseEntity<Void> assoCategorieFournisseurToProjet(@PathVariable Integer idProjet,
+			@PathVariable Integer idFr, @PathVariable Integer idCat) throws URISyntaxException {
+		receptionFicheMetier.assoCategorieFournisseurToProjet(idProjet, idFr, idCat);
+		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
+	}
+	@RequestMapping(value = "/fournisseurs/{idFr}/projets/{idProjet}", method = RequestMethod.PUT)
+	public ResponseEntity<Void> assoFournisseurToProjet(@PathVariable Integer idProjet,
+			@PathVariable Integer idFr) throws URISyntaxException {
+		receptionFicheMetier.assoFournisseurToProjet(idProjet, idFr);
 		return ResponseEntity.created(new URI("reception/fournisseurs/")).build();
 	}
 

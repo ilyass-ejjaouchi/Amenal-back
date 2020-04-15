@@ -29,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ch.qos.logback.core.db.dialect.MsSQLDialect;
-
 @Service
 @Transactional
 public class FournisseurMetier {
@@ -67,6 +65,10 @@ public class FournisseurMetier {
 	public Fournisseur AjouterFournisseur(FournisseurCommande frCmd) {
 
 		Fournisseur fr = fournisseurMapper.toEntity(frCmd);
+
+		Fournisseur ff = fournisseurRepository.findByFournisseurNom(fr.getFournisseurNom());
+		if (ff != null)
+			throw new BadRequestException("le fournisseur  [" + fr.getFournisseurNom() + "] est inexistant");
 
 		return fournisseurRepository.save(fr);
 
@@ -153,10 +155,18 @@ public class FournisseurMetier {
 			}
 
 		} else {
-			locationAssos.stream().forEach(l -> {
-				locationAssoRepository.delete(l);
 
-			});
+			List<LocationDesignation> dss = locationDesignationRepository
+					.findByFournisseurAndProjetAssoToFicheReception(f.get(), projet.get());
+
+			if (!dss.isEmpty())
+				throw new BadRequestException("le fournisseur " + f.get().getFournisseurNom()
+						+ " est deja ajouter a une fiche de location non valider du projet " + projet.get().getAbreveation());
+			else
+				locationAssos.stream().forEach(l -> {
+					locationAssoRepository.delete(l);
+
+				});
 		}
 	}
 
@@ -185,12 +195,25 @@ public class FournisseurMetier {
 			loc.setFourniseur(f.get());
 			loc.setProjet(p.get());
 			locationAssoRepository.save(loc);
-		} else
-			locationAssoRepository.delete(loc);
+		} else {
+			List<LocationDesignation> dss = locationDesignationRepository
+					.findByFournisseurAndProjetAndMaterielAssoToFicheReception(f.get(), p.get(), mtr.get());
+
+			if (!dss.isEmpty())
+				throw new BadRequestException("le materiel " + mtr.get().getDesignation() + "fournit par "
+						+ f.get().getFournisseurNom()
+						+ " est deja ajouter a une fiche de location non valider du projet " + p.get().getAbreveation());
+			else
+				locationAssoRepository.delete(loc);
+		}
 
 	}
 
 	public void modifierFourniseur(FournisseurCommande fourCmd, Integer fourID) {
+
+		Fournisseur ff = fournisseurRepository.findByFournisseurNom(fourCmd.getFournisseurNom());
+		if (ff != null)
+			throw new BadRequestException("le fournisseur  [" + fourCmd.getFournisseurNom() + "] est inexistant");
 
 		Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
 
@@ -199,17 +222,19 @@ public class FournisseurMetier {
 
 		Fournisseur fr = fournisseurMapper.toEntity(fourCmd);
 		fr.setId(fourID);
-		
-		List<ReceptionDesignation> dsRc= receptionDesignationRepository.findDesignationByfournisseurIDAndFicheNotValid(fourID);
-		List<LocationDesignation> dsLoc= locationDesignationRepository.findDesignationByfournisseurIDAndFicheNotValid(f.get());
-		
-		if(!dsRc.isEmpty()) {
-			dsRc.forEach(l->{
+
+		List<ReceptionDesignation> dsRc = receptionDesignationRepository
+				.findDesignationByfournisseurIDAndFicheNotValid(fourID);
+		List<LocationDesignation> dsLoc = locationDesignationRepository
+				.findDesignationByfournisseurIDAndFicheNotValid(f.get());
+
+		if (!dsRc.isEmpty()) {
+			dsRc.forEach(l -> {
 				l.setFournisseurNom(fr.getFournisseurNom());
 			});
 		}
-		if(!dsLoc.isEmpty()) {
-			dsLoc.forEach(l->{
+		if (!dsLoc.isEmpty()) {
+			dsLoc.forEach(l -> {
 				l.setFournisseurNom(fr.getFournisseurNom());
 			});
 		}
@@ -239,7 +264,7 @@ public class FournisseurMetier {
 			for (String p : projets)
 				ps = ps + " " + p;
 			throw new BadRequestException("le fournisseur  [" + f.get().getFournisseurNom()
-					+ "] ne peut pas etre supprimé " + "le fourniseur est associer au projets = [ " + ps + " ]");
+					+ "] ne peut pas etre supprimé le fourniseur est associer au projets = [ " + ps + " ]");
 		} else {
 
 			f.get().getReceptionAsso().forEach(l -> {
@@ -259,7 +284,8 @@ public class FournisseurMetier {
 		if (!f.isPresent())
 			throw new NotFoundException("le fournisseur [" + fourID + "] est inexistant");
 
-		List<LocationDesignation> ds = locationDesignationRepository.findDesignationByfournisseurIDAndFicheNotValid(f.get());
+		List<LocationDesignation> ds = locationDesignationRepository
+				.findDesignationByfournisseurIDAndFicheNotValid(f.get());
 
 		if (!ds.isEmpty())
 			throw new BadRequestException("vous ne pouvez pas supprimer ce fournisseur [" + f.get().getFournisseurNom()

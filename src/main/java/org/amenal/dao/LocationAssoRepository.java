@@ -22,10 +22,10 @@ public interface LocationAssoRepository extends JpaRepository<LocationAsso, Inte
 
 	List<LocationAsso> findByMateriel(Article mat);
 
-	@Query("SELECT distinct loc.projet.titre FROM LocationAsso loc WHERE loc.fourniseur=:f and loc.materiel=:mat")
+	@Query("SELECT distinct loc.projet.intitule FROM LocationAsso loc WHERE loc.fourniseur=:f and loc.materiel=:mat")
 	List<String> findProjetByFourniseurAndMateriel(@Param("f") Fournisseur fr, @Param("mat") Article mat);
 
-	@Query("SELECT distinct loc.projet.titre FROM LocationAsso loc WHERE loc.fourniseur=:f")
+	@Query("SELECT distinct loc.projet.intitule FROM LocationAsso loc WHERE loc.fourniseur=:f")
 	List<String> findProjetByfournisseur(@Param("f") Fournisseur f);
 
 	@Transactional

@@ -15,6 +15,7 @@ import lombok.Setter;
 public class StockPresentation {
 
 	private String categorie;
+	private Boolean stockable;
 
 	private List<StockDesignationPresentation> stockDesignations = 
 			new ArrayList<StockDesignationPresentation>();

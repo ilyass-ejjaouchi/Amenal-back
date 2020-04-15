@@ -19,12 +19,25 @@ import lombok.Setter;
 @NoArgsConstructor
 
 public class Unite {
+	
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
 	private String unite;
 	
+	private Boolean showUnite;
+	
     @OneToMany(mappedBy="unite")
 	List<Article> articles;
+    
+    public String getUnite() {
+		return unite;
+	}
+
+	public void setUnite(String unite) {
+		this.unite = unite.trim().toUpperCase();
+	}
+    
 }

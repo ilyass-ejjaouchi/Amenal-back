@@ -19,11 +19,9 @@ public class OuvrierDesignationPresentation extends DesignationPresentation {
 	private String qualification;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
-	private String travail;
 	private Double hSup;
 	private Double jour;
 	private Boolean epi;
-	private Boolean valid;
 
 
 }

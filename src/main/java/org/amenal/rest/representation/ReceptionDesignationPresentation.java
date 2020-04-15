@@ -12,8 +12,10 @@ public class ReceptionDesignationPresentation {
 	private Integer id;
 	private String designation;
 	private String unite;
-	private Double quantite;
+	private Double quantite = 0.0;
 	private String fournisseurNom;
 	private String observation;
+	private Boolean valid;
+
 
 }

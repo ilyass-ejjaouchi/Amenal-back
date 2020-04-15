@@ -1,6 +1,5 @@
 package org.amenal.rest.representation;
 
-import java.time.LocalTime;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class DesignationPresentation {
+
 	Integer id;
+	private Boolean valid;
 
 
 }

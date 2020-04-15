@@ -20,7 +20,7 @@ public class OuvrierDesignationCommande   {
 	private String qualification;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
-	private Integer travail;
+	private Double travail;
 	private Double jour;
 	private Double hSup;
 	private Boolean epi;

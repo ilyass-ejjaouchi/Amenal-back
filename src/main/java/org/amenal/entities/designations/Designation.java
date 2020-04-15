@@ -36,6 +36,8 @@ public class Designation implements Serializable {
 	private Integer id;
 	
 	private int nbFile = 0;
+	private Boolean valid;
+
 	
 	
 	

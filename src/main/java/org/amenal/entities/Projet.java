@@ -1,6 +1,7 @@
 package org.amenal.entities;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,19 +37,36 @@ public class Projet implements Serializable {
 	Integer id;
 
 	@Column(unique = true)
-	private String titre;
+	private String intitule;
+	private String abreveation;
+	private String description;
+	private LocalDate debut;
+	private LocalDate fin;
 
-	@ElementCollection(fetch=FetchType.EAGER)
+	@ElementCollection(fetch = FetchType.EAGER)
 	private List<FicheTypeEnum> fichierTypes = new ArrayList<FicheTypeEnum>();
 
 	@OneToMany(mappedBy = "projet", cascade = { CascadeType.ALL })
 	private List<Fiche> fichiers = new ArrayList<Fiche>();
-	
+
+	@ManyToMany()
+	@JoinTable(name = "projet_ouvrier", joinColumns = {
+			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
+					@JoinColumn(name = "fk_ouvrier", nullable = true) })
+	private List<Ouvrier> ouvriers = new ArrayList<Ouvrier>();
+
+	@ManyToMany()
+	@JoinTable(name = "projet_destination", joinColumns = {
+			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
+					@JoinColumn(name = "fk_dst", nullable = true) })
+	private List<Destination> destinations = new ArrayList<Destination>();
 	
 	@ManyToMany()
-	 @JoinTable(name="projet_ouvrier", joinColumns= { @JoinColumn(name="fk_projet" , nullable=true) }, inverseJoinColumns = { @JoinColumn(name="fk_ouvrier" , nullable=true) } )
-	private List<Ouvrier> ouvriers = new ArrayList<Ouvrier>();
-	
+	@JoinTable(name = "projet_document", joinColumns = {
+			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
+					@JoinColumn(name = "fk_document", nullable = true) })
+	private List<Document> documents = new ArrayList<Document>();
+
 	public void addOuvrier(Ouvrier ouvrier) {
 		// TODO Auto-generated method stub
 		if (ouvriers == null) {
@@ -57,7 +75,7 @@ public class Projet implements Serializable {
 		ouvriers.add(ouvrier);
 		ouvrier.addProjet(this);
 	}
-	
+
 	public void addFiche(Fiche fiche) {
 		// TODO Auto-generated method stub
 		if (fichiers == null) {
@@ -67,5 +85,32 @@ public class Projet implements Serializable {
 		fiche.setProjet(this);
 
 	}
+
+	public String getIntitule() {
+		return intitule;
+	}
+
+	public void setIntitule(String intitule) {
+		this.intitule = intitule.toUpperCase();;
+	}
+
+	public String getAbreveation() {
+		return abreveation;
+	}
+
+	public void setAbreveation(String abreveation) {
+		this.abreveation = abreveation.toUpperCase();;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description.toUpperCase();;
+	}
+	
+	
+
 
 }

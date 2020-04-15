@@ -41,13 +41,11 @@ public class BesionFicheMetier {
 		bs.setArticle(ar.get());
 		bs.setBesionFiche(fiche.get());
 
-		/* exception date */
-
 		besionDesignationRepository.save(bs);
 
 	}
-	
-	public void updateLigneDesignationBesion(BesionDesignationCommande bsrCmd , Integer id) {
+
+	public void updateLigneDesignationBesion(BesionDesignationCommande bsrCmd, Integer id) {
 
 		BesionDesignation bs = BesionDesignationMapper.toEntity(bsrCmd);
 
@@ -65,13 +63,11 @@ public class BesionFicheMetier {
 		bs.setBesionFiche(fiche.get());
 		bs.setId(id);
 
-		/* exception date */
-
 		besionDesignationRepository.save(bs);
 
 	}
-	
-	public void DeleteLigneDesignationBesion( Integer id) {
+
+	public void DeleteLigneDesignationBesion(Integer id) {
 
 		Optional<BesionDesignation> bs = besionDesignationRepository.findById(id);
 
@@ -82,5 +78,4 @@ public class BesionFicheMetier {
 
 	}
 
-	
 }

@@ -24,7 +24,7 @@ public class FicheBesionController {
 	@RequestMapping(value = "/{projetId}", method = RequestMethod.GET)
 	public void getStockDesignationForFicheBsn
 	(@PathVariable Integer projetId , @RequestParam(name = "date", required = false)  LocalDate date ) {
-		stockMetier.getStockLigneDesignationForFicheBsn(1, date);
+		//stockMetier.getStockLigneDesignationForFicheBsn(1, date);
 
 	}
 	

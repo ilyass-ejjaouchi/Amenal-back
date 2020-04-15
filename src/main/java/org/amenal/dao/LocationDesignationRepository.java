@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.amenal.dao.pojo.StockDs;
+import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
+import org.amenal.entities.Projet;
 import org.amenal.entities.designations.LocationDesignation;
+import org.amenal.entities.designations.ReceptionDesignation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,12 +24,21 @@ public interface LocationDesignationRepository extends JpaRepository<LocationDes
 	List<LocationDesignation> findDesignationByfournisseurIDAndFicheNotValid(@Param("fr")Fournisseur fr);
 	
 	
-	@Query("select loc.libelle as lib , loc.unite as unt , sum(loc.travailleLoc) as somme "
+	@Query("select loc.materiel as mat,sum(loc.travailleLoc) as somme "
 			+ "from LocationDesignation loc WHERE"
-			+ " loc.locationFiche.projet.id=:projetID AND loc.locationFiche.date =:date group by loc.libelle , loc.unite")
+			+ " loc.locationFiche.projet.id=:projetID AND loc.travailleLoc IS NOT NULL  AND loc.locationFiche.date =:date group by loc.materiel")
 	List<Map<String, Object>> findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
 			@Param("date") LocalDate date);
 	
+	@Query("select ds from LocationDesignation ds WHERE ds.fournisseur=:fr "
+			+ "and ds.locationFiche.isValidated = false and ds.locationFiche.projet=:projet  ")
+	List<LocationDesignation> findByFournisseurAndProjetAssoToFicheReception(@Param("fr") Fournisseur fr,
+			@Param("projet") Projet projet);
+
+	@Query("select ds from LocationDesignation ds WHERE ds.fournisseur=:fr "
+			+ "and ds.locationFiche.isValidated = false and ds.materiel=:mat and ds.locationFiche.projet=:projet  ")
+	List<LocationDesignation> findByFournisseurAndProjetAndMaterielAssoToFicheReception(@Param("fr") Fournisseur fr,
+			@Param("projet") Projet projet, @Param("mat") Article materiel);
 	
 	
 	

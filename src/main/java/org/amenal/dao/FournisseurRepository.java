@@ -15,4 +15,6 @@ public interface FournisseurRepository extends JpaRepository<Fournisseur, Intege
 	@Query("select distinct f from Fournisseur f join fetch f.locationAssos loc where loc.projet.id=:idProjet and loc.materiel.id=:idMateriel ")
 	List<Fournisseur> findByProjetIdAndMaterielId(@Param("idProjet") Integer idProjet , @Param("idMateriel") Integer idMateriel);
 	
+	Fournisseur findByFournisseurNom(String nom);
+	
 }

@@ -18,7 +18,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Table(name = "Designation")
 @Entity
 @DiscriminatorValue("ODesignation")
 @Setter@Getter
@@ -42,16 +41,17 @@ public class OuvrierDesignation extends Designation implements Serializable {
 	private String nom;
 	private String qualification;
 	
-	private Integer travail;
+	private Double travail;
 	@ManyToOne
 	private Ouvrier ouvrier;
 
 	private Boolean epi;
-	private Boolean valid;
 
-	@ManyToOne
-	
+	@ManyToOne()
 	private OuvrierFiche OuvrierFiche;
+	
+	@ManyToOne()
+	ReceptionDesignation receptionDesignationOuv;
 	
 	
 	

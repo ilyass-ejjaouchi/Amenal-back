@@ -5,12 +5,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.dao.LivraisonDesignationRepository;
 import org.amenal.dao.OuvrierDesignationRepository;
 import org.amenal.dao.OuvrierFicheRepository;
 import org.amenal.dao.OuvrierRepository;
+import org.amenal.dao.ReceptionDesignationRepository;
+import org.amenal.dao.ReceptionFicheRepository;
 import org.amenal.entities.Ouvrier;
 import org.amenal.entities.designations.OuvrierDesignation;
+import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.OuvrierFiche;
+import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.OuvrierDesignationCommande;
@@ -32,10 +37,20 @@ public class OuvrierFicheMetier {
 	OuvrierDesignationRepository ouvrierDesignationRepository;
 
 	@Autowired
+	ReceptionDesignationRepository receptionDesignationRepository;
+
+	@Autowired
 	OuvrierRepository ouvrierRepository;
 
 	@Autowired
+	ReceptionFicheRepository receptionFicheRepository;
+
+	@Autowired
+	StockMetier stockMetier;
+
+	@Autowired
 	OuvrierFicheRepository ouvrierFicheRepository;
+
 	public OuvrierDesignation addLigneDesignation(OuvrierDesignationCommande dsCmd) {
 
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
@@ -44,6 +59,11 @@ public class OuvrierFicheMetier {
 
 		if (!ouv.isPresent())
 			throw new BadRequestException("Cet ouvrier n'existe pas!");
+
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
+		if (!ouvFiche.isPresent()) {
+			throw new NotFoundException();
+		}
 
 		des.setCin(ouv.get().getCin());
 		des.setNom(ouv.get().getNom() + " " + ouv.get().getPrenom());
@@ -57,28 +77,44 @@ public class OuvrierFicheMetier {
 		 * 
 		 * }
 		 */
-		
-		
-		
+		des = ouvrierDesignationRepository.save(des);
 
-		return ouvrierDesignationRepository.save(des);
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("MAIN D'OEUVRE"  , ouvFiche.get().getProjet());
+
+		if (rec == null) {
+			rec = new ReceptionDesignation();
+			rec.setCategorie("MAIN D'OEUVRE");
+			rec.getOuvrierDesignations().add(des);
+
+			ReceptionFiche f = receptionFicheRepository.findByDate(ouvFiche.get().getDate());
+
+			rec.setReceptionfiche(f);
+
+			receptionDesignationRepository.save(rec);
+			des.setReceptionDesignationOuv(rec);
+
+		} else {
+			rec.getOuvrierDesignations().add(des);
+			des.setReceptionDesignationOuv(rec);
+
+		}
+
+		return des;
 
 	}
 
 	public OuvrierDesignation updateLigneDesignation(OuvrierDesignationCommande dsCmd, Integer OuvDsId) {
 
-		
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
+		if (!this.ouvrierDesignationRepository.findById(OuvDsId).isPresent())
+			throw (new NotFoundException("ouvirer introuvabe"));
 		
-		
-		
-		if(this.ouvrierDesignationRepository.findById(OuvDsId).get().getOuvrierFiche().getIsValidated()) {
+		Optional<OuvrierDesignation> odDs = this.ouvrierDesignationRepository.findById(OuvDsId);
+
+		if (odDs.get().getOuvrierFiche().getIsValidated()) {
 			throw (new BadRequestException("La fiche associer a cette ligne est deja validé!"));
 
 		}
-		
-		if (!this.ouvrierDesignationRepository.findById(OuvDsId).isPresent())
-			throw (new NotFoundException());
 
 		des.setId(OuvDsId);
 
@@ -91,13 +127,29 @@ public class OuvrierFicheMetier {
 				des.setOuvrier(null);
 
 		}
-		/*
-		 * if( des.getJour() * 9 + des.getHSup() < 9) {
-		 * 
-		 * throw new BadRequestException("information incompatible");
-		 * 
-		 * }
-		 */
+
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
+		if (!ouvFiche.isPresent()) {
+			throw new NotFoundException();
+		}
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("MAIN D'OEUVRE" , ouvFiche.get().getProjet());
+
+		if (rec == null) {
+			rec = new ReceptionDesignation();
+			rec.setCategorie("MAIN D'OEUVRE");
+			rec.getOuvrierDesignations().add(des);
+
+			ReceptionFiche f = receptionFicheRepository.findByDate(ouvFiche.get().getDate());
+
+			rec.setReceptionfiche(f);
+
+			receptionDesignationRepository.save(rec);
+			des.setReceptionDesignationOuv(rec);
+
+		} else {
+			rec.getOuvrierDesignations().add(des);
+			des.setReceptionDesignationOuv(rec);
+		}
 
 		return ouvrierDesignationRepository.save(des);
 
@@ -111,36 +163,41 @@ public class OuvrierFicheMetier {
 	}
 
 	public void SupprimerOuvrierDesignation(Integer OuvDsId) {
+		Optional<OuvrierDesignation> odDs = this.ouvrierDesignationRepository.findById(OuvDsId);
 
-		if (!this.ouvrierDesignationRepository.findById(OuvDsId).isPresent())
-			throw (new NotFoundException());
+		if (!odDs.isPresent())
+			throw (new NotFoundException("designation introuvable!"));
+		if (odDs.get().getOuvrierFiche().getIsValidated()) {
+			throw (new BadRequestException("La fiche associer a cette ligne est deja validé!"));
+		}
 
-		this.ouvrierDesignationRepository.deleteById(OuvDsId);
-		
+		if (odDs.get().getReceptionDesignationOuv().getOuvrierDesignations().size() == 1) {
+			receptionDesignationRepository.delete(odDs.get().getReceptionDesignationOuv());
+		} else
+			this.ouvrierDesignationRepository.deleteById(OuvDsId);
+
 	}
-	
+
 	public void ValiderFicheOuvrier(Integer ficheId) {
-		Optional<OuvrierFiche> ouvFiche= ouvrierFicheRepository.findById(ficheId);
-		if(!ouvFiche.isPresent()) {
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(ficheId);
+		if (!ouvFiche.isPresent()) {
 			throw new NotFoundException();
 		}
-		ouvFiche.get().getOuvrierDesignation().forEach(ds->{
-			if(!ds.getValid()) {
-				throw new BadRequestException("la ligne de l' ouvrier ["+ds.getNom()+"] n' est pas valide!");
+		ouvFiche.get().getOuvrierDesignation().forEach(ds -> {
+			if (!ds.getValid()) {
+				throw new BadRequestException("la ligne de l' ouvrier [" + ds.getNom() + "] n' est pas valide!");
 			}
 		});
 		ouvFiche.get().setIsValidated(true);
-		for (LocalDate date = ouvFiche.get().getDate(); date.isBefore( LocalDate.now()); date = date.plusDays(1))
-		{
-		    OuvrierFiche fiche = new OuvrierFiche();
-		    fiche.setProjet(ouvFiche.get().getProjet());
-		    fiche.setDate(date);
-		    
-		    ouvrierFicheRepository.save(fiche);
-		    
+		for (LocalDate date = ouvFiche.get().getDate(); date.isBefore(LocalDate.now()); date = date.plusDays(1)) {
+			OuvrierFiche fiche = new OuvrierFiche();
+			fiche.setProjet(ouvFiche.get().getProjet());
+			fiche.setDate(date);
+
+			ouvrierFicheRepository.save(fiche);
+
 		}
-		
-		
+
 	}
 
 }

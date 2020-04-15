@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList ;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -26,7 +27,7 @@ public class LocationFiche extends Fiche implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy="locationFiche")
+	@OneToMany(mappedBy="locationFiche" , cascade=CascadeType.REMOVE)
 	private List<LocationDesignation> locationDesignations ;
 	
 

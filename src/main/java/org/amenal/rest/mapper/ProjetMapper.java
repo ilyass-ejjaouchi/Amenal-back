@@ -14,11 +14,9 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface ProjetMapper {
 
-	@Mapping(target = "titre", source = "e.titre")
 	@Mapping(target = "fichierTypes", source = "e.fichierTypes", qualifiedByName = "enum_to_string")
 	ProjetPresentation toRepresentation(Projet e);
 
-	@Mapping(target = "titre", source = "e.titre")
 	@Mapping(target = "fichierTypes", source = "e.fichierTypes", qualifiedByName = "string_to_enum")
 	Projet toEntity(ProjetCommande e);
 
@@ -32,7 +30,6 @@ public interface ProjetMapper {
 	default List<String> fromEnumToString(List<FicheTypeEnum> ficheTypes) {
 		
 		return ficheTypes.stream().distinct().map((x)->x.getCode()).collect(Collectors.toList());
-
 
 	}
 

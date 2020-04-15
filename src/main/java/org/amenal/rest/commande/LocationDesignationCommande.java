@@ -20,12 +20,12 @@ public class LocationDesignationCommande {
 	private Integer fournisseurId;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
-	private Integer travailleLoc;
-	private Double quantite;
+	private Double travailleLoc;
+	private String quantite;
 	private String fournisseurNom;
 	private String observation;
-
+	private Boolean valid;
 	private Integer idFiche;
-	private Integer idProjet ;
+	private Integer idProjet;
 
 }

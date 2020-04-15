@@ -17,7 +17,7 @@ public class LocationDesignationPresentation extends DesignationPresentation{
 	private String unite;
 	private LocalTime tempsDebut;
 	private LocalTime tempsFin;
-	private Double quantite;
+	private Integer quantite;
 	private String fournisseurNom;
 	private String observation;
 

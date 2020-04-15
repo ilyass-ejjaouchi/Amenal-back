@@ -16,6 +16,7 @@ public class ReceptionDesignationCommande {
 	private Integer idProjet ;
 	private Integer idArticle;
 	private Integer idFournisseur;
+	private Boolean valid;
 	
 
 }

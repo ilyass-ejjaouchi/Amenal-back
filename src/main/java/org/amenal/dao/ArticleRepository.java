@@ -16,6 +16,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
 	@Query("select ar from Article ar where ar.categorie is not null")
 	public List<Article> findAllArticles();
 	
+	public Article findByDesignation(String ds);
+	
 	 
 
 }
