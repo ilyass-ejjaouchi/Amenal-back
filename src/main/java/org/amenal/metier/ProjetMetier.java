@@ -391,6 +391,7 @@ public class ProjetMetier {
 				liv.setProjet(p);
 				fiches.add(liv);
 				createStck = true;
+				break;
 			case DOC:
 				DocFiche dic = new DocFiche();
 				dic.setDate(LocalDate.now());
