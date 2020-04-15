@@ -149,7 +149,7 @@ public class StockMetier {
 
 		/****************** LOCATION *********************/
 
-		/*List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId,
+		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId,
 				date);
 		Stock oldStockLoc = OldlistDs.stream().filter(l -> {
 			return l.getCategorie().equals("LOCATION");
@@ -197,7 +197,7 @@ public class StockMetier {
 			});
 			OldlistDs.add(d2);
 		}
-
+		/*
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		Boolean catIsStockable = false;
