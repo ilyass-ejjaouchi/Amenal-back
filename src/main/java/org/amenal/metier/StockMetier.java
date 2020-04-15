@@ -161,6 +161,13 @@ public class StockMetier {
 
 					StockDesignation dp = new StockDesignation();
 					Article mat = (Article) l.get("mat");
+					System.out.println("dddd "+mat.getDesignation());
+					System.out.println("dddd "+mat.getDesignation());
+
+					System.out.println("dddd "+mat.getDesignation());
+
+					System.out.println("dddd "+mat.getDesignation());
+
 					dp.setDesignation(mat.getDesignation());
 					dp.setArticle(mat);
 					dp.setUnite(mat.getUnite().getUnite());
@@ -187,6 +194,7 @@ public class StockMetier {
 
 			stockLoc.forEach(l -> {
 				StockDesignation dp = new StockDesignation();
+				
 				Article mat = (Article) l.get("mat");
 				dp.setDesignation(mat.getDesignation());
 				dp.setArticle(mat);
