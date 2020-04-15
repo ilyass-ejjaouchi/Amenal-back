@@ -390,6 +390,12 @@ public class ProjetMetier {
 				liv.setProjet(p);
 				fiches.add(liv);
 				createStck = true;
+			case DOC:
+				DocFiche dic = new DocFiche();
+				dic.setDate(LocalDate.now());
+				dic.setProjet(p);
+				fiches.add(dic);
+				createStck = true;
 				break;
 			default:
 				break;

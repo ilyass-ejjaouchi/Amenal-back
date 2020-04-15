@@ -91,8 +91,10 @@ public class StockMetier {
 		if (OldlistDs == null)
 			OldlistDs = new ArrayList<Stock>();
 
-		for (Stock s : OldlistDs)
+		for (Stock s : OldlistDs) {
+			s.getStockDesignations();
 			entityManager.detach(s);
+		}
 
 		/************** OUVRIER **************************/
 		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
