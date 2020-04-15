@@ -383,6 +383,7 @@ public class ProjetMetier {
 				recf.setProjet(p);
 				fiches.add(recf);
 				createStck = true;
+				
 				break;
 			case LVR:
 				LivraisonFiche liv = new LivraisonFiche();
