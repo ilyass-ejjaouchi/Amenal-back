@@ -329,7 +329,7 @@ public class StockMetier {
 					dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
 					dp.setQuantite(((Double) l.get("qt")));
 					dp.setUnite("H");
-					dp.setBesionType("ouvrier");	
+					dp.setBesionType("ouvrier");
 					StockDesignation dpp = stockOuv.getStockDesignations().stream().filter(ll -> {
 						return ll.getQualifOuvrier().getId() == dp.getQualifOuvrier().getId();
 					}).findFirst().orElse(null);
@@ -374,8 +374,7 @@ public class StockMetier {
 					dp.setArticle(mat);
 					dp.setUnite(mat.getUnite().getUnite());
 					dp.setQuantite(((Double) l.get("somme")));
-					dp.setBesionType("article");	
-
+					dp.setBesionType("article");
 
 					StockDesignation dpp = oldStockLoc.getStockDesignations().stream().filter(ll -> {
 						return ll.getArticle().getId() == dp.getArticle().getId();
@@ -399,7 +398,7 @@ public class StockMetier {
 				dp.setUnite(mat.getUnite().getUnite());
 				dp.setQuantite(((Double) l.get("somme")));
 				dp.setStockable(false);
-				dp.setBesionType("article");	
+				dp.setBesionType("article");
 				stockBsn.add(dp);
 			});
 		}
@@ -459,8 +458,10 @@ public class StockMetier {
 		list.add("MAIN D'OEUVRE");
 
 		List<StockDesignation> OldlistDs = stockRepository.findRecByprojetIdAndDate(projetId, date.minusDays(1), list);
-		for (StockDesignation s : OldlistDs)
-			entityManager.detach(s);
+		if (!OldlistDs.isEmpty())
+			for (StockDesignation s : OldlistDs) {
+				entityManager.detach(s);
+			}
 
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
