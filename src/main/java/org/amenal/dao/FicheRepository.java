@@ -22,5 +22,6 @@ public interface FicheRepository<T extends Fiche> extends JpaRepository<T, Integ
 	List<T> findByProjetAndAndDate(@Param("projetID") Integer projetID, @Param("dateCreation") LocalDate dateCreation);
 
 	T findByDate(LocalDate date);
+	
 
 }
