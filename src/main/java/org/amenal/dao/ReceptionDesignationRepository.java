@@ -41,7 +41,7 @@ public interface ReceptionDesignationRepository extends JpaRepository<ReceptionD
 	List<ReceptionDesignation> findFournisseurArticleCategorieAssoToFicheReception(@Param("fr") Fournisseur fr,
 			@Param("cat") CategorieArticle cat);
 
-	@Query("select new org.amenal.dao.pojo." + "StockDs( rec.article , SUM(rec.quantite) , rec.article.categorie   )"
+	@Query("select new org.amenal.dao.pojo.StockDs( rec.article , SUM(rec.quantite) , rec.article.categorie   )"
 			+ "from ReceptionDesignation rec WHERE"
 			+ " rec.receptionfiche.projet.id=:projetID AND rec.receptionfiche.date =:date "
 			+ "group by rec.article , rec.article.categorie  order by rec.article.categorie.categorie asc")

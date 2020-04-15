@@ -462,10 +462,18 @@ public class StockMetier {
 			for (StockDesignation s : OldlistDs) {
 				entityManager.detach(s);
 			}
+		System.out.println("receptionDesignationRepository");
+		System.out.println("receptionDesignationRepository");
+
+		System.out.println("receptionDesignationRepository");
 
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
+
 		List<Map<String, Object>> lvrDs = livraisonFicheRepository.findLivraisonDesignationByDate(date, projetId);
+		System.out.println("livraisonFicheRepository");
+		System.out.println("livraisonFicheRepository");
+		System.out.println("livraisonFicheRepository");
 
 		if (!stockRec.isEmpty()) {
 			for (StockDs s : stockRec) {
