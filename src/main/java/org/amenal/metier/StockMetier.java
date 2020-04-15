@@ -205,7 +205,7 @@ public class StockMetier {
 			});
 			OldlistDs.add(d2);
 		}
-		/*
+		
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		Boolean catIsStockable = false;
@@ -303,7 +303,7 @@ public class StockMetier {
 					}
 				}
 		}
-*/
+
 		return OldlistDs;
 
 	}
