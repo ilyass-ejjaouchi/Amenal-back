@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -22,6 +23,6 @@ import lombok.Setter;
 public class DocFiche extends Fiche implements Serializable {
 	private String type = FicheTypeEnum.DOC.getCode();
 
-	@OneToMany(mappedBy = "docFiche")
+	@OneToMany(mappedBy = "docFiche" , cascade = CascadeType.ALL)
 	private List<DocDesignation> docDesignations = new ArrayList<DocDesignation>();
 }

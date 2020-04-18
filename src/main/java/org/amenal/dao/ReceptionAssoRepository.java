@@ -40,13 +40,17 @@ public interface ReceptionAssoRepository extends JpaRepository<ReceptionAsso, In
 	List<ReceptionAsso> findByFournisseur(Fournisseur fr);
 
 	List<ReceptionAsso> findByArticle(Article ar);
+	
+	List<ReceptionAsso> findByArticleId(Integer ar);
 
+
+	@Query("SELECT rec FROM ReceptionAsso rec where rec.fournisseur =:fr and rec.article.categorie.id =:idCat")
 	List<ReceptionAsso> findByFournisseurAndCategorieId(Fournisseur fr, Integer idCat);
 
-	@Query("SELECT rec FROM ReceptionAsso rec where rec.fournisseur =:fr and rec.categorie is null and rec.article is null")
+	@Query("SELECT rec FROM ReceptionAsso rec where rec.fournisseur =:fr and rec.article is null")
 	ReceptionAsso findByFournisseurAndOthersNull(@Param("fr") Fournisseur fr);
 
-	@Query("SELECT rec.article FROM ReceptionAsso rec where rec.categorie.categorie=:cat ")
+	@Query("SELECT rec.article FROM ReceptionAsso rec where rec.article.categorie.categorie=:cat ")
 	List<Article> findArticleByCat(@Param("cat") String cat);
 
 	@Query("SELECT rec FROM ReceptionAsso rec join rec.projets ps  where ps =:p and rec.article is not null")
@@ -55,7 +59,7 @@ public interface ReceptionAssoRepository extends JpaRepository<ReceptionAsso, In
 	@Query("SELECT f FROM Fournisseur f left join f.receptionAsso rec where rec = null")
 	List<Fournisseur> findFournisseurNotAsso();
 
-	@Query("SELECT rec FROM ReceptionAsso rec ORDER BY rec.fournisseur , rec.categorie")
+	@Query("SELECT rec FROM ReceptionAsso rec left join rec.article.categorie cat ORDER BY rec.fournisseur , cat")
 	List<ReceptionAsso> findByOrderByFournisseurAndCategorie();
 
 	@Query("SELECT distinct p.intitule FROM ReceptionAsso loc join loc.projets p WHERE loc.fournisseur=:f and loc.article=:art")

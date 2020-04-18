@@ -66,9 +66,12 @@ public class FournisseurMetier {
 
 		Fournisseur fr = fournisseurMapper.toEntity(frCmd);
 
-		Fournisseur ff = fournisseurRepository.findByFournisseurNom(fr.getFournisseurNom());
-		if (ff != null)
-			throw new BadRequestException("le fournisseur  [" + fr.getFournisseurNom() + "] est inexistant");
+		Fournisseur fr$ = fournisseurRepository.findByFournisseurNom(fr.getFournisseurNom());
+
+		if (fr$ != null)
+			throw new BadRequestException("le fournisseur  [" + fr.getFournisseurNom() + "] est deja ajouté");
+
+		
 
 		return fournisseurRepository.save(fr);
 
@@ -161,7 +164,8 @@ public class FournisseurMetier {
 
 			if (!dss.isEmpty())
 				throw new BadRequestException("le fournisseur " + f.get().getFournisseurNom()
-						+ " est deja ajouter a une fiche de location non valider du projet " + projet.get().getAbreveation());
+						+ " est deja ajouter a une fiche de location non valider du projet "
+						+ projet.get().getAbreveation());
 			else
 				locationAssos.stream().forEach(l -> {
 					locationAssoRepository.delete(l);
@@ -200,9 +204,10 @@ public class FournisseurMetier {
 					.findByFournisseurAndProjetAndMaterielAssoToFicheReception(f.get(), p.get(), mtr.get());
 
 			if (!dss.isEmpty())
-				throw new BadRequestException("le materiel " + mtr.get().getDesignation() + "fournit par "
-						+ f.get().getFournisseurNom()
-						+ " est deja ajouter a une fiche de location non valider du projet " + p.get().getAbreveation());
+				throw new BadRequestException(
+						"le materiel " + mtr.get().getDesignation() + "fournit par " + f.get().getFournisseurNom()
+								+ " est deja ajouter a une fiche de location non valider du projet "
+								+ p.get().getAbreveation());
 			else
 				locationAssoRepository.delete(loc);
 		}
@@ -214,6 +219,11 @@ public class FournisseurMetier {
 		Fournisseur ff = fournisseurRepository.findByFournisseurNom(fourCmd.getFournisseurNom());
 		if (ff != null)
 			throw new BadRequestException("le fournisseur  [" + fourCmd.getFournisseurNom() + "] est inexistant");
+
+		Fournisseur fr$ = fournisseurRepository.findByFournisseurNom(ff.getFournisseurNom());
+
+		if (fr$ != null && fr$.getId() == fourID)
+			throw new BadRequestException("le fournisseur  [" + ff.getFournisseurNom() + "] est deja ajouté");
 
 		Optional<Fournisseur> f = fournisseurRepository.findById(fourID);
 

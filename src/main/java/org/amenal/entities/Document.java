@@ -37,7 +37,7 @@ public class Document {
 	@ManyToMany(mappedBy = "documents", cascade = CascadeType.REFRESH)
 	private List<Projet> projets;
 	
-	@OneToMany(mappedBy ="document")
+	@OneToMany(mappedBy ="document" , cascade= CascadeType.MERGE)
 	private List<DocDesignation> docDesignations = new ArrayList<DocDesignation>();
 	
 	

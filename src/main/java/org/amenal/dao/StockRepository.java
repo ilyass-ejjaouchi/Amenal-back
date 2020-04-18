@@ -15,7 +15,7 @@ public interface StockRepository extends JpaRepository<Stock, Integer> {
 
 	Stock findByCategorie(String categorie);
 
-	@Query("select stck from Stock stck where stck.stockFiche.projet.id=:projetId AND stck.stockFiche.date=:date ")
+	@Query("select stck from Stock stck JOIN FETCH stck.stockDesignations where stck.stockFiche.projet.id=:projetId AND stck.stockFiche.date=:date ")
 	List<Stock> findByprojetIdAndDate(@Param("projetId") Integer idProjet, @Param("date") LocalDate date);
 	
 	@Query("select ds from Stock stck JOIN stck.stockDesignations ds "

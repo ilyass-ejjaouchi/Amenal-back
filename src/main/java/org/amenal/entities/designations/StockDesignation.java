@@ -49,7 +49,7 @@ public class StockDesignation {
 	@Transient
 	String BesionType;
 	
-	@ManyToOne(cascade=CascadeType.DETACH)
+	@ManyToOne(cascade= CascadeType.ALL)
 	private Stock stock;
 
 }

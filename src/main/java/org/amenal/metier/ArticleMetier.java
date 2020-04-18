@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.CategorieArticleRepository;
+import org.amenal.dao.LivraisonDesignationRepository;
 import org.amenal.dao.ReceptionAssoRepository;
 import org.amenal.dao.ReceptionDesignationRepository;
 import org.amenal.dao.UniteRepository;
@@ -13,6 +14,7 @@ import org.amenal.entities.Article;
 import org.amenal.entities.CategorieArticle;
 import org.amenal.entities.ReceptionAsso;
 import org.amenal.entities.Unite;
+import org.amenal.entities.designations.LivraisonDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
@@ -45,6 +47,9 @@ public class ArticleMetier {
 	ReceptionAssoRepository receptionAssoRepository;
 
 	@Autowired
+	LivraisonDesignationRepository livraisonDesignationRepository;
+
+	@Autowired
 	ArticleMapper articleMapper;
 
 	@Autowired
@@ -72,32 +77,51 @@ public class ArticleMetier {
 
 	public void editCategorieArticle(CategorieArticleCommande CatCmd, Integer id) {
 		CategorieArticle cc = categorieArticleMapper.toEntity(CatCmd);
-		
+
 		CategorieArticle ca = categorieArticleRepository.findByCategorie(cc.getCategorie());
-		
 
+		if (ca != null && ca.getId()!=id)
+			if (ca.getShowCat())
+				throw new BadRequestException("La categorie est deja ajouter!");
+			else {
+				Optional<CategorieArticle> cat = categorieArticleRepository.findById(id);
 
-		Optional<CategorieArticle> cat = categorieArticleRepository.findById(id);
-		
-		
+				cat.get().getArticles().forEach(a -> {
+					a.setCategorie(ca);
+					articleRepository.save(a);
+				});
+				ca.setShowCat(true);
+				cat.get().setArticles(null);
+				categorieArticleRepository.delete(cat.get());
 
-		if (!cat.isPresent())
-			throw new NotFoundException("La categorie dont l' id [ " + id + " ] est inexistante!");
+			}
+		else {
 
-		List<ReceptionDesignation> dss = receptionDesignationRepository.findDesignationByCategorieAndFicheNotValid(id);
+			Optional<CategorieArticle> cat = categorieArticleRepository.findById(id);
 
-		if (!dss.isEmpty()) {
-			dss.forEach(l -> {
-				l.setCategorie(CatCmd.getCategorie());
-			});
+			if (!cat.isPresent())
+				throw new NotFoundException("La categorie dont l' id [ " + id + " ] est inexistante!");
+			cat.get().setCategorie(cc.getCategorie());
+
+			List<LivraisonDesignation> livs = livraisonDesignationRepository
+					.findDesignationByCategorieArticleAndFicheNotValid(id);
+
+			if (!livs.isEmpty()) {
+				livs.forEach(l -> {
+					l.setCategorieLv(cat.get().getCategorie());
+					livraisonDesignationRepository.save(l);
+				});
+			}
+
+			List<ReceptionDesignation> dss = receptionDesignationRepository
+					.findDesignationByCategorieAndFicheNotValid(id);
+
+			if (!dss.isEmpty()) {
+				dss.forEach(l -> {
+					l.setCategorie(cat.get().getCategorie());
+				});
+			}
 		}
-
-		CatCmd.setId(id);
-
-
-		cc.setShowCat(true);
-
-		categorieArticleRepository.save(cc);
 
 	}
 
@@ -113,20 +137,71 @@ public class ArticleMetier {
 
 		Article article = articleMapper.toEntity(articleCmd);
 
-		List<ReceptionDesignation> dss = receptionDesignationRepository.findDesignationByArticleIDAndFicheNotValid(id);
+		Article article$ = articleRepository.findByDesignation(article.getDesignation());
 
-		if (!dss.isEmpty()) {
-			dss.forEach(l -> {
-				l.setLibelle(article.getDesignation());
-				l.setUnitee(unite.getUnite());
-			});
+		if (article$ != null && article$.getId()!=id) {
+			if (article$.getShowArt() )
+				throw new BadRequestException("cette article est deja ajouter!");
+			else {
+				article$.setShowArt(true);
+				article$.setUnite(unite);
+				article$.setCategorie(cat.get());
+
+				List<ReceptionAsso> rcAss = receptionAssoRepository.findByArticleId(id);
+
+				if (!rcAss.isEmpty()) {
+					rcAss.forEach(as -> {
+						as.setArticle(article$);
+						receptionAssoRepository.save(as);
+					});
+				}
+
+				List<ReceptionDesignation> dss = receptionDesignationRepository
+						.findDesignationByArticleIDAndFicheNotValid(id);
+
+				if (!dss.isEmpty()) {
+					dss.forEach(l -> {
+						l.setArticle(article$);
+						l.setLibelle(article$.getDesignation());
+						l.setUnitee(unite.getUnite());
+						receptionDesignationRepository.save(l);
+					});
+				}
+
+				List<LivraisonDesignation> livs = livraisonDesignationRepository
+						.findDesignationByArticleIDAndFicheNotValid(id);
+
+				if (!livs.isEmpty()) {
+					livs.forEach(l -> {
+						l.setArticleLvr(article$);
+						l.setDesignation(article$.getDesignation());
+						l.setCategorieLv(article$.getCategorie().getCategorie());
+						l.setUnite(article$.getUnite().getUnite());
+						livraisonDesignationRepository.save(l);
+					});
+				}
+
+				articleRepository.deleteById(id);
+
+			}
+		} else {
+			List<ReceptionDesignation> dss = receptionDesignationRepository
+					.findDesignationByArticleIDAndFicheNotValid(id);
+
+			if (!dss.isEmpty()) {
+				dss.forEach(l -> {
+					l.setLibelle(article.getDesignation());
+					l.setUnitee(unite.getUnite());
+				});
+			}
+			article.setShowArt(true);
+			article.setUnite(unite);
+
+			article.setId(id);
+
+			return articleRepository.save(article).getId();
 		}
-		article.setShowArt(true);
-		article.setUnite(unite);
-
-		article.setId(id);
-
-		return articleRepository.save(article).getId();
+		return null;
 	}
 
 	public void supprimerCategorie(Integer catId) {
@@ -142,6 +217,7 @@ public class ArticleMetier {
 
 		articles.forEach(a -> {
 			a.setShowArt(false);
+			articleRepository.save(a);
 		});
 
 		cat.get().setShowCat(false);
@@ -158,8 +234,14 @@ public class ArticleMetier {
 
 		List<ReceptionAsso> assos = receptionAssoRepository.findByArticle(ar.get());
 
+		List<LivraisonDesignation> livs = livraisonDesignationRepository
+				.findDesignationByArticleIDAndFicheNotValid(ar.get().getId());
+
 		if (!assos.isEmpty())
-			throw new BadRequestException("Cette categorie est deja associer des fournisseur!");
+			throw new BadRequestException("Cette article est deja associer des fournisseur!");
+
+		if (!livs.isEmpty())
+			throw new BadRequestException("Cette article est deja associer a une livraison non valide!");
 
 		ar.get().setShowArt(false);
 

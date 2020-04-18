@@ -21,6 +21,7 @@ import org.amenal.entities.designations.LocationDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
+import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.LocationDesignationCommande;
 import org.amenal.rest.mapper.FournisseurMapper;
@@ -57,6 +58,27 @@ public class LocationFicheMetier {
 	@Autowired
 	private LocationAssoRepository locationAssoRepository;
 
+	public void validerFicheLocation(Integer ficheId) {
+		Optional<LocationFiche> fiche = locationFicheRepository.findById(ficheId);
+		Boolean notValid = false;
+		if (!fiche.isPresent())
+			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
+		for (LocationDesignation l : fiche.get().getLocationDesignations()) {
+			if (l.getTempsFin() == null)
+				notValid = true;
+			else {
+				if (l.getObservation().isEmpty())
+					l.setObservation("Rien a signaler");
+			}
+		}
+
+		if (notValid)
+			throw new BadRequestException("La fiche ne peut pas etre valide , une des designation n' est pas valide!");
+		else
+			fiche.get().setIsValidated(true);
+
+	}
+
 	public LocationDesignation addLigneDesignation(@Valid LocationDesignationCommande dsCmd) {
 		// TODO Auto-generated method stub
 		LocationDesignation locDs = locationDesignationMapper.toEntity(dsCmd);
@@ -67,6 +89,9 @@ public class LocationFicheMetier {
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
+		else if (fiche.get().getIsValidated())
+			throw new BadRequestException("La fiche est deja valide !");
+
 		if (!article.isPresent())
 			throw new NotFoundException("L' article [ " + locDs.getMateriel().getId() + " ] est introuvable !");
 		if (!fr.isPresent())
@@ -79,7 +104,8 @@ public class LocationFicheMetier {
 		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
-		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("LOCATION"  , fiche.get().getProjet());
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("LOCATION",
+				fiche.get().getProjet());
 
 		if (rec == null) {
 			rec = new ReceptionDesignation();
@@ -122,8 +148,12 @@ public class LocationFicheMetier {
 	public void SupprimerLocationDesignation(Integer locDsId) {
 		// TODO Auto-generated method stub
 		Optional<LocationDesignation> ds = locationDesignationRepository.findById(locDsId);
+
 		if (!ds.isPresent())
 			throw new NotFoundException("La ligne [ " + locDsId + " ] est introuvable !");
+
+		if (ds.get().getLocationFiche().getIsValidated())
+			throw new BadRequestException("La fiche est deja valide");
 
 		if (ds.get().getReceptionDesignationLoc().getOuvrierDesignations().size() == 1) {
 			receptionDesignationRepository.delete(ds.get().getReceptionDesignationLoc());
@@ -142,6 +172,9 @@ public class LocationFicheMetier {
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
+		else if (fiche.get().getIsValidated())
+			throw new BadRequestException("La fiche est deja validé !");
+
 		if (!article.isPresent())
 			throw new NotFoundException("L' article [ " + locDs.getMateriel().getId() + " ] est introuvable !");
 		if (!fr.isPresent())
@@ -154,7 +187,8 @@ public class LocationFicheMetier {
 		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
-		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("LOCATION" , fiche.get().getProjet());
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("LOCATION",
+				fiche.get().getProjet());
 
 		if (rec == null) {
 			rec = new ReceptionDesignation();

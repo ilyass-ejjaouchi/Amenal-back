@@ -34,6 +34,11 @@ public class DestinationMetier {
 		Destination Ds = new Destination();
 
 		Ds.setDestination(dst.trim());
+		Destination d = destinationRepository.findByDestination(Ds.getDestination());
+
+		if (d != null)
+			throw new BadRequestException("Cette destination est deja existante!");
+
 		destinationRepository.save(Ds);
 	}
 
@@ -44,6 +49,11 @@ public class DestinationMetier {
 		if (!d.isPresent())
 			throw new NotFoundException("Destination invalide!");
 
+		Destination d$ = destinationRepository.findByDestination(d.get().getDestination());
+
+		if (d$ != null)
+			throw new BadRequestException("Cette destination est deja existante!");
+
 		d.get().setDestination(dst.trim());
 	}
 
@@ -52,8 +62,8 @@ public class DestinationMetier {
 
 		if (!d.isPresent())
 			throw new NotFoundException("Destination invalide!");
-		
-		if(!d.get().getProjets().isEmpty())
+
+		if (!d.get().getProjets().isEmpty())
 			throw new BadRequestException(
 					"La desitnation ne peut pas etre supprimé , elle est deja associer a un ou plusieurs projet");
 

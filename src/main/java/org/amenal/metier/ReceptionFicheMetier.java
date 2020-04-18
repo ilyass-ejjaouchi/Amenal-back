@@ -1,17 +1,20 @@
 package org.amenal.metier;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.CategorieArticleRepository;
+import org.amenal.dao.DocFicheRepository;
+import org.amenal.dao.FicheRepository;
 import org.amenal.dao.FournisseurRepository;
-
+import org.amenal.dao.LivraisonDesignationRepository;
+import org.amenal.dao.LivraisonFicheRepository;
+import org.amenal.dao.LocationFicheRepository;
+import org.amenal.dao.OuvrierFicheRepository;
 import org.amenal.dao.ProjetRepository;
 import org.amenal.dao.ReceptionAssoRepository;
 import org.amenal.dao.ReceptionDesignationRepository;
@@ -21,13 +24,16 @@ import org.amenal.entities.Article;
 import org.amenal.entities.CategorieArticle;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.Projet;
-import org.amenal.entities.QualificationOuvrier;
 import org.amenal.entities.ReceptionAsso;
-import org.amenal.entities.designations.LocationDesignation;
+import org.amenal.entities.designations.LivraisonDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
-import org.amenal.entities.designations.Stock;
-import org.amenal.entities.designations.StockDesignation;
+import org.amenal.entities.fiches.DocFiche;
+import org.amenal.entities.fiches.Fiche;
+import org.amenal.entities.fiches.LivraisonFiche;
+import org.amenal.entities.fiches.LocationFiche;
+import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
+import org.amenal.entities.fiches.StockFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.FournisseurCommande;
@@ -36,8 +42,6 @@ import org.amenal.rest.mapper.ArticleMapper;
 import org.amenal.rest.mapper.FournisseurArticleMapper;
 import org.amenal.rest.mapper.FournisseurMapper;
 import org.amenal.rest.mapper.ReceptionDesignationMapper;
-import org.amenal.rest.representation.ArticlePresentation;
-import org.amenal.rest.representation.CategorieReceptionDesignationPresentation;
 import org.amenal.rest.representation.FournisseurArticlePresentation;
 import org.amenal.rest.representation.FournisseurPresentation;
 import org.amenal.rest.representation.ReceptionDesignationPresentation;
@@ -61,6 +65,12 @@ public class ReceptionFicheMetier {
 	ReceptionAssoRepository receptionAssoRepository;
 
 	@Autowired
+	OuvrierFicheRepository ouvrierFicheRepository;
+
+	@Autowired
+	LocationFicheRepository locationFicheRepository;
+
+	@Autowired
 	ProjetRepository projetRepository;
 
 	@Autowired
@@ -76,10 +86,19 @@ public class ReceptionFicheMetier {
 	CategorieArticleRepository categorieArticleRepository;
 
 	@Autowired
+	DocFicheRepository docFicheRepository;
+
+	@Autowired
+	LivraisonFicheRepository livraisonFicheRepository;
+
+	@Autowired
 	FournisseurMapper fournisseurMapper;
 
 	@Autowired
 	ArticleMapper articleMapper;
+
+	@Autowired
+	LivraisonDesignationRepository livraisonDesignationRepository;
 
 	@Autowired
 	ReceptionDesignationMapper receptionDesignationMapper;
@@ -95,6 +114,11 @@ public class ReceptionFicheMetier {
 
 		if (id == -1) {
 			Fournisseur fr = fournisseurMapper.toEntity(frCmd);
+
+			Fournisseur fr$ = fournisseurRepository.findByFournisseurNom(fr.getFournisseurNom());
+
+			if (fr$ != null)
+				throw new BadRequestException("le fournisseur  [" + fr.getFournisseurNom() + "] est deja ajouté");
 
 			id = fournisseurRepository.save(fr).getId();
 
@@ -216,7 +240,6 @@ public class ReceptionFicheMetier {
 		if (receptionAssos == null) {
 			rec.setArticle(art.get());
 			rec.setFournisseur(f.get());
-			rec.setCategorie(art.get().getCategorie());
 			receptionAssoRepository.save(rec);
 		}
 
@@ -230,10 +253,10 @@ public class ReceptionFicheMetier {
 		List<ReceptionAsso> assos = receptionAssoRepository.findByOrderByFournisseurAndCategorie();
 		CategorieArticle cat = null;
 		if (!assos.isEmpty()) {
-			if (assos.get(0).getCategorie() != null) {
+			if (assos.get(0).getArticle() != null) {
 				cat = new CategorieArticle();
-				cat.setId(assos.get(0).getCategorie().getId());
-				cat.setCategorie(assos.get(0).getCategorie().getCategorie());
+				cat.setId(assos.get(0).getArticle().getCategorie().getId());
+				cat.setCategorie(assos.get(0).getArticle().getCategorie().getCategorie());
 			}
 			fr.setId(assos.get(0).getFournisseur().getId());
 			fr.setFournisseurNom(assos.get(0).getFournisseur().getFournisseurNom());
@@ -284,8 +307,8 @@ public class ReceptionFicheMetier {
 							}
 
 							CategorieArticle cat2 = new CategorieArticle();
-							cat2.setId(ass.getCategorie().getId());
-							cat2.setCategorie(ass.getCategorie().getCategorie());
+							cat2.setId(ass.getArticle().getCategorie().getId());
+							cat2.setCategorie(ass.getArticle().getCategorie().getCategorie());
 
 							frs.get(i).getCategories().add(cat2);
 
@@ -325,8 +348,8 @@ public class ReceptionFicheMetier {
 						cat = new CategorieArticle();
 						fr = new FournisseurArticleBsn();
 
-						cat.setId(ass.getCategorie().getId());
-						cat.setCategorie(ass.getCategorie().getCategorie());
+						cat.setId(ass.getArticle().getCategorie().getId());
+						cat.setCategorie(ass.getArticle().getCategorie().getCategorie());
 
 						fr.setId(ass.getFournisseur().getId());
 						fr.setFournisseurNom(ass.getFournisseur().getFournisseurNom());
@@ -385,7 +408,7 @@ public class ReceptionFicheMetier {
 			throw new NotFoundException("Le fournisseur [ " + idFour + " ] est introuvable !");
 		Optional<Article> art = articleRepository.findById(IdArticle);
 
-		ReceptionAsso ass = receptionAssoRepository.findByFournisseurIdAndArticleId(fr.get(), art.get() , p.get());
+		ReceptionAsso ass = receptionAssoRepository.findByFournisseurIdAndArticleId(fr.get(), art.get(), p.get());
 		if (ass == null) {
 			throw new NotFoundException(
 					"La article [ " + art.get().getDesignation() + " ] fournit par [ " + fr.get().getFournisseurNom()
@@ -469,6 +492,8 @@ public class ReceptionFicheMetier {
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
+		else if (fiche.get().getIsValidated())
+			throw new BadRequestException("La fiche est deja valider!");
 		if (!article.isPresent())
 			throw new NotFoundException("L' article [ " + recCmd.getIdArticle() + " ] est introuvable !");
 		if (!fr.isPresent())
@@ -497,12 +522,26 @@ public class ReceptionFicheMetier {
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + ficheId + " ] est introuvable !");
+		else if (fiche.get().getIsValidated())
+			throw new BadRequestException("La fiche est deja valider!");
 		if (!article.isPresent())
 			throw new NotFoundException("L' article [ " + recCmd.getIdArticle() + " ] est introuvable !");
 		if (!fr.isPresent())
 			throw new NotFoundException("Le fournisseur [ " + recCmd.getIdFournisseur() + " ] est introuvable !");
 
 		ReceptionDesignation recDs = receptionDesignationMapper.toEntity(recCmd);
+
+		List<LivraisonDesignation> ll = livraisonDesignationRepository.findDesignationByArticleAndProjet(article.get(),
+				fiche.get().getProjet());
+
+		Double qt = 0.0;
+		for (LivraisonDesignation l : ll) {
+			qt += l.getQuantite();
+		}
+
+		if (recDs.getQuantite() < qt)
+			throw new BadRequestException("Vous avez deja livrais [ " + qt + " de l' article" + article.get().getDesignation()
+					+ " ],la quantité ne dois pas etre inferieur a la quantié livrais!");
 
 		recDs.setId(id);
 		recDs.setLibelle(article.get().getDesignation());
@@ -521,6 +560,15 @@ public class ReceptionFicheMetier {
 		Optional<ReceptionDesignation> ds = receptionDesignationRepository.findById(Rec);
 		if (!ds.isPresent())
 			throw new NotFoundException("La ligne [ " + Rec + " ] est introuvable !");
+		else if (ds.get().getReceptionfiche().getIsValidated())
+			throw new BadRequestException("La fiche est deja valider!");
+
+		List<LivraisonDesignation> ll = livraisonDesignationRepository
+				.findDesignationByArticleAndProjet(ds.get().getArticle(), ds.get().getReceptionfiche().getProjet());
+
+		if (!ll.isEmpty())
+			throw new BadRequestException(
+					"Vous ne pouvais pas supprimer cette reception , l' article associer est livrais!");
 
 		this.receptionDesignationRepository.delete(ds.get());
 
@@ -553,7 +601,29 @@ public class ReceptionFicheMetier {
 
 		return frs;
 	}
-	
-	
+
+	public void validerFicheReception(Integer idFiche) {
+		Optional<ReceptionFiche> fiche = receptionFicheRepository.findById(idFiche);
+
+		if (!fiche.isPresent())
+			throw new NotFoundException("La fiche [ " + idFiche + " ] est introuvable !");
+
+		OuvrierFiche ficheOuv = ouvrierFicheRepository.findByDate(fiche.get().getDate());
+
+		if (!ficheOuv.getIsValidated())
+			throw new BadRequestException("voudevez tous d abord valider l' afiche ouvrier!");
+
+		LocationFiche ficheLoc = locationFicheRepository.findByDate(fiche.get().getDate());
+
+		if (!ficheLoc.getIsValidated())
+			throw new BadRequestException("voudevez tous d abord valider l' afiche location!");
+
+		for (ReceptionDesignation ds : fiche.get().getReceptionDesignations())
+			if (ds.getObservation() == "")
+				ds.setObservation("Rien a signaler");
+
+		fiche.get().setIsValidated(true);
+
+	}
 
 }

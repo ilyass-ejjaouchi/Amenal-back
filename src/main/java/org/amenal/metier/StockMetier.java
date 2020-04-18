@@ -82,6 +82,24 @@ public class StockMetier {
 
 	}
 
+	public void validerFicheStock(LocalDate date) {
+
+		StockFiche stockFiche = stockFicheRepository.findByDate(date);
+
+		if (stockFiche == null)
+			throw new NotFoundException("La fiche est introuvable!");
+
+		Integer pId = stockFiche.getProjet().getId();
+		List<Stock> stock = getStockLigneDesignation(pId, date);
+		stockFiche.setStocks(stock);
+
+		for (Stock s : stock) {
+			s.setStockFiche(stockFiche);
+			stockRepository.save(s);
+		}
+
+	}
+
 	public List<Stock> getStockLigneDesignation(Integer projetId, LocalDate date) {
 
 		int index = -1;
@@ -92,7 +110,6 @@ public class StockMetier {
 			OldlistDs = new ArrayList<Stock>();
 
 		for (Stock s : OldlistDs) {
-			s.getStockDesignations();
 			entityManager.detach(s);
 		}
 
@@ -117,9 +134,11 @@ public class StockMetier {
 							return ll.getQualifOuvrier().getId() == dp.getQualifOuvrier().getId();
 						}).findFirst().orElse(null);
 
-						if (dpp == null)
+						if (dpp == null) {
+							dp.setStock(stockOuv);
 							stockOuv.getStockDesignations().add(dp);
-						else {
+						} else {
+							dpp.setStock(stockOuv);
 							dpp.setDesignation(dp.getDesignation());
 							dpp.setQuantite(dpp.getQuantite() + dp.getQuantite());
 						}
@@ -138,9 +157,11 @@ public class StockMetier {
 				dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
 				dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
 				dp.setQuantite(((Double) l.get("qt")).doubleValue());
+				dp.setQuantite(Double.valueOf((new DecimalFormat("##.##").format((Double) l.get("qt")))));
+
 				dp.setUnite("H");
 				dp.setStockable(false);
-
+				dp.setStock(d);
 				d.getStockDesignations().add(dp);
 			});
 
@@ -161,7 +182,6 @@ public class StockMetier {
 
 					StockDesignation dp = new StockDesignation();
 					Article mat = (Article) l.get("mat");
-					
 
 					dp.setDesignation(mat.getDesignation());
 					dp.setArticle(mat);
@@ -172,9 +192,11 @@ public class StockMetier {
 						return ll.getArticle().getId() == dp.getArticle().getId();
 					}).findFirst().orElse(null);
 
-					if (dpp == null)
+					if (dpp == null) {
+						dp.setStock(stockOuv);
 						stockOuv.getStockDesignations().add(dp);
-					else {
+					} else {
+						dpp.setStock(stockOuv);
 						dpp.setDesignation(mat.getDesignation());
 						dpp.setQuantite(dpp.getQuantite() + dp.getQuantite());
 					}
@@ -189,23 +211,20 @@ public class StockMetier {
 
 			stockLoc.forEach(l -> {
 				StockDesignation dp = new StockDesignation();
-				
+
 				Article mat = (Article) l.get("mat");
-				System.out.println("dddd "+mat.getDesignation());
 
-				System.out.println("dddd "+mat.getDesignation());
-
-				System.out.println("dddd "+mat.getDesignation());
 				dp.setDesignation(mat.getDesignation());
 				dp.setArticle(mat);
 				dp.setUnite(mat.getUnite().getUnite());
 				dp.setQuantite(((Double) l.get("somme")));
 				dp.setStockable(false);
+				dp.setStock(d2);
 				d2.getStockDesignations().add(dp);
 			});
 			OldlistDs.add(d2);
 		}
-		
+
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		Boolean catIsStockable = false;
@@ -244,7 +263,9 @@ public class StockMetier {
 					dp.setUnite(art.getUnite().getUnite());
 
 					dp.setStockable(art.getStockable());
-					if (!art.getStockable())
+					if (art.getStockable() == null)
+						stageStock.setStockable(false);
+					else if (!art.getStockable())
 						stageStock.setStockable(false);
 
 					stageStock.getStockDesignations().add(dp);
@@ -277,8 +298,9 @@ public class StockMetier {
 								if (oldStockRecDs.getQuantite() <= 0)
 									stageStock.getStockDesignations().remove(oldStockRecDs);
 
-							} else
+							} else {
 								oldStockRec.getStockDesignations().add(element);
+							}
 
 						}
 					} else
@@ -290,19 +312,33 @@ public class StockMetier {
 
 		List<Map<String, Object>> lvrDs = livraisonFicheRepository.findLivraisonDesignationByDate(date, projetId);
 
+		List<StockDesignation> dsToRemove = new ArrayList<StockDesignation>();
+		List<Stock> stkToRemove = new ArrayList<Stock>();
+
 		for (Stock stk : OldlistDs) {
-			if (stk.getCategorie() != "LOCATION" && stk.getCategorie() != "MAIN D'OEUVRE")
+			if (stk.getCategorie() != "LOCATION" && stk.getCategorie() != "MAIN D'OEUVRE") {
+
 				for (StockDesignation ds : stk.getStockDesignations()) {
+					ds.setStock(stk);
 					for (Map<String, Object> m : lvrDs) {
 						if (ds.getArticle().getId() == m.get("artId")) {
 							ds.setQuantite(Double.valueOf(
 									(new DecimalFormat("##.##").format(ds.getQuantite() - (Double) m.get("qt")))));
 							if (ds.getQuantite() <= 0)
-								stk.getStockDesignations().remove(ds);
+								dsToRemove.add(ds);
 						}
 					}
 				}
+				if (!dsToRemove.isEmpty()) {
+					stk.getStockDesignations().removeAll(dsToRemove);
+					if (!stk.getStockDesignations().isEmpty())
+						stkToRemove.add(stk);
+				}
+			}
 		}
+		
+		if(!stkToRemove.isEmpty())
+			OldlistDs.removeAll(stkToRemove);
 
 		return OldlistDs;
 
@@ -475,7 +511,6 @@ public class StockMetier {
 		System.out.println("receptionDesignationRepository");
 
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
-
 
 		List<Map<String, Object>> lvrDs = livraisonFicheRepository.findLivraisonDesignationByDate(date, projetId);
 		System.out.println("livraisonFicheRepository");

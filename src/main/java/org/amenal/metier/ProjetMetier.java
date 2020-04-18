@@ -291,6 +291,7 @@ public class ProjetMetier {
 
 			List<FichePresentation> fsPrs = fs.stream().map(o -> {
 				FichePresentation ff = new FichePresentation();
+				ff.setType("STOCK");
 				ff.setId(o.getId());
 				ff.setDate(o.getDate());
 				if (o.getIsValidated())

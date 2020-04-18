@@ -14,6 +14,8 @@ public interface DestinationRepository extends JpaRepository<Destination, Intege
 			+ " dst.id=:id and ds.locationFiche.projet=:p and s.locationFiche.isValidated = false")
 	public List<Destination> findByIdAndProjetAndFicheNonValid(@Param("dst") Integer dst, @Param("projet") Projet p);*/
 	
+	Destination findByDestination(String dst);
+	
 	
 
 }

@@ -36,8 +36,8 @@ public class ReceptionAsso {
 
 	Boolean isAssoWithProjet;
 
-	@ManyToOne
-	CategorieArticle categorie;
+	/*@ManyToOne
+	CategorieArticle categorie;*/
 
 	@Override
 	public String toString() {

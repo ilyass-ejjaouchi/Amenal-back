@@ -78,12 +78,12 @@ public class OuvrierMetier {
 		
 		Ouvrier oo = ouvrierRepository.findByCin(ouvrier.getCin());
 
-		if (oo != null)
-			throw new NotFoundException("Il existe deja un ouvrier dont le CIN est [ " + oo + " ] !");
+		if (oo != null && oo.getId()!= id)
+			throw new NotFoundException("Il existe deja un ouvrier dont le CIN est [ " + ouvrier.getCin() + " ] !");
 
 		oo = ouvrierRepository.findByNomAndPrenom(ouvrier.getNom(), ouvrier.getPrenom());
 
-		if (oo != null)
+		if (oo != null && oo.getId()!= id)
 			throw new NotFoundException("Il existe deja un ouvrier qui porte le nom/prenom est [ " + ouvrier.getNom()
 					+ "/" + ouvrier.getPrenom() + " ] !");
 

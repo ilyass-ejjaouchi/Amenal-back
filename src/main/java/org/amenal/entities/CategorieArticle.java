@@ -31,7 +31,7 @@ public class CategorieArticle {
 	
 	private String categorie;
 	
-	@OneToMany( mappedBy="categorie"  , cascade= {CascadeType.REMOVE })
+	@OneToMany( mappedBy="categorie"  , cascade= {CascadeType.REMOVE , CascadeType.MERGE})
 	private List<Article> articles = new  ArrayList<Article>() ;
 	
 	private Boolean showCat;

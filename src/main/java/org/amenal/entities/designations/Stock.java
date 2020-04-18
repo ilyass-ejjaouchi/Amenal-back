@@ -35,13 +35,13 @@ public class Stock {
 	
 	private Boolean stockable = true;
 	
-	@OneToOne
-	private CategorieArticle artCategorie = new CategorieArticle();
+	@OneToOne(cascade = CascadeType.ALL)
+	 CategorieArticle artCategorie = new CategorieArticle();
 
 	@ManyToOne
 	private StockFiche stockFiche;
 
-	@OneToMany(mappedBy = "stock" ,
+	@OneToMany(mappedBy = "stock" , 
 			cascade = 
 		{ CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE  , CascadeType.DETACH ,CascadeType.MERGE , })
 	private List<StockDesignation> stockDesignations = new ArrayList<StockDesignation>();

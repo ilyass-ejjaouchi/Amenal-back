@@ -55,15 +55,18 @@ public class OuvrierFicheMetier {
 
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
 
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
+		if (!ouvFiche.isPresent()) {
+			throw new NotFoundException("Fiche introuvable");
+		}
+
+		if (ouvFiche.get().getIsValidated())
+			throw new BadRequestException("Cette fiche est deja valider!");
+
 		Optional<Ouvrier> ouv = ouvrierRepository.findById(des.getOuvrier().getId());
 
 		if (!ouv.isPresent())
 			throw new BadRequestException("Cet ouvrier n'existe pas!");
-
-		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
-		if (!ouvFiche.isPresent()) {
-			throw new NotFoundException();
-		}
 
 		des.setCin(ouv.get().getCin());
 		des.setNom(ouv.get().getNom() + " " + ouv.get().getPrenom());
@@ -79,10 +82,12 @@ public class OuvrierFicheMetier {
 		 */
 		des = ouvrierDesignationRepository.save(des);
 
-		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("MAIN D'OEUVRE"  , ouvFiche.get().getProjet());
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("MAIN D'OEUVRE",
+				ouvFiche.get().getProjet());
 
 		if (rec == null) {
 			rec = new ReceptionDesignation();
+			
 			rec.setCategorie("MAIN D'OEUVRE");
 			rec.getOuvrierDesignations().add(des);
 
@@ -106,9 +111,18 @@ public class OuvrierFicheMetier {
 	public OuvrierDesignation updateLigneDesignation(OuvrierDesignationCommande dsCmd, Integer OuvDsId) {
 
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
+		
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
+		if (!ouvFiche.isPresent()) {
+			throw new NotFoundException("Fiche introuvable");
+		}
+
+		if (ouvFiche.get().getIsValidated())
+			throw new BadRequestException("Cette fiche est deja valider!");
+		
 		if (!this.ouvrierDesignationRepository.findById(OuvDsId).isPresent())
 			throw (new NotFoundException("ouvirer introuvabe"));
-		
+
 		Optional<OuvrierDesignation> odDs = this.ouvrierDesignationRepository.findById(OuvDsId);
 
 		if (odDs.get().getOuvrierFiche().getIsValidated()) {
@@ -128,11 +142,9 @@ public class OuvrierFicheMetier {
 
 		}
 
-		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
-		if (!ouvFiche.isPresent()) {
-			throw new NotFoundException();
-		}
-		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("MAIN D'OEUVRE" , ouvFiche.get().getProjet());
+		
+		ReceptionDesignation rec = receptionDesignationRepository.FindByCategorieAndFicheNotValid("MAIN D'OEUVRE",
+				ouvFiche.get().getProjet());
 
 		if (rec == null) {
 			rec = new ReceptionDesignation();
@@ -181,22 +193,23 @@ public class OuvrierFicheMetier {
 	public void ValiderFicheOuvrier(Integer ficheId) {
 		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(ficheId);
 		if (!ouvFiche.isPresent()) {
-			throw new NotFoundException();
+			throw new NotFoundException("fiche introuvable");
 		}
-		ouvFiche.get().getOuvrierDesignation().forEach(ds -> {
-			if (!ds.getValid()) {
-				throw new BadRequestException("la ligne de l' ouvrier [" + ds.getNom() + "] n' est pas valide!");
-			}
-		});
+		for (OuvrierDesignation ds : ouvFiche.get().getOuvrierDesignation())
+			if (!ds.getValid())
+				throw new BadRequestException("La fiche ne peut pas etre valider !");
+
 		ouvFiche.get().setIsValidated(true);
-		for (LocalDate date = ouvFiche.get().getDate(); date.isBefore(LocalDate.now()); date = date.plusDays(1)) {
-			OuvrierFiche fiche = new OuvrierFiche();
-			fiche.setProjet(ouvFiche.get().getProjet());
-			fiche.setDate(date);
-
-			ouvrierFicheRepository.save(fiche);
-
-		}
+		/*
+		 * for (LocalDate date = ouvFiche.get().getDate();
+		 * date.isBefore(LocalDate.now()); date = date.plusDays(1)) { OuvrierFiche fiche
+		 * = new OuvrierFiche(); fiche.setProjet(ouvFiche.get().getProjet());
+		 * fiche.setDate(date);
+		 * 
+		 * ouvrierFicheRepository.save(fiche);
+		 * 
+		 * }
+		 */
 
 	}
 
