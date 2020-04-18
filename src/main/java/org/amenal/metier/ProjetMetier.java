@@ -206,9 +206,11 @@ public class ProjetMetier {
 		List<FicheTypeEnum> list = projet.get().getFichierTypes().stream()
 				.filter((typeEnum) -> typeEnum.getCode().equals(type)).collect(Collectors.toList());
 
-		/*if (list.isEmpty() && type != "TOUS")
-			throw new BadRequestException(
-					"Le type [" + type + "] n' existe pas pour le projet [" + projet.get().getAbreveation() + "]");*/
+		/*
+		 * if (list.isEmpty() && type != "TOUS") throw new BadRequestException(
+		 * "Le type [" + type + "] n' existe pas pour le projet [" +
+		 * projet.get().getAbreveation() + "]");
+		 */
 
 		switch (type) {
 		case "TOUS": {
@@ -290,6 +292,7 @@ public class ProjetMetier {
 			List<StockFiche> fs = stockFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
 
 			List<FichePresentation> fsPrs = fs.stream().map(o -> {
+
 				FichePresentation ff = new FichePresentation();
 				ff.setType("STOCK");
 				ff.setId(o.getId());
@@ -302,6 +305,7 @@ public class ProjetMetier {
 							.map(v -> stockMapper.toRepresentation(v)).collect(Collectors.toList()));
 
 				return ff;
+
 			}).collect(Collectors.toList());
 			;
 
@@ -384,7 +388,7 @@ public class ProjetMetier {
 				recf.setProjet(p);
 				fiches.add(recf);
 				createStck = true;
-				
+
 				break;
 			case LVR:
 				LivraisonFiche liv = new LivraisonFiche();

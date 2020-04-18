@@ -540,8 +540,9 @@ public class ReceptionFicheMetier {
 		}
 
 		if (recDs.getQuantite() < qt)
-			throw new BadRequestException("Vous avez deja livrais [ " + qt + " de l' article" + article.get().getDesignation()
-					+ " ],la quantité ne dois pas etre inferieur a la quantié livrais!");
+			throw new BadRequestException(
+					"Vous avez deja livrais [ " + qt + " de l' article" + article.get().getDesignation()
+							+ " ],la quantité ne dois pas etre inferieur a la quantié livrais!");
 
 		recDs.setId(id);
 		recDs.setLibelle(article.get().getDesignation());
@@ -608,19 +609,33 @@ public class ReceptionFicheMetier {
 		if (!fiche.isPresent())
 			throw new NotFoundException("La fiche [ " + idFiche + " ] est introuvable !");
 
-		OuvrierFiche ficheOuv = ouvrierFicheRepository.findByDate(fiche.get().getDate());
+		OuvrierFiche ficheOuv = ouvrierFicheRepository.findByDateAndProjet(fiche.get().getDate(),
+				fiche.get().getProjet());
 
 		if (!ficheOuv.getIsValidated())
 			throw new BadRequestException("voudevez tous d abord valider l' afiche ouvrier!");
 
-		LocationFiche ficheLoc = locationFicheRepository.findByDate(fiche.get().getDate());
+		LocationFiche ficheLoc = locationFicheRepository.findByDateAndProjet(fiche.get().getDate(),
+				fiche.get().getProjet());
 
 		if (!ficheLoc.getIsValidated())
 			throw new BadRequestException("voudevez tous d abord valider l' afiche location!");
 
-		for (ReceptionDesignation ds : fiche.get().getReceptionDesignations())
-			if (ds.getObservation() == "")
+		for (ReceptionDesignation ds : fiche.get().getReceptionDesignations()) {
+			System.out.println("***********************************************");
+
+			System.out.println(ds.getObservation());
+			System.out.println(ds.getObservation());
+			System.out.println(ds.getObservation());
+			System.out.println("***********************************************");
+
+
+			if (ds.getObservation() == null)
 				ds.setObservation("Rien a signaler");
+			if (ds.getObservation().trim() == "")
+				ds.setObservation("Rien a signaler");
+			receptionDesignationRepository.save(ds);
+		}
 
 		fiche.get().setIsValidated(true);
 

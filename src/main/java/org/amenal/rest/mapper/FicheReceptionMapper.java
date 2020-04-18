@@ -61,6 +61,7 @@ public interface FicheReceptionMapper {
 						ds.setUnite("H");
 						ds.setQuantite(ouvDs.getTravail().doubleValue());
 						ds.setFournisseurNom("PAS DE FOURNISSEUR");
+						ds.setObservation("Rien a signaler");
 						cat.getReceptionDesignation().add(ds);
 						i++;
 					}
@@ -98,6 +99,7 @@ public interface FicheReceptionMapper {
 						ds.setUnite("H");
 						ds.setQuantite(locDs.getTravailleLoc().doubleValue());
 						ds.setFournisseurNom(locDs.getFournisseurNom());
+						ds.setObservation("Rien a signaler");
 						cat.getReceptionDesignation().add(ds);
 						i++;
 					}

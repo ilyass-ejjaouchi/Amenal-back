@@ -112,7 +112,7 @@ public class LocationFicheMetier {
 			rec.setCategorie("LOCATION");
 			rec.getLocationDesignations().add(locDs);
 
-			ReceptionFiche f = receptionFicheRepository.findByDate(fiche.get().getDate());
+			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate(),fiche.get().getProjet());
 
 			rec.setReceptionfiche(f);
 
@@ -195,7 +195,8 @@ public class LocationFicheMetier {
 			rec.setCategorie("LOCATION");
 			rec.getLocationDesignations().add(locDs);
 
-			ReceptionFiche f = receptionFicheRepository.findByDate(fiche.get().getDate());
+			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate(),fiche.get().getProjet());
+
 
 			rec.setReceptionfiche(f);
 

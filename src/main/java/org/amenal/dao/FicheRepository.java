@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
+import org.amenal.entities.Projet;
 import org.amenal.entities.fiches.Fiche;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +22,7 @@ public interface FicheRepository<T extends Fiche> extends JpaRepository<T, Integ
 			+ " ( :dateCreation is NULL OR f.date=:dateCreation ) " + "order by date(date) asc ")
 	List<T> findByProjetAndAndDate(@Param("projetID") Integer projetID, @Param("dateCreation") LocalDate dateCreation);
 
-	T findByDate(LocalDate date);
+	T findByDateAndProjet(LocalDate date , Projet p);
 	
 
 }

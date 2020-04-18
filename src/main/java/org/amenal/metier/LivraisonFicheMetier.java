@@ -114,11 +114,11 @@ public class LivraisonFicheMetier {
 
 		Optional<LivraisonFiche> fiche = livraisonFicheRepository.findById(id);
 
-		ReceptionFiche rcF = receptionFicheRepository.findByDate(fiche.get().getDate());
+		ReceptionFiche rcF = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
 
 		if (rcF.getIsValidated()) {
 			fiche.get().setIsValidated(true);
-			DocFiche docF = docFicheRepository.findByDate(fiche.get().getDate());
+			DocFiche docF = docFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
 
 			if (docF.getIsValidated()) {
 				List<Fiche> fiches = new ArrayList<Fiche>();
@@ -126,7 +126,7 @@ public class LivraisonFicheMetier {
 				if (fiche.get().getDate().isBefore(LocalDate.now())) {
 					
 					LocalDate date = fiche.get().getDate().plusDays(1);
-					stockMetier.validerFicheStock(fiche.get().getDate());
+					stockMetier.validerFicheStock(fiche.get().getDate() , fiche.get().getProjet());
 
 					/* OUVRIER */
 					OuvrierFiche ouvFiche = new OuvrierFiche();

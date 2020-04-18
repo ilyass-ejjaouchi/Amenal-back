@@ -21,7 +21,7 @@ import lombok.Setter;
 public class StockFiche  extends Fiche  {
 	private String type = FicheTypeEnum.STK.getCode();
 	
-	@OneToMany(mappedBy = "stockFiche" , cascade=CascadeType.PERSIST )
+	@OneToMany(mappedBy = "stockFiche"  )
 	List<Stock> stocks;
 
 }

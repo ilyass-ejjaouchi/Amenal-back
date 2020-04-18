@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
@@ -22,6 +23,7 @@ import org.amenal.dao.StockRepository;
 import org.amenal.dao.pojo.StockDs;
 import org.amenal.entities.Article;
 import org.amenal.entities.CategorieArticle;
+import org.amenal.entities.Projet;
 import org.amenal.entities.QualificationOuvrier;
 import org.amenal.entities.designations.Stock;
 import org.amenal.entities.designations.StockDesignation;
@@ -76,26 +78,35 @@ public class StockMetier {
 		if (!stockFiche.isPresent())
 			throw new NotFoundException("La fiche est introuvable!");
 
+		stockFiche.get().setIsValidated(true);
+
 		Integer pId = stockFiche.get().getProjet().getId();
 		LocalDate date = stockFiche.get().getDate();
-		stockFiche.get().setStocks(getStockLigneDesignation(pId, date));
+		stockFiche.get().setStocks(getStockLigneDesignation(pId, date).stream().filter(o -> o.getStockable())
+				.collect(Collectors.toList()));
 
 	}
 
-	public void validerFicheStock(LocalDate date) {
+	public void validerFicheStock(LocalDate date, Projet projet) {
 
-		StockFiche stockFiche = stockFicheRepository.findByDate(date);
+		StockFiche stockFiche = stockFicheRepository.findByDateAndProjet(date, projet);
 
 		if (stockFiche == null)
 			throw new NotFoundException("La fiche est introuvable!");
 
-		Integer pId = stockFiche.getProjet().getId();
-		List<Stock> stock = getStockLigneDesignation(pId, date);
+		stockFiche.setIsValidated(true);
+
+		List<Stock> stock = getStockLigneDesignation(projet.getId(), date);
 		stockFiche.setStocks(stock);
 
 		for (Stock s : stock) {
-			s.setStockFiche(stockFiche);
-			stockRepository.save(s);
+			s.setStockDesignations(
+					s.getStockDesignations().stream().filter(l -> l.getStockable()).collect(Collectors.toList()));
+			s.setStockable(true);
+			if (!s.getStockDesignations().isEmpty()) {
+				s.setStockFiche(stockFiche);
+				stockRepository.save(s);
+			}
 		}
 
 	}
@@ -225,6 +236,8 @@ public class StockMetier {
 			OldlistDs.add(d2);
 		}
 
+		/*************** RECEPTION ***************/
+
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		Boolean catIsStockable = false;
@@ -243,6 +256,12 @@ public class StockMetier {
 					dp.setDesignation(art.getDesignation());
 					dp.setQuantite(s.getQuantite());
 					dp.setUnite(art.getUnite().getUnite());
+					dp.setStockable(art.getStockable());
+					if (art.getStockable() == null)
+						stageStock.setStockable(false);
+					else if (!art.getStockable())
+						stageStock.setStockable(false);
+
 					stageStock.getStockDesignations().add(dp);
 					index = stockRec.indexOf(s);
 
@@ -336,8 +355,8 @@ public class StockMetier {
 				}
 			}
 		}
-		
-		if(!stkToRemove.isEmpty())
+
+		if (!stkToRemove.isEmpty())
 			OldlistDs.removeAll(stkToRemove);
 
 		return OldlistDs;

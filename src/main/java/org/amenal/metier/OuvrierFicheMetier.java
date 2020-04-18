@@ -91,7 +91,7 @@ public class OuvrierFicheMetier {
 			rec.setCategorie("MAIN D'OEUVRE");
 			rec.getOuvrierDesignations().add(des);
 
-			ReceptionFiche f = receptionFicheRepository.findByDate(ouvFiche.get().getDate());
+			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(ouvFiche.get().getDate(),ouvFiche.get().getProjet());
 
 			rec.setReceptionfiche(f);
 
@@ -151,7 +151,7 @@ public class OuvrierFicheMetier {
 			rec.setCategorie("MAIN D'OEUVRE");
 			rec.getOuvrierDesignations().add(des);
 
-			ReceptionFiche f = receptionFicheRepository.findByDate(ouvFiche.get().getDate());
+			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(ouvFiche.get().getDate(),ouvFiche.get().getProjet());
 
 			rec.setReceptionfiche(f);
 

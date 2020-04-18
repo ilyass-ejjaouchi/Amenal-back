@@ -181,8 +181,8 @@ public class DocumentFicheMetier {
 				throw new BadRequestException("Vous devez completer la fiche!");
 		}
 
-		ReceptionFiche ff = receptionFicheRepository.findByDate(fiche.get().getDate());
-		LivraisonFiche livF = livraisonFicheRepository.findByDate(fiche.get().getDate());
+		ReceptionFiche ff = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
+		LivraisonFiche livF = livraisonFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
 
 		fiche.get().setIsValidated(true);
 
@@ -192,7 +192,7 @@ public class DocumentFicheMetier {
 
 			if (fiche.get().getDate().isBefore(LocalDate.now())) {
 				LocalDate date = fiche.get().getDate().plusDays(1);
-				stockMetier.validerFicheStock(fiche.get().getDate());
+				stockMetier.validerFicheStock(fiche.get().getDate(),fiche.get().getProjet());
 
 				/* OUVRIER */
 				OuvrierFiche ouvFiche = new OuvrierFiche();
