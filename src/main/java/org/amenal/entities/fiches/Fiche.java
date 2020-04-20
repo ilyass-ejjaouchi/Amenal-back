@@ -37,6 +37,8 @@ public abstract class Fiche implements Serializable{
 	@Transient
 	protected Integer count;
 	
+
+	
 	
 	
 	protected LocalDate date;

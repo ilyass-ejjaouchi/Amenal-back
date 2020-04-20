@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.DestinationRepository;
 import org.amenal.dao.DocFicheRepository;
@@ -19,6 +20,7 @@ import org.amenal.entities.Projet;
 import org.amenal.entities.designations.Designation;
 import org.amenal.entities.designations.DocDesignation;
 import org.amenal.entities.designations.LivraisonDesignation;
+import org.amenal.entities.fiches.AccidentFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.LivraisonFiche;
@@ -52,18 +54,21 @@ public class LivraisonFicheMetier {
 
 	@Autowired
 	LivraisonDesignationMapper livraisonDesignationMapper;
-	
+
 	@Autowired
 	ProjetRepository projetRepository;
-	
+
 	@Autowired
 	ReceptionFicheRepository receptionFicheRepository;
-	
+
 	@Autowired
 	StockMetier stockMetier;
 
 	@Autowired
 	DocFicheRepository docFicheRepository;
+
+	@Autowired
+	AccidentFicherepository accidentFicherepository;
 
 	public void addLivraisonDesignation(LivraisonDesignationCommande livCmd) {
 
@@ -71,17 +76,25 @@ public class LivraisonFicheMetier {
 
 		Optional<Article> art = articleRepository.findById(ds.getArticleLvr().getId());
 		Optional<Destination> dst = destinationRepository.findById(ds.getDestination().getId());
+
 		if (!art.isPresent())
 			throw new NotFoundException("L 'article [ " + ds.getArticleLvr().getId() + " ] est introuvable!");
 		if (!dst.isPresent())
 			throw new NotFoundException("La destination [ " + ds.getArticleLvr().getId() + " ] est introuvable!");
 
-		ds.setArticleLvr(art.get());
-		ds.setCategorieLv(art.get().getCategorie().getCategorie());
-		ds.setUnite(art.get().getUnite().getUnite());
-		ds.setDestination(dst.get());
+		LivraisonDesignation dss = livraisonDesignationRepository.findByArticleLvrAndDestinationAndLivraisonFicheId(
+				art.get(), dst.get(), ds.getLivraisonFiche().getId());
 
-		livraisonDesignationRepository.save(ds);
+		if (dss == null) {
+			ds.setArticleLvr(art.get());
+			ds.setCategorieLv(art.get().getCategorie().getCategorie());
+			ds.setUnite(art.get().getUnite().getUnite());
+			ds.setDestination(dst.get());
+			livraisonDesignationRepository.save(ds);
+		} else {
+			dss.setQuantite(dss.getQuantite() + ds.getQuantite());
+		}
+
 	}
 
 	public void updateLivraisonDesignation(LivraisonDesignationCommande livCmd, Integer id) {
@@ -95,10 +108,18 @@ public class LivraisonFicheMetier {
 		if (!dst.isPresent())
 			throw new NotFoundException("La destination [ " + ds.getArticleLvr().getId() + " ] est introuvable!");
 
-		ds.setArticleLvr(art.get());
-		ds.setCategorieLv(art.get().getCategorie().getCategorie());
-		ds.setDestination(dst.get());
-		ds.setId(id);
+		LivraisonDesignation dss = livraisonDesignationRepository.findByArticleLvrAndDestinationAndLivraisonFicheId(
+				art.get(), dst.get(), ds.getLivraisonFiche().getId());
+
+		if (dss == null) {
+			ds.setArticleLvr(art.get());
+			ds.setCategorieLv(art.get().getCategorie().getCategorie());
+			ds.setUnite(art.get().getUnite().getUnite());
+			ds.setDestination(dst.get());
+			ds.setId(id);
+			livraisonDesignationRepository.save(ds);
+		} else
+			dss.setQuantite(dss.getQuantite() + ds.getQuantite());
 
 		livraisonDesignationRepository.save(ds);
 	}
@@ -114,62 +135,69 @@ public class LivraisonFicheMetier {
 
 		Optional<LivraisonFiche> fiche = livraisonFicheRepository.findById(id);
 
-		ReceptionFiche rcF = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
+		ReceptionFiche rcF = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate(),
+				fiche.get().getProjet());
 
 		if (rcF.getIsValidated()) {
 			fiche.get().setIsValidated(true);
-			DocFiche docF = docFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
+			DocFiche docF = docFicheRepository.findByDateAndProjet(fiche.get().getDate(), fiche.get().getProjet());
+			AccidentFiche accF = accidentFicherepository.findByDateAndProjet(fiche.get().getDate(),
+					fiche.get().getProjet());
 
-			if (docF.getIsValidated()) {
+			if (docF.getIsValidated() && accF.getIsValidated()) {
 				List<Fiche> fiches = new ArrayList<Fiche>();
 				Projet p = fiche.get().getProjet();
-				if (fiche.get().getDate().isBefore(LocalDate.now())) {
-					
-					LocalDate date = fiche.get().getDate().plusDays(1);
-					stockMetier.validerFicheStock(fiche.get().getDate() , fiche.get().getProjet());
 
-					/* OUVRIER */
-					OuvrierFiche ouvFiche = new OuvrierFiche();
-					ouvFiche.setProjet(p);
-					ouvFiche.setDate(date);
-					fiches.add(ouvFiche);
-					/* LOCATION */
-					LocationFiche locFiche = new LocationFiche();
-					locFiche.setDate(date);
-					locFiche.setProjet(p);
-					fiches.add(locFiche);
-					/* RECEPTION */
-					ReceptionFiche recf = new ReceptionFiche();
-					recf.setDate(date);
-					recf.setProjet(p);
-					fiches.add(recf);
-					/* LIVRAISON */
-					LivraisonFiche liv = new LivraisonFiche();
-					liv.setDate(date);
-					liv.setProjet(p);
-					fiches.add(liv);
-					/* DOCUMENT */
-					DocFiche dic = new DocFiche();
-					dic.setDate(date);
-					p.getDocuments().forEach(doc->{
-						DocDesignation ds = new DocDesignation();
-						ds.setDocument(doc);
-						ds.setIntitule(doc.getIntitule());
-						ds.setDisponibilite(false);
-						ds.setDocFiche(dic);
-						dic.getDocDesignations().add(ds);
-					});
-					dic.setProjet(p);
-					fiches.add(dic);
-					/* STOCK */
-					StockFiche stockFiche = new StockFiche();
-					stockFiche.setDate(date);
-					stockFiche.setProjet(p);
-					fiches.add(stockFiche);
-					
-					p.getFichiers().addAll(fiches);
-					projetRepository.save(p);
-				}
+				LocalDate date = fiche.get().getDate().plusDays(1);
+				stockMetier.validerFicheStock(fiche.get().getDate(), fiche.get().getProjet());
+
+				System.out.println("date : " + fiche.get().getDate());
+
+				/* OUVRIER */
+				OuvrierFiche ouvFiche = new OuvrierFiche();
+				ouvFiche.setProjet(p);
+				ouvFiche.setDate(date);
+				fiches.add(ouvFiche);
+				/* LOCATION */
+				LocationFiche locFiche = new LocationFiche();
+				locFiche.setDate(date);
+				locFiche.setProjet(p);
+				fiches.add(locFiche);
+				/* RECEPTION */
+				ReceptionFiche recf = new ReceptionFiche();
+				recf.setDate(date);
+				recf.setProjet(p);
+				fiches.add(recf);
+				/* LIVRAISON */
+				LivraisonFiche liv = new LivraisonFiche();
+				liv.setDate(date);
+				liv.setProjet(p);
+				fiches.add(liv);
+				/* DOCUMENT */
+				DocFiche dic = new DocFiche();
+				dic.setDate(date);
+				p.getDocuments().forEach(doc -> {
+					DocDesignation ds = new DocDesignation();
+					ds.setDocument(doc);
+					ds.setIntitule(doc.getIntitule());
+					ds.setDisponibilite(false);
+					ds.setDocFiche(dic);
+					dic.getDocDesignations().add(ds);
+				});
+				dic.setProjet(p);
+				fiches.add(dic);
+				/* STOCK */
+				StockFiche stockFiche = new StockFiche();
+				stockFiche.setDate(date);
+				stockFiche.setProjet(p);
+				fiches.add(stockFiche);
+				/* ACCIDENT */
+				AccidentFiche accFiche = new AccidentFiche();
+				accFiche.setDate(date);
+				accFiche.setProjet(p);
+				fiches.add(accFiche);
+
+				p.getFichiers().addAll(fiches);
 			}
 
 		} else

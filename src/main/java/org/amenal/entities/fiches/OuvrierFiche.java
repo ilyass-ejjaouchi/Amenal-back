@@ -21,7 +21,8 @@ import lombok.Setter;
 public class OuvrierFiche extends Fiche implements Serializable {
 	
 	private String type = FicheTypeEnum.MOO.getCode();
-
+	
+	private String alpha = "a";
 	
 	@OneToMany(mappedBy="OuvrierFiche",cascade=CascadeType.REMOVE )
 	private List<OuvrierDesignation> ouvrierDesignation;

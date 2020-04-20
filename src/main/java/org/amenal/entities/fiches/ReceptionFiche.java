@@ -20,6 +20,9 @@ import lombok.Setter;
 public class ReceptionFiche extends Fiche {
 
 	private String type = FicheTypeEnum.RCP.getCode();
+	
+	private String alpha = "c";
+
 
 	@OneToMany(mappedBy = "receptionfiche" , cascade=CascadeType.REMOVE)
 	private List<ReceptionDesignation> receptionDesignations;

@@ -622,12 +622,10 @@ public class ReceptionFicheMetier {
 			throw new BadRequestException("voudevez tous d abord valider l' afiche location!");
 
 		for (ReceptionDesignation ds : fiche.get().getReceptionDesignations()) {
-			System.out.println("***********************************************");
 
 			System.out.println(ds.getObservation());
 			System.out.println(ds.getObservation());
 			System.out.println(ds.getObservation());
-			System.out.println("***********************************************");
 
 
 			if (ds.getObservation() == null)

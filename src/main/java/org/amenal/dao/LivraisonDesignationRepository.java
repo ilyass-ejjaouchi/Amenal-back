@@ -2,7 +2,9 @@ package org.amenal.dao;
 
 import java.util.List;
 
+
 import org.amenal.entities.Article;
+import org.amenal.entities.Destination;
 import org.amenal.entities.Projet;
 import org.amenal.entities.designations.LivraisonDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
@@ -20,5 +22,8 @@ public interface LivraisonDesignationRepository extends JpaRepository<LivraisonD
 
 	@Query("select ds from LivraisonDesignation ds WHERE ds.articleLvr=:art and ds.livraisonFiche.isValidated = false and ds.livraisonFiche.projet =:p ")
 	List<LivraisonDesignation> findDesignationByArticleAndProjet(@Param("art") Article art, @Param("p") Projet p);
+	
+	
+	LivraisonDesignation findByArticleLvrAndDestinationAndLivraisonFicheId(Article ar , Destination dst ,Integer ficheID  );
 
 }

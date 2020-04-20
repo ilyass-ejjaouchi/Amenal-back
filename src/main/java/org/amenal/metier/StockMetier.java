@@ -113,6 +113,8 @@ public class StockMetier {
 
 	public List<Stock> getStockLigneDesignation(Integer projetId, LocalDate date) {
 
+		System.out.println("projet : " + projetId + "  date" + date);
+
 		int index = -1;
 
 		List<Stock> OldlistDs = stockRepository.findByprojetIdAndDate(projetId, date.minusDays(1));
@@ -133,28 +135,30 @@ public class StockMetier {
 		if (stockOuv != null) {
 			if (!dd.isEmpty()) {
 				index++;
-				if (!dd.isEmpty())
-					dd.forEach(l -> {
-						StockDesignation dp = new StockDesignation();
-						dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
-						dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
-						dp.setQuantite(((Double) l.get("qt")));
-						dp.setUnite("H");
+				dd.forEach(l -> {
+					StockDesignation dp = new StockDesignation();
+					System.out.println();
+					System.out.println("fffff : " + ((QualificationOuvrier) l.get("qual")).getCode());
+					System.out.println();
+					dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
+					dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
+					dp.setQuantite(((Double) l.get("qt")));
+					dp.setUnite("H");
 
-						StockDesignation dpp = stockOuv.getStockDesignations().stream().filter(ll -> {
-							return ll.getQualifOuvrier().getId() == dp.getQualifOuvrier().getId();
-						}).findFirst().orElse(null);
+					StockDesignation dpp = stockOuv.getStockDesignations().stream().filter(ll -> {
+						return ll.getQualifOuvrier().getId() == dp.getQualifOuvrier().getId();
+					}).findFirst().orElse(null);
 
-						if (dpp == null) {
-							dp.setStock(stockOuv);
-							stockOuv.getStockDesignations().add(dp);
-						} else {
-							dpp.setStock(stockOuv);
-							dpp.setDesignation(dp.getDesignation());
-							dpp.setQuantite(dpp.getQuantite() + dp.getQuantite());
-						}
+					if (dpp == null) {
+						dp.setStock(stockOuv);
+						stockOuv.getStockDesignations().add(dp);
+					} else {
+						dpp.setStock(stockOuv);
+						dpp.setDesignation(dp.getDesignation());
+						dpp.setQuantite(dpp.getQuantite() + dp.getQuantite());
+					}
 
-					});
+				});
 
 			}
 		} else if (!dd.isEmpty()) {
@@ -178,6 +182,7 @@ public class StockMetier {
 
 			OldlistDs.add(d);
 		}
+		System.out.println("OldlistDs : " + OldlistDs.size());
 
 		/****************** LOCATION *********************/
 

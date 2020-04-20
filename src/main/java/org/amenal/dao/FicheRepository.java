@@ -19,7 +19,7 @@ public interface FicheRepository<T extends Fiche> extends JpaRepository<T, Integ
 			@Param("dateCreation") LocalDate dateCreation);
 
 	@Query("select f from Fiche as f where  f.projet.id = :projetID AND"
-			+ " ( :dateCreation is NULL OR f.date=:dateCreation ) " + "order by date(date) asc ")
+			+ " ( :dateCreation is NULL OR f.date=:dateCreation ) order by date(date) asc ,  f.alpha asc ")
 	List<T> findByProjetAndAndDate(@Param("projetID") Integer projetID, @Param("dateCreation") LocalDate dateCreation);
 
 	T findByDateAndProjet(LocalDate date , Projet p);

@@ -22,6 +22,8 @@ import lombok.Setter;
 public class LocationFiche extends Fiche implements Serializable{
 	
 	private String type = FicheTypeEnum.LOC.getCode();
+	
+	private String alpha = "b";
 
 
 	

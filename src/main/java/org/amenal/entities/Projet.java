@@ -46,7 +46,7 @@ public class Projet implements Serializable {
 	@ElementCollection(fetch = FetchType.EAGER)
 	private List<FicheTypeEnum> fichierTypes = new ArrayList<FicheTypeEnum>();
 
-	@OneToMany(mappedBy = "projet", cascade = { CascadeType.ALL })
+	@OneToMany(mappedBy = "projet", cascade = { CascadeType.PERSIST , CascadeType.MERGE })
 	private List<Fiche> fichiers = new ArrayList<Fiche>();
 
 	@ManyToMany()

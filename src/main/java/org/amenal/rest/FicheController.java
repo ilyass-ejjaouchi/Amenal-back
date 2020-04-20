@@ -3,6 +3,7 @@ package org.amenal.rest;
 import java.net.URISyntaxException;
 
 import org.amenal.entities.fiches.LocationFiche;
+import org.amenal.metier.AccidentFicheMetier;
 import org.amenal.metier.DocumentFicheMetier;
 import org.amenal.metier.LivraisonFicheMetier;
 import org.amenal.metier.LocationFicheMetier;
@@ -34,6 +35,14 @@ public class FicheController {
 
 	@Autowired
 	DocumentFicheMetier documentFicheMetier;
+	
+	@Autowired
+	AccidentFicheMetier  accidentFicheMetier;
+	
+	@RequestMapping(value = "/accidents/{ficheId}", method = RequestMethod.PUT)
+	public void validerFicheAccident(@PathVariable Integer ficheId) throws URISyntaxException {
+		accidentFicheMetier.validerFicheAccident(ficheId);
+	}
 
 	@RequestMapping(value = "/documents/{ficheId}", method = RequestMethod.PUT)
 	public void ValiderFicheDocument(@PathVariable Integer ficheId) throws URISyntaxException {
@@ -61,5 +70,6 @@ public class FicheController {
 	public void validerFicheLivraison(@PathVariable Integer ficheId) throws URISyntaxException {
 		livraisonFicheMetier.validerFicheLivraison(ficheId);
 	}
+	
 
 }

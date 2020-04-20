@@ -21,6 +21,9 @@ import lombok.Setter;
 public class LivraisonFiche extends Fiche{
 
 	private String type = FicheTypeEnum.LVR.getCode();
+	
+	private String alpha = "d";
+
 
 	@OneToMany(mappedBy = "livraisonFiche" , cascade=CascadeType.REMOVE)
 	private List<LivraisonDesignation> livraisonDesignations;

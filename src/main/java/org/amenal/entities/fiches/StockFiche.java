@@ -20,6 +20,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class StockFiche  extends Fiche  {
 	private String type = FicheTypeEnum.STK.getCode();
+	private String alpha = "j";
+
 	
 	@OneToMany(mappedBy = "stockFiche"  )
 	List<Stock> stocks;

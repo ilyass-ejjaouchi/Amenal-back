@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.DocFicheRepository;
 import org.amenal.dao.FicheRepository;
 import org.amenal.dao.LivraisonFicheRepository;
@@ -23,6 +24,7 @@ import org.amenal.entities.Ouvrier;
 import org.amenal.entities.Projet;
 import org.amenal.entities.designations.OuvrierDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
+import org.amenal.entities.fiches.AccidentFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.FicheTypeEnum;
@@ -34,6 +36,7 @@ import org.amenal.entities.fiches.StockFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
+import org.amenal.rest.mapper.FicheAccidentMapper;
 import org.amenal.rest.mapper.FicheDocumentMapper;
 import org.amenal.rest.mapper.FicheLivraisonMapper;
 import org.amenal.rest.mapper.FicheLocationMapper;
@@ -60,6 +63,9 @@ public class ProjetMetier {
 
 	@Autowired
 	ProjetRepository projetDao;
+
+	@Autowired
+	AccidentFicherepository accidentFicherepository;
 
 	@Autowired
 	OuvrierFicheRepository OuvFicheDao;
@@ -108,6 +114,9 @@ public class ProjetMetier {
 
 	@Autowired
 	FicheDocumentMapper ficheDocumentMapper;
+
+	@Autowired
+	FicheAccidentMapper ficheAccidentMapper;
 
 	@Autowired
 	FicheRepository<Fiche> ficheRepository;
@@ -224,6 +233,8 @@ public class ProjetMetier {
 					return ficheLocationMapper.toRepresentation((LocationFiche) x);
 				else if (x instanceof ReceptionFiche)
 					return ficheReceptionMapper.toRepresentation((ReceptionFiche) x);
+				else if (x instanceof AccidentFiche)
+					return ficheAccidentMapper.toRepresentation((AccidentFiche) x);
 				else if (x instanceof StockFiche) {
 					FichePresentation ff = new FichePresentation();
 					ff.setType("STOCK");
@@ -339,6 +350,11 @@ public class ProjetMetier {
 
 			return fs.stream().map(o -> ficheDocumentMapper.toRepresentation(o)).collect(Collectors.toList());
 		}
+		case "ACCIDENT": {
+			List<AccidentFiche> fs = accidentFicherepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
+
+			return fs.stream().map(o -> ficheAccidentMapper.toRepresentation(o)).collect(Collectors.toList());
+		}
 		default:
 			break;
 		}
@@ -404,6 +420,11 @@ public class ProjetMetier {
 				fiches.add(dic);
 				createStck = true;
 				break;
+			case ACC:
+				AccidentFiche acc = new AccidentFiche();
+				acc.setDate(LocalDate.now());
+				acc.setProjet(p);
+				fiches.add(acc);
 			default:
 				break;
 			}

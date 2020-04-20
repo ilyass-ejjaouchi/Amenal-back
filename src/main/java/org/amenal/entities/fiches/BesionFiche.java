@@ -21,6 +21,8 @@ import lombok.Setter;
 public class BesionFiche extends Fiche implements Serializable {
 
 	private String type = FicheTypeEnum.BSN.getCode();
+	private String alpha = "e";
+
 
 	@OneToMany(mappedBy = "besionFiche")
 	private List<BesionDesignation> besionDesignations;

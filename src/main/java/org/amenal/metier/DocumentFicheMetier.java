@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.DocDesignationRepository;
 import org.amenal.dao.DocFicheRepository;
 import org.amenal.dao.DocumentRepository;
@@ -17,6 +18,7 @@ import org.amenal.dao.ReceptionFicheRepository;
 import org.amenal.entities.Document;
 import org.amenal.entities.Projet;
 import org.amenal.entities.designations.DocDesignation;
+import org.amenal.entities.fiches.AccidentFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.LivraisonFiche;
@@ -54,10 +56,10 @@ public class DocumentFicheMetier {
 	private DocumentMapper documentMapper;
 
 	@Autowired
-	private ReceptionFicheRepository receptionFicheRepository;
+	LivraisonFicheRepository livraisonFicheRepository;
 
 	@Autowired
-	LivraisonFicheRepository livraisonFicheRepository;
+	AccidentFicherepository accidentFicherepository;
 
 	public void AddDocument(String intitule) {
 		Document doc = documentRepository.findByIntitule(intitule.trim().toUpperCase());
@@ -181,64 +183,69 @@ public class DocumentFicheMetier {
 				throw new BadRequestException("Vous devez completer la fiche!");
 		}
 
-		ReceptionFiche ff = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
-		LivraisonFiche livF = livraisonFicheRepository.findByDateAndProjet(fiche.get().getDate() , fiche.get().getProjet());
+		LivraisonFiche livF = livraisonFicheRepository.findByDateAndProjet(fiche.get().getDate(),
+				fiche.get().getProjet());
+		AccidentFiche accF = accidentFicherepository.findByDateAndProjet(fiche.get().getDate(),
+				fiche.get().getProjet());
 
 		fiche.get().setIsValidated(true);
 
-		if (ff.getIsValidated() && livF.getIsValidated()) {
+		if (livF.getIsValidated() && accF.getIsValidated()) {
 
 			List<Fiche> fiches = new ArrayList<Fiche>();
 
-			if (fiche.get().getDate().isBefore(LocalDate.now())) {
-				LocalDate date = fiche.get().getDate().plusDays(1);
-				stockMetier.validerFicheStock(fiche.get().getDate(),fiche.get().getProjet());
+			LocalDate date = fiche.get().getDate().plusDays(1);
+			stockMetier.validerFicheStock(fiche.get().getDate(), fiche.get().getProjet());
 
-				/* OUVRIER */
-				OuvrierFiche ouvFiche = new OuvrierFiche();
-				ouvFiche.setProjet(p);
-				ouvFiche.setDate(date);
-				fiches.add(ouvFiche);
-				/* LOCATION */
-				LocationFiche locFiche = new LocationFiche();
-				locFiche.setDate(date);
-				locFiche.setProjet(p);
-				fiches.add(locFiche);
-				/* RECEPTION */
-				ReceptionFiche recf = new ReceptionFiche();
-				recf.setDate(date);
-				recf.setProjet(p);
-				fiches.add(recf);
-				/* LIVRAISON */
-				LivraisonFiche liv = new LivraisonFiche();
-				liv.setDate(date);
-				liv.setProjet(p);
-				fiches.add(liv);
-				/* DOCUMENT */
-				DocFiche dic = new DocFiche();
-				p.getDocuments().forEach(doc -> {
-					DocDesignation ds = new DocDesignation();
-					ds.setDocument(doc);
-					ds.setIntitule(doc.getIntitule());
-					ds.setDisponibilite(false);
-					ds.setDocFiche(dic);
-					dic.getDocDesignations().add(ds);
-				});
+			/* OUVRIER */
+			OuvrierFiche ouvFiche = new OuvrierFiche();
+			ouvFiche.setProjet(p);
+			ouvFiche.setDate(date);
+			fiches.add(ouvFiche);
+			
+			/* LOCATION */
+			LocationFiche locFiche = new LocationFiche();
+			locFiche.setDate(date);
+			locFiche.setProjet(p);
+			fiches.add(locFiche);
+			/* RECEPTION */
+			ReceptionFiche recf = new ReceptionFiche();
+			recf.setDate(date);
+			recf.setProjet(p);
+			fiches.add(recf);
+			/* LIVRAISON */
+			LivraisonFiche liv = new LivraisonFiche();
+			liv.setDate(date);
+			liv.setProjet(p);
+			fiches.add(liv);
+			/* DOCUMENT */
+			DocFiche dic = new DocFiche();
+			p.getDocuments().forEach(doc -> {
+				DocDesignation ds = new DocDesignation();
+				ds.setDocument(doc);
+				ds.setIntitule(doc.getIntitule());
+				ds.setDisponibilite(false);
+				ds.setDocFiche(dic);
+				dic.getDocDesignations().add(ds);
+			});
 
-				dic.setDate(date);
-				dic.setProjet(p);
-				fiches.add(dic);
-				/* STOCK */
-				StockFiche stockFiche = new StockFiche();
-				stockFiche.setDate(date);
-				stockFiche.setProjet(p);
-				fiches.add(stockFiche);
+			dic.setDate(date);
+			dic.setProjet(p);
+			fiches.add(dic);
+			/* STOCK */
+			StockFiche stockFiche = new StockFiche();
+			stockFiche.setDate(date);
+			stockFiche.setProjet(p);
+			fiches.add(stockFiche);
+			/* ACCIDENT */
+			AccidentFiche accFiche = new AccidentFiche();
+			accFiche.setDate(date);
+			stockFiche.setProjet(p);
+			fiches.add(accFiche);
 
-				p.getFichiers().addAll(fiches);
-				projetRepository.save(p);
-			}
-
+			p.getFichiers().addAll(fiches);
 		}
+
 	}
 
 }
