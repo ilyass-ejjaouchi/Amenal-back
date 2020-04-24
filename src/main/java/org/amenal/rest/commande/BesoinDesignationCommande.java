@@ -9,13 +9,16 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BesionDesignationCommande {
+public class BesoinDesignationCommande {
 	
-	private Integer ArticleId;
-	private String BesionType;
+	private Integer BesoinId;
+	private String designation;
+	private String unite;
+	private String BesoinType;
 	private Double quantite;
 	private LocalDate dateDemande;
 	private LocalDate datePrevu;
+	private Integer retard;
 	private Boolean satisfaction;
 	private String observation;
 	private Boolean valid;

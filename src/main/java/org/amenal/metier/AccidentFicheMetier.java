@@ -11,13 +11,16 @@ import javax.persistence.PersistenceContext;
 import org.amenal.dao.AccidentDesignationRepository;
 import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.DocFicheRepository;
+import org.amenal.dao.FicheBesoinRepository;
 import org.amenal.dao.LivraisonFicheRepository;
 import org.amenal.dao.ProjetRepository;
 import org.amenal.dao.ReceptionFicheRepository;
+import org.amenal.dao.VisiteurFicheRepository;
 import org.amenal.entities.Projet;
 import org.amenal.entities.designations.AccidentDesignation;
 import org.amenal.entities.designations.DocDesignation;
 import org.amenal.entities.fiches.AccidentFiche;
+import org.amenal.entities.fiches.BesoinFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.LivraisonFiche;
@@ -25,6 +28,7 @@ import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.entities.fiches.StockFiche;
+import org.amenal.entities.fiches.VisiteurFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.AccidentDesignationCommande;
@@ -53,6 +57,12 @@ public class AccidentFicheMetier {
 
 	@Autowired
 	DocFicheRepository docFicheRepository;
+
+	@Autowired
+	FicheBesoinRepository ficheBesoinRepository;
+
+	@Autowired
+	VisiteurFicheRepository visiteurFicheRepository;
 
 	@Autowired
 	StockMetier stockMetier;
@@ -105,8 +115,13 @@ public class AccidentFicheMetier {
 			LivraisonFiche livF = livraisonFicheRepository.findByDateAndProjet(fiche.get().getDate(),
 					fiche.get().getProjet());
 			DocFiche docf = docFicheRepository.findByDateAndProjet(fiche.get().getDate(), fiche.get().getProjet());
+			VisiteurFiche ficheV = visiteurFicheRepository.findByDateAndProjet(fiche.get().getDate(),
+					fiche.get().getProjet());
+			BesoinFiche bsnFiche = ficheBesoinRepository.findByDateAndProjet(fiche.get().getDate(),
+					fiche.get().getProjet());
 
-			if (livF.getIsValidated() && docf.getIsValidated()) {
+			if (livF.getIsValidated() && docf.getIsValidated() && ficheV.getIsValidated()
+					&& bsnFiche.getIsValidated()) {
 
 				List<Fiche> fiches = new ArrayList<Fiche>();
 
@@ -155,8 +170,18 @@ public class AccidentFicheMetier {
 				/* ACCIDENT */
 				AccidentFiche accFiche = new AccidentFiche();
 				accFiche.setDate(date);
-				accFiche.setProjet(p);
+				stockFiche.setProjet(p);
 				fiches.add(accFiche);
+				/* BESOIN */
+				BesoinFiche bsnnFiche = new BesoinFiche();
+				bsnnFiche.setDate(date);
+				bsnnFiche.setProjet(p);
+				fiches.add(bsnnFiche);
+				/* VISITEUR */
+				VisiteurFiche vstFiche = new VisiteurFiche();
+				vstFiche.setDate(date);
+				vstFiche.setProjet(p);
+				fiches.add(vstFiche);
 				entityManager.detach(p);
 
 				p.setFichiers(fiches);

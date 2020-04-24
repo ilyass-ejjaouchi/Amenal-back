@@ -23,7 +23,7 @@ import lombok.Setter;
 public class DocFiche extends Fiche implements Serializable {
 	private String type = FicheTypeEnum.DOC.getCode();
 	
-	private String alpha = "f";
+	private String alpha = "g";
 
 
 	@OneToMany(mappedBy = "docFiche" , cascade = CascadeType.ALL)

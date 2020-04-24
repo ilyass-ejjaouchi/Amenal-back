@@ -7,7 +7,7 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 
-import org.amenal.entities.designations.BesionDesignation;
+import org.amenal.entities.designations.BesoinDesignation;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,13 +18,13 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BesionFiche extends Fiche implements Serializable {
+public class BesoinFiche extends Fiche implements Serializable {
 
 	private String type = FicheTypeEnum.BSN.getCode();
 	private String alpha = "e";
 
 
-	@OneToMany(mappedBy = "besionFiche")
-	private List<BesionDesignation> besionDesignations;
+	@OneToMany(mappedBy = "besoinFiche")
+	private List<BesoinDesignation> besoinDesignations;
 
 }

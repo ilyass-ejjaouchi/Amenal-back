@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.DocFicheRepository;
+import org.amenal.dao.FicheBesoinRepository;
 import org.amenal.dao.FicheRepository;
 import org.amenal.dao.LivraisonFicheRepository;
 import org.amenal.dao.LocationFicheRepository;
@@ -18,6 +19,7 @@ import org.amenal.dao.OuvrierRepository;
 import org.amenal.dao.ProjetRepository;
 import org.amenal.dao.ReceptionFicheRepository;
 import org.amenal.dao.StockFicheRepository;
+import org.amenal.dao.VisiteurFicheRepository;
 import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
 import org.amenal.entities.Ouvrier;
@@ -25,6 +27,7 @@ import org.amenal.entities.Projet;
 import org.amenal.entities.designations.OuvrierDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.AccidentFiche;
+import org.amenal.entities.fiches.BesoinFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.FicheTypeEnum;
@@ -33,15 +36,18 @@ import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.entities.fiches.StockFiche;
+import org.amenal.entities.fiches.VisiteurFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
 import org.amenal.rest.mapper.FicheAccidentMapper;
+import org.amenal.rest.mapper.FicheBesoinMapper;
 import org.amenal.rest.mapper.FicheDocumentMapper;
 import org.amenal.rest.mapper.FicheLivraisonMapper;
 import org.amenal.rest.mapper.FicheLocationMapper;
 import org.amenal.rest.mapper.FicheOuvrierMapper;
 import org.amenal.rest.mapper.FicheReceptionMapper;
+import org.amenal.rest.mapper.FicheVisiteurMapper;
 import org.amenal.rest.mapper.LocationDesignationMapper;
 import org.amenal.rest.mapper.OuvrierMapper;
 import org.amenal.rest.mapper.ProjetMapper;
@@ -52,8 +58,6 @@ import org.amenal.rest.representation.ProjetPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
 
 @Service
 @Transactional
@@ -104,6 +108,8 @@ public class ProjetMetier {
 	DocFicheRepository docFicheRepository;
 
 	@Autowired
+	FicheBesoinRepository ficheBesoinRepository;
+	@Autowired
 	FicheOuvrierMapper ficheOuvrierMapper;
 
 	@Autowired
@@ -119,7 +125,16 @@ public class ProjetMetier {
 	FicheAccidentMapper ficheAccidentMapper;
 
 	@Autowired
+	FicheBesoinMapper ficheBesoinMapper;
+
+	@Autowired
+	VisiteurFicheRepository visiteurFicheRepository;
+
+	@Autowired
 	FicheRepository<Fiche> ficheRepository;
+
+	@Autowired
+	FicheVisiteurMapper ficheVisiteurMapper;
 
 	private static Boolean createStck;
 
@@ -264,7 +279,11 @@ public class ProjetMetier {
 				} else if (x instanceof DocFiche) {
 					return ficheDocumentMapper.toRepresentation((DocFiche) x);
 
-				} else
+				} else if (x instanceof BesoinFiche)
+					return ficheBesoinMapper.toRepresentation((BesoinFiche) x);
+				else if (x instanceof VisiteurFiche)
+					return ficheVisiteurMapper.toRepresentation((VisiteurFiche) x);
+				else
 					return null;
 
 			}).collect(Collectors.toList());
@@ -355,10 +374,24 @@ public class ProjetMetier {
 
 			return fs.stream().map(o -> ficheAccidentMapper.toRepresentation(o)).collect(Collectors.toList());
 		}
+		case "BESOIN": {
+
+			List<BesoinFiche> bsnFiche = ficheBesoinRepository.findByProjetAndTypeFicheAndDate(idProjet, type, date);
+
+			return bsnFiche.stream().map(o -> ficheBesoinMapper.toRepresentation(o)).collect(Collectors.toList());
+
+		}
+		case "VISITEUR": {
+
+			List<VisiteurFiche> vstFiche = visiteurFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type,
+					date);
+
+			return vstFiche.stream().map(o -> ficheVisiteurMapper.toRepresentation(o)).collect(Collectors.toList());
+
+		}
 		default:
 			break;
 		}
-
 		return null;
 
 	}
@@ -425,6 +458,19 @@ public class ProjetMetier {
 				acc.setDate(LocalDate.now());
 				acc.setProjet(p);
 				fiches.add(acc);
+				break;
+			case BSN:
+				BesoinFiche bsn = new BesoinFiche();
+				bsn.setDate(LocalDate.now());
+				bsn.setProjet(p);
+				fiches.add(bsn);
+				break;
+			case VST:
+				VisiteurFiche vst = new VisiteurFiche();
+				vst.setDate(LocalDate.now());
+				vst.setProjet(p);
+				fiches.add(vst);
+				break;
 			default:
 				break;
 			}

@@ -10,13 +10,14 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BesionDesignationPresentation extends DesignationPresentation {
+public class BesoinDesignationPresentation extends DesignationPresentation {
 
 	private String designation;
 	private String unite;
 	private Double quantite;
 	private LocalDate dateDemande;
 	private LocalDate datePrevu;
+	private Integer retard;
 	private Boolean satisfaction;
 	private String observation;
 

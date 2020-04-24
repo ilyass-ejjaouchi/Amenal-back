@@ -66,6 +66,12 @@ public class Projet implements Serializable {
 			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
 					@JoinColumn(name = "fk_document", nullable = true) })
 	private List<Document> documents = new ArrayList<Document>();
+	
+	@ManyToMany(cascade = CascadeType.REFRESH)
+	@JoinTable(name = "projet_visiteur", joinColumns = {
+			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
+					@JoinColumn(name = "fk_visiteur", nullable = true) })
+	private List<Visiteur> visiteurs = new ArrayList<Visiteur>();
 
 	public void addOuvrier(Ouvrier ouvrier) {
 		// TODO Auto-generated method stub

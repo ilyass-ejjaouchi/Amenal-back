@@ -24,7 +24,7 @@ public class AccidentFiche  extends Fiche implements Serializable{
 	
 	private String type = FicheTypeEnum.ACC.getCode();
 
-	private String alpha = "g";
+	private String alpha = "h";
 
 	
 	

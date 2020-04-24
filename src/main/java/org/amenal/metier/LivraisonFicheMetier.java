@@ -5,15 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.ArticleRepository;
 import org.amenal.dao.DestinationRepository;
 import org.amenal.dao.DocFicheRepository;
+import org.amenal.dao.FicheBesoinRepository;
 import org.amenal.dao.LivraisonDesignationRepository;
 import org.amenal.dao.LivraisonFicheRepository;
 import org.amenal.dao.ProjetRepository;
 import org.amenal.dao.ReceptionFicheRepository;
 import org.amenal.dao.StockRepository;
+import org.amenal.dao.VisiteurFicheRepository;
 import org.amenal.entities.Article;
 import org.amenal.entities.Destination;
 import org.amenal.entities.Projet;
@@ -21,6 +26,7 @@ import org.amenal.entities.designations.Designation;
 import org.amenal.entities.designations.DocDesignation;
 import org.amenal.entities.designations.LivraisonDesignation;
 import org.amenal.entities.fiches.AccidentFiche;
+import org.amenal.entities.fiches.BesoinFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.LivraisonFiche;
@@ -28,6 +34,7 @@ import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 import org.amenal.entities.fiches.ReceptionFiche;
 import org.amenal.entities.fiches.StockFiche;
+import org.amenal.entities.fiches.VisiteurFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.exception.NotFoundException;
 import org.amenal.rest.commande.LivraisonDesignationCommande;
@@ -39,6 +46,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @Service
 public class LivraisonFicheMetier {
+	
+	@PersistenceContext
+	EntityManager entityManager;
+
 
 	@Autowired
 	LivraisonFicheRepository livraisonFicheRepository;
@@ -69,6 +80,12 @@ public class LivraisonFicheMetier {
 
 	@Autowired
 	AccidentFicherepository accidentFicherepository;
+	
+	@Autowired
+	FicheBesoinRepository ficheBesoinRepository;
+
+	@Autowired
+	VisiteurFicheRepository visiteurFicheRepository;
 
 	public void addLivraisonDesignation(LivraisonDesignationCommande livCmd) {
 
@@ -143,8 +160,12 @@ public class LivraisonFicheMetier {
 			DocFiche docF = docFicheRepository.findByDateAndProjet(fiche.get().getDate(), fiche.get().getProjet());
 			AccidentFiche accF = accidentFicherepository.findByDateAndProjet(fiche.get().getDate(),
 					fiche.get().getProjet());
+			VisiteurFiche ficheV = visiteurFicheRepository.findByDateAndProjet(fiche.get().getDate(),
+					fiche.get().getProjet());
+			BesoinFiche bsnFiche = ficheBesoinRepository.findByDateAndProjet(fiche.get().getDate(),
+					fiche.get().getProjet());
 
-			if (docF.getIsValidated() && accF.getIsValidated()) {
+			if (docF.getIsValidated() && accF.getIsValidated() && ficheV.getIsValidated() && bsnFiche.getIsValidated()) {
 				List<Fiche> fiches = new ArrayList<Fiche>();
 				Projet p = fiche.get().getProjet();
 
@@ -196,8 +217,21 @@ public class LivraisonFicheMetier {
 				accFiche.setDate(date);
 				accFiche.setProjet(p);
 				fiches.add(accFiche);
+				/* BESOIN */
+				BesoinFiche bsnnFiche = new BesoinFiche();
+				bsnnFiche.setDate(date);
+				bsnnFiche.setProjet(p);
+				fiches.add(bsnnFiche);
+				/* VISITEUR */
+				VisiteurFiche vstFiche = new VisiteurFiche();
+				vstFiche.setDate(date);
+				vstFiche.setProjet(p);
+				fiches.add(vstFiche);
+				entityManager.detach(p);
 
-				p.getFichiers().addAll(fiches);
+				p.setFichiers(fiches);
+				projetRepository.save(p);
+
 			}
 
 		} else

@@ -4,7 +4,9 @@ import java.net.URISyntaxException;
 
 import org.amenal.entities.fiches.LocationFiche;
 import org.amenal.metier.AccidentFicheMetier;
+import org.amenal.metier.BesoinFicheMetier;
 import org.amenal.metier.DocumentFicheMetier;
+import org.amenal.metier.FicheVisiteurMetier;
 import org.amenal.metier.LivraisonFicheMetier;
 import org.amenal.metier.LocationFicheMetier;
 import org.amenal.metier.OuvrierFicheMetier;
@@ -39,6 +41,14 @@ public class FicheController {
 	@Autowired
 	AccidentFicheMetier  accidentFicheMetier;
 	
+	@Autowired
+	BesoinFicheMetier besoinFicheMetier;
+	
+	@Autowired
+	FicheVisiteurMetier ficheVisiteurMetier;
+	
+	
+	
 	@RequestMapping(value = "/accidents/{ficheId}", method = RequestMethod.PUT)
 	public void validerFicheAccident(@PathVariable Integer ficheId) throws URISyntaxException {
 		accidentFicheMetier.validerFicheAccident(ficheId);
@@ -69,6 +79,16 @@ public class FicheController {
 	@RequestMapping(value = "/livraisons/{ficheId}", method = RequestMethod.PUT)
 	public void validerFicheLivraison(@PathVariable Integer ficheId) throws URISyntaxException {
 		livraisonFicheMetier.validerFicheLivraison(ficheId);
+	}
+	
+	@RequestMapping(value = "/besoins/{ficheId}", method = RequestMethod.PUT)
+	public void validerFicheBesoin(@PathVariable Integer ficheId) throws URISyntaxException {
+		besoinFicheMetier.validerFicheBesion(ficheId);
+	}
+	
+	@RequestMapping(value = "/visiteurs/{ficheId}", method = RequestMethod.PUT)
+	public void validerFicheVisiteur(@PathVariable Integer ficheId) throws URISyntaxException {
+		ficheVisiteurMetier.validerVisiteur(ficheId);
 	}
 	
 

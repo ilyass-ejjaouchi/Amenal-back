@@ -10,7 +10,7 @@ import javax.persistence.Table;
 
 import org.amenal.entities.Article;
 import org.amenal.entities.QualificationOuvrier;
-import org.amenal.entities.fiches.BesionFiche;
+import org.amenal.entities.fiches.BesoinFiche;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,8 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class BesionDesignation extends Designation {
+public class BesoinDesignation extends Designation {
+
 
 	private String designation;
 	private String unite;
@@ -31,6 +32,7 @@ public class BesionDesignation extends Designation {
 	private LocalDate dateDemande;
 	private LocalDate datePrevu;
 	private Boolean satisfaction;
+	private Integer retard;
 	private String observation;
 	
 	@OneToOne
@@ -40,6 +42,31 @@ public class BesionDesignation extends Designation {
 	private QualificationOuvrier qualification;
 
 	@ManyToOne
-	private BesionFiche besionFiche;
+	private BesoinFiche besoinFiche;
+
+	public String getDesignation() {
+		return designation;
+	}
+
+	public void setDesignation(String designation) {
+		this.designation = designation.toUpperCase();
+	}
+
+	public String getUnite() {
+		return unite;
+	}
+
+	public void setUnite(String unite) {
+		this.unite = unite.toUpperCase();
+	}
+
+	public String getObservation() {
+		return observation;
+	}
+
+	public void setObservation(String observation) {
+		this.observation = observation.toUpperCase();
+	}
+	
 
 }
