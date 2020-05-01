@@ -33,7 +33,7 @@ public class OuvrierDesignationController {
 	OuvrierFicheMetier ouvrierFicheMetier;
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	@PreAuthorize("@authoritiesService.hasAuthorityFiche(#OuvrierDesignationCommande.idFiche,'USER')")
+	@PreAuthorize("@authoritiesService.hasAuthorityFiche(#dsCmd.idFiche,'USER')")
 	public ResponseEntity<Void> addOuvrierDesignation(@Valid @RequestBody OuvrierDesignationCommande dsCmd)
 			throws URISyntaxException {
 
@@ -45,15 +45,15 @@ public class OuvrierDesignationController {
 	public List<OuvrierDesignationPresentation> getListOuvrierDesignation() {
 		return ouvrierFicheMetier.ListOuvrierDesignation();
 	}
-	@PreAuthorize("@authoritiesService.hasAuthority('USER')")
+	@PreAuthorize("@authoritiesService.hasAuthorityDs(#OuvId,'USER')")
 	@RequestMapping(value = "/{OuvId}", method = RequestMethod.DELETE)
 	public void SupprimerOuvrierDesignation(@PathVariable Integer OuvId) {
 		ouvrierFicheMetier.SupprimerOuvrierDesignation(OuvId);
 
 	}
-	@PreAuthorize("@authoritiesService.hasAuthority('USER')")
+	@PreAuthorize("@authoritiesService.hasAuthority(#OuvDsId,'USER')")
 	@RequestMapping(value = "/{OuvDsId}", method = RequestMethod.PUT)
-	public void SupprimerOuvrierDesignation(@PathVariable Integer OuvDsId , @Valid @RequestBody OuvrierDesignationCommande dsCmd) {
+	public void UpdateOuvrierDesignation(@PathVariable Integer OuvDsId , @Valid @RequestBody OuvrierDesignationCommande dsCmd) {
 		ouvrierFicheMetier.updateLigneDesignation(dsCmd ,OuvDsId);
 
 	}

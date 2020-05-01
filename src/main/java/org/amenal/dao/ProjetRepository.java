@@ -19,6 +19,9 @@ public interface ProjetRepository extends JpaRepository<Projet, Integer>{
 	@Query("select p from Projet p join p.ouvriers ouv where ouv.id = :ouvrierID  ")
 	List<Projet> findProjetByOuvrierID(@Param("ouvrierID")Integer ouvrierID);
 	
+	@Query("select p from Projet p  where p.id IN (:ouvrierIDs)  ")
+	List<Projet> findProjetByIDs(@Param("ouvrierID")List<Integer> ouvrierIDs);
+	
 	@Query("select p.documents from Projet p where p.id = :projetID  ")
 	List<Document> findDocumentByProjetID(@Param("projetID")Integer projetID);
 

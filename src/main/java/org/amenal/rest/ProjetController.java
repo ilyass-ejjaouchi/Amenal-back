@@ -40,6 +40,9 @@ public class ProjetController {
 	@Autowired
 	FournisseurMetier fournisseurMetier;
 
+	@PreAuthorize("@authoritiesService.hasAuthority('ADMIN') OR"
+			+ " @authoritiesService.hasAuthority('USER') OR"
+			+ " @authoritiesService.hasAuthority('VISITEUR')")
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public List<ProjetPresentation> getListProjet() {
 		return projetMetier.ListProjet();
@@ -78,9 +81,9 @@ public class ProjetController {
 		return ResponseEntity.ok().build();
 	}
 	
-	@PreAuthorize("@authoritiesService.hasAuthority('ADMIN') OR"
-			+ " @authoritiesService.hasAuthority('USER') OR"
-			+ " @authoritiesService.hasAuthority('VISITEUR')")
+	@PreAuthorize("@authoritiesService.hasAuthority(#idProjet,'ADMIN') OR"
+			+ " @authoritiesService.hasAuthority(#idProjet,'USER') OR"
+			+ " @authoritiesService.hasAuthority(#idProjet,'VISITEUR')")
 	@RequestMapping(value = "{idProjet}/fiche/{typeFiche}", method = RequestMethod.GET)
 	public List<FichePresentation> getProjetFicheByType(@PathVariable(name = "idProjet") Integer idProjet,
 			@PathVariable(name = "typeFiche") String typeFiche,

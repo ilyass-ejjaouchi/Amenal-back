@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.amenal.config.security.dto.AppUserAuthenticationToken;
+import org.amenal.config.security.dto.ProjetAuthority;
 import org.amenal.dao.AccidentFicherepository;
 import org.amenal.dao.DocFicheRepository;
 import org.amenal.dao.FicheBesoinRepository;
@@ -56,6 +58,7 @@ import org.amenal.rest.representation.FichePresentation;
 import org.amenal.rest.representation.OuvrierPresentation;
 import org.amenal.rest.representation.ProjetPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -172,7 +175,16 @@ public class ProjetMetier {
 
 	public List<ProjetPresentation> ListProjet() {
 
-		return projetDao.findAll().stream().map(o -> projetMapper.toRepresentation(o)).collect(Collectors.toList());
+		AppUserAuthenticationToken auth = (AppUserAuthenticationToken) SecurityContextHolder.getContext()
+				.getAuthentication();
+		if (auth.isRoot())
+			return projetDao.findAll().stream().map(o -> projetMapper.toRepresentation(o)).collect(Collectors.toList());
+		else {
+			List<Integer> pids = auth.getAuthorities().stream().map(a -> ((ProjetAuthority) a).getProjetId())
+					.collect(Collectors.toList());
+			return projetDao.findProjetByIDs(pids).stream().map(o -> projetMapper.toRepresentation(o))
+					.collect(Collectors.toList());
+		}
 
 	}
 
