@@ -33,7 +33,7 @@ public class OuvrierDesignationController {
 	OuvrierFicheMetier ouvrierFicheMetier;
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
-	@PreAuthorize("@authoritiesService.hasAuthority(#OuvrierDesignationCommande.idFiche,'USER')")
+	@PreAuthorize("@authoritiesService.hasAuthorityFiche(#OuvrierDesignationCommande.idFiche,'USER')")
 	public ResponseEntity<Void> addOuvrierDesignation(@Valid @RequestBody OuvrierDesignationCommande dsCmd)
 			throws URISyntaxException {
 
