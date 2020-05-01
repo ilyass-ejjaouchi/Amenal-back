@@ -31,6 +31,7 @@ public class OuvrierDesignationController {
 
 	@Autowired
 	OuvrierFicheMetier ouvrierFicheMetier;
+	
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	@PreAuthorize("@authoritiesService.hasAuthorityFiche(#dsCmd.idFiche,'USER')")
