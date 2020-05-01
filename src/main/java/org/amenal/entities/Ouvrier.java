@@ -31,7 +31,7 @@ public class Ouvrier {
 	private String appreciation;
 	@Transient
 	private int nbrJours;
-	@ManyToOne
+	@ManyToOne(cascade=CascadeType.PERSIST)
 	@JoinColumn(name = "FK_QUAL")
 	private QualificationOuvrier qualification;
 

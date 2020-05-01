@@ -24,7 +24,7 @@ public class ReceptionFiche extends Fiche {
 	private String alpha = "c";
 
 
-	@OneToMany(mappedBy = "receptionfiche" , cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy = "fiche" , cascade=CascadeType.REMOVE)
 	private List<ReceptionDesignation> receptionDesignations;
 
 }

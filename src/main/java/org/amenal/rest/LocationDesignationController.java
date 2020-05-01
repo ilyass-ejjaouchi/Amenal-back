@@ -18,6 +18,7 @@ import org.amenal.rest.representation.LocationDesignationPresentation;
 import org.amenal.rest.representation.ProjetPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,28 +34,29 @@ public class LocationDesignationController {
 	@Autowired
 	LocationFicheMetier locationFicheMetier;
 
+	@PreAuthorize("@authoritiesService.hasAuthority(#projetId,'USER')")
 	@RequestMapping(value = "/projets/{projetId}/fournisseurs", method = RequestMethod.GET)
-
 	public List<FournisseurPresentation> ListerFournisseurAssoToProjet(@PathVariable Integer projetId)
 			throws URISyntaxException {
 		return locationFicheMetier.ListMaterielAssoToProjet(projetId);
 	}
 
+	@PreAuthorize(" @authoritiesService.hasAuthorityFiche(#dsCmd.idFiche ,'USER')")
 	@RequestMapping(value = "", method = RequestMethod.POST)
-
 	public ResponseEntity<Void> addLocationDesignation(@Valid @RequestBody LocationDesignationCommande dsCmd)
 			throws URISyntaxException {
 
 		LocationDesignation LocationDesignation = locationFicheMetier.addLigneDesignation(dsCmd);
 		return ResponseEntity.created(new URI("/designations/".concat(LocationDesignation.getId().toString()))).build();
 	}
-
+	
+	@PreAuthorize(" @authoritiesService.hasAuthorityDs(#locDsId ,'USER')")
 	@RequestMapping(value = "/{locDsId}", method = RequestMethod.DELETE)
 	public void SupprimerLocationDesignation(@PathVariable Integer locDsId) throws URISyntaxException {
 		locationFicheMetier.SupprimerLocationDesignation(locDsId);
 
 	}
-
+	@PreAuthorize(" @authoritiesService.hasAuthorityDs(#locDsId ,'USER')")
 	@RequestMapping(value = "/{locDsId}", method = RequestMethod.PUT)
 	public void ModifierLocationDesignation(@Valid @RequestBody LocationDesignationCommande dsCmd,
 			@PathVariable Integer locDsId) throws URISyntaxException {

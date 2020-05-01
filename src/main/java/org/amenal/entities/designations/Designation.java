@@ -15,6 +15,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import org.amenal.entities.Ouvrier;
+import org.amenal.entities.fiches.AccidentFiche;
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 
@@ -37,7 +38,11 @@ public class Designation implements Serializable {
 	
 	private int nbFile = 0;
 	private Boolean valid;
+	@ManyToOne
+	private Fiche fiche;
 
+	
+	
 	
 	
 	

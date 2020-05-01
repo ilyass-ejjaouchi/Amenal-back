@@ -12,7 +12,7 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface VisiteurDesignationMapper {
 	
-	@Mapping(target = "visiteurFiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
+	@Mapping(target = "fiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
 	VisiteurDesignation toEntity(VisiteurDesignationCommande e);
 	
 	@Mapping(target = "visiteurId", source = "e.visiteur.id"  )

@@ -68,7 +68,7 @@ public class DestinationMetier {
 					"La desitnation ne peut pas etre supprimé , elle est deja associer a un ou plusieurs projet");
 
 		d.get().getLivraisonDesignations().forEach(l -> {
-			if (!l.getLivraisonFiche().getIsValidated()) {
+			if (!l.getFiche().getIsValidated()) {
 				throw new BadRequestException(
 						"La desitnation ne peut pas etre supprimé , elle est deja associer a une fiche du projet qui ' est pas valide");
 			}
@@ -123,7 +123,7 @@ public class DestinationMetier {
 
 		if (projet.get().getDestinations().contains(d.get())) {
 			d.get().getLivraisonDesignations().forEach(l -> {
-				if (!l.getLivraisonFiche().getIsValidated() && l.getLivraisonFiche().getProjet() == projet.get())
+				if (!l.getFiche().getIsValidated() && l.getFiche().getProjet() == projet.get())
 					throw new BadRequestException(
 							"La destination ne peut pas etre supprimé , elle est deja associer a une fiche du projet qui ' est pas valide");
 			});

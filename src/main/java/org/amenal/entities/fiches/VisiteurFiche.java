@@ -23,6 +23,6 @@ private String type = FicheTypeEnum.VST.getCode();
 	
 	private String alpha = "f";
 
-	@OneToMany(mappedBy="visiteurFiche",cascade=CascadeType.REMOVE )
+	@OneToMany(mappedBy="fiche",cascade=CascadeType.REMOVE )
 	private List<VisiteurDesignation> visiteurDesignations;
 }

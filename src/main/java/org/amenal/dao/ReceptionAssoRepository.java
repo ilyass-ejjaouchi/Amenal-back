@@ -16,18 +16,18 @@ public interface ReceptionAssoRepository extends JpaRepository<ReceptionAsso, In
 	/**********************/
 	@Query("SELECT rec FROM ReceptionAsso rec WHERE rec.fournisseur =:fr and rec.article=:art and rec.article NOT IN "
 			+ "( SELECT ds.article FROM ReceptionDesignation ds "
-			+ "WHERE ds.recFournisseur=:fr and ds.article=:art and ds.receptionfiche.isValidated=false and ds.receptionfiche.projet=:projet)")
+			+ "WHERE ds.recFournisseur=:fr and ds.article=:art and ds.fiche.isValidated=false and ds.fiche.projet=:projet)")
 	ReceptionAsso findByFournisseurIdAndArticleId(@Param("fr") Fournisseur fr, @Param("art") Article art,
 			@Param("projet") Projet p);
 
 	@Query("SELECT rec FROM ReceptionAsso rec WHERE rec.fournisseur=:fr and rec.article NOT IN "
-			+ "( SELECT ds.article FROM ReceptionDesignation ds WHERE ds.recFournisseur=:fr and ds.receptionfiche.isValidated=false and ds.receptionfiche.projet=:projet)")
+			+ "( SELECT ds.article FROM ReceptionDesignation ds WHERE ds.recFournisseur=:fr and ds.fiche.isValidated=false and ds.fiche.projet=:projet)")
 	List<ReceptionAsso> findByFournisseurAndArticleNotAssoToFiche(@Param("fr") Fournisseur f,
 			@Param("projet") Projet p);
 
 	@Query("SELECT rec FROM ReceptionAsso rec WHERE rec.fournisseur=:fr and rec.article.categorie=:cat and rec.article NOT IN "
 			+ "( SELECT ds.article FROM ReceptionDesignation ds "
-			+ "WHERE ds.recFournisseur=:fr and ds.article.categorie=:cat and ds.receptionfiche.isValidated=false and ds.receptionfiche.projet=:projet)")
+			+ "WHERE ds.recFournisseur=:fr and ds.article.categorie=:cat and ds.fiche.isValidated=false and ds.fiche.projet=:projet)")
 	List<ReceptionAsso> findByCategorieAndArticleNotAssoToFiche(@Param("fr") Fournisseur f,
 			@Param("cat") CategorieArticle cat, @Param("projet") Projet p);
 

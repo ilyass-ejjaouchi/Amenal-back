@@ -18,6 +18,7 @@ import javax.persistence.Transient;
 import org.amenal.entities.Article;
 import org.amenal.entities.Ouvrier;
 import org.amenal.entities.QualificationOuvrier;
+import org.amenal.entities.fiches.Fiche;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,5 +52,12 @@ public class StockDesignation {
 	
 	@ManyToOne(cascade= CascadeType.ALL)
 	private Stock stock;
+	
+	
+	Fiche getFiche() {
+		// TODO Auto-generated method stub
+		return stock.getStockFiche();
+	}
+	
 
 }

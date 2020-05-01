@@ -19,7 +19,7 @@ public interface LocationDesignationMapper {
 	
 	LocationDesignationPresentation toRepresentation(LocationDesignation o);
 	
-	@Mapping(target = "locationFiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
+	@Mapping(target = "fiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
 	@Mapping(target = "materiel", source = "e.idMateriel" ,qualifiedByName="toMateriel" )
 	@Mapping(target = "fournisseur", source = "e.fournisseurId" ,qualifiedByName="toFournisseur" )
 	LocationDesignation toEntity(LocationDesignationCommande e);

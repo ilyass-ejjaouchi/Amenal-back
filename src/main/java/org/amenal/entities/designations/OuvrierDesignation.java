@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import org.amenal.entities.Ouvrier;
+import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.OuvrierFiche;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -47,8 +48,7 @@ public class OuvrierDesignation extends Designation implements Serializable {
 
 	private Boolean epi;
 
-	@ManyToOne()
-	private OuvrierFiche OuvrierFiche;
+
 	
 	@ManyToOne()
 	ReceptionDesignation receptionDesignationOuv;

@@ -24,7 +24,7 @@ public class OuvrierFiche extends Fiche implements Serializable {
 	
 	private String alpha = "a";
 	
-	@OneToMany(mappedBy="OuvrierFiche",cascade=CascadeType.REMOVE )
+	@OneToMany(mappedBy="fiche",cascade=CascadeType.REMOVE )
 	private List<OuvrierDesignation> ouvrierDesignation;
 	
 	
@@ -34,7 +34,7 @@ public class OuvrierFiche extends Fiche implements Serializable {
 			ouvrierDesignation = new ArrayList<OuvrierDesignation>();
 		}
 		ouvrierDesignation.add(Designation);
-		Designation.setOuvrierFiche(this);
+		Designation.setFiche(this);
 	}
 	@Override
 	public String toString() {

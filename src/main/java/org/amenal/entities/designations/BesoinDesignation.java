@@ -11,6 +11,7 @@ import javax.persistence.Table;
 import org.amenal.entities.Article;
 import org.amenal.entities.QualificationOuvrier;
 import org.amenal.entities.fiches.BesoinFiche;
+import org.amenal.entities.fiches.Fiche;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,8 +42,7 @@ public class BesoinDesignation extends Designation {
 	@OneToOne
 	private QualificationOuvrier qualification;
 
-	@ManyToOne
-	private BesoinFiche besoinFiche;
+
 
 	public String getDesignation() {
 		return designation;
@@ -67,6 +67,7 @@ public class BesoinDesignation extends Designation {
 	public void setObservation(String observation) {
 		this.observation = observation.toUpperCase();
 	}
+	
 	
 
 }

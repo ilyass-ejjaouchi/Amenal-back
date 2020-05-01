@@ -20,7 +20,7 @@ public interface LivraisonDesignationMapper {
 	LivraisonDesignationPresentation toRepresentation(LivraisonDesignation e);
 
 	@Mapping(source = "e.idMateriel", target = "articleLvr", qualifiedByName = "toArticle")
-	@Mapping(target = "livraisonFiche", source = "e.idFiche", qualifiedByName = "toFiche")
+	@Mapping(target = "fiche", source = "e.idFiche", qualifiedByName = "toFiche")
 	@Mapping(target = "destination", source = "e.destinationId", qualifiedByName = "toDestination")
 	LivraisonDesignation toEntity(LivraisonDesignationCommande e);
 

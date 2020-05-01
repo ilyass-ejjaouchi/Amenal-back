@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface DocDesignationRepository extends JpaRepository<DocDesignation, Integer> {
 	
-	@Query("select d from DocDesignation d where d.document=:d and d.docFiche.isValidated=false")
+	@Query("select d from DocDesignation d where d.document=:d and d.fiche.isValidated=false")
 	DocDesignation findByDocument(@Param("d") Document d);
 
 }

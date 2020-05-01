@@ -55,7 +55,7 @@ public class OuvrierFicheMetier {
 
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
 
-		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getFiche().getId());
 		if (!ouvFiche.isPresent()) {
 			throw new NotFoundException("Fiche introuvable");
 		}
@@ -93,7 +93,7 @@ public class OuvrierFicheMetier {
 
 			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(ouvFiche.get().getDate(),ouvFiche.get().getProjet());
 
-			rec.setReceptionfiche(f);
+			rec.setFiche(f);
 
 			receptionDesignationRepository.save(rec);
 			des.setReceptionDesignationOuv(rec);
@@ -112,7 +112,7 @@ public class OuvrierFicheMetier {
 
 		OuvrierDesignation des = ouvrierDesignationMapper.toEntity(dsCmd);
 		
-		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getOuvrierFiche().getId());
+		Optional<OuvrierFiche> ouvFiche = ouvrierFicheRepository.findById(des.getFiche().getId());
 		if (!ouvFiche.isPresent()) {
 			throw new NotFoundException("Fiche introuvable");
 		}
@@ -125,7 +125,7 @@ public class OuvrierFicheMetier {
 
 		Optional<OuvrierDesignation> odDs = this.ouvrierDesignationRepository.findById(OuvDsId);
 
-		if (odDs.get().getOuvrierFiche().getIsValidated()) {
+		if (odDs.get().getFiche().getIsValidated()) {
 			throw (new BadRequestException("La fiche associer a cette ligne est deja validé!"));
 
 		}
@@ -153,7 +153,7 @@ public class OuvrierFicheMetier {
 
 			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(ouvFiche.get().getDate(),ouvFiche.get().getProjet());
 
-			rec.setReceptionfiche(f);
+			rec.setFiche(f);
 
 			receptionDesignationRepository.save(rec);
 			des.setReceptionDesignationOuv(rec);
@@ -179,7 +179,7 @@ public class OuvrierFicheMetier {
 
 		if (!odDs.isPresent())
 			throw (new NotFoundException("designation introuvable!"));
-		if (odDs.get().getOuvrierFiche().getIsValidated()) {
+		if (odDs.get().getFiche().getIsValidated()) {
 			throw (new BadRequestException("La fiche associer a cette ligne est deja validé!"));
 		}
 

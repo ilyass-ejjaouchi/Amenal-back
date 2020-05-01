@@ -28,7 +28,7 @@ public class AccidentFiche  extends Fiche implements Serializable{
 
 	
 	
-	@OneToMany(mappedBy = "accidentFiche" , cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "fiche" , cascade = CascadeType.ALL)
 	private List<AccidentDesignation> accDesignations = new ArrayList<AccidentDesignation>();
 
 }

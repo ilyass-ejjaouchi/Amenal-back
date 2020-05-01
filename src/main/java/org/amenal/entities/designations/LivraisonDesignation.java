@@ -8,6 +8,7 @@ import javax.persistence.OneToOne;
 import org.amenal.entities.Article;
 import org.amenal.entities.Destination;
 import org.amenal.entities.Fournisseur;
+import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.LivraisonFiche;
 
 import lombok.Getter;
@@ -33,7 +34,6 @@ public class LivraisonDesignation extends Designation {
 	
 	private String observation;
 	
-	@ManyToOne
-	private LivraisonFiche livraisonFiche;
 
+	
 }

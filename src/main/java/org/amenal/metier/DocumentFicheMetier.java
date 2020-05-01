@@ -96,7 +96,7 @@ public class DocumentFicheMetier {
 
 		docc.get().setIntitule(intitule);
 		docc.get().getDocDesignations().forEach(l -> {
-			if (!l.getDocFiche().getIsValidated()) {
+			if (!l.getFiche().getIsValidated()) {
 				l.setIntitule(docc.get().getIntitule());
 				docDesignationRepository.save(l);
 			}
@@ -166,18 +166,18 @@ public class DocumentFicheMetier {
 
 			DocFiche f = docFicheRepository.findLastDocFicheByProjet(projet.get());
 
-			ds.setDocFiche(f);
+			ds.setFiche(f);
 
 			f.getDocDesignations().add(ds);
 		}
 	}
 
-	public void updateDocumentDesignationDipo(Integer id) {
+	public void updateDocumentDesignationDisponibilite(Integer id) {
 		Optional<DocDesignation> ds = docDesignationRepository.findById(id);
 
 		if (!ds.isPresent())
 			throw new BadRequestException("Ceette designation est inexistant!");
-		else if (ds.get().getDocFiche().getIsValidated())
+		else if (ds.get().getFiche().getIsValidated())
 			throw new BadRequestException("Cette fiche est deja validé!");
 
 		if (ds.get().getDisponibilite())
@@ -246,7 +246,7 @@ public class DocumentFicheMetier {
 					ds.setDocument(doc);
 					ds.setIntitule(doc.getIntitule());
 					ds.setDisponibilite(false);
-					ds.setDocFiche(dic);
+					ds.setFiche(dic);
 					dic.getDocDesignations().add(ds);
 				});
 

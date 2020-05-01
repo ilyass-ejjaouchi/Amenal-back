@@ -10,6 +10,7 @@ import javax.persistence.OneToOne;
 
 import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
+import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.LocationFiche;
 
 import lombok.Getter;
@@ -39,21 +40,11 @@ public class LocationDesignation extends Designation {
 	
 	@ManyToOne
 	private Fournisseur fournisseur;
-
-	@ManyToOne
-	private LocationFiche locationFiche;
 	
 	@ManyToOne()
 	ReceptionDesignation receptionDesignationLoc;
-
-	@Override
-	public String toString() {
-		return "LocationDesignation [libelle=" + libelle + ", unite=" + unite + ", tempsDebut=" + tempsDebut
-				+ ", tempsFin=" + tempsFin + ", quantite=" + quantite + ", fournisseurNom=" + fournisseurNom
-				+ ", observation=" + observation + ", article=" + materiel.getId() + ", fournisseur=" + fournisseur.getId()
-				+ ", locationFiche=" + locationFiche.getId() + "]";
-	}
 	
 	
 
+	
 }

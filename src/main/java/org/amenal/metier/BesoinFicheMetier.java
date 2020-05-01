@@ -118,12 +118,12 @@ public class BesoinFicheMetier {
 				bs.setDesignation(art.get().getDesignation());
 			}
 
-		Optional<BesoinFiche> fiche = ficheBesoinRepository.findById(bs.getBesoinFiche().getId());
+		Optional<BesoinFiche> fiche = ficheBesoinRepository.findById(bs.getFiche().getId());
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("Fiche introuvable!");
 
-		bs.setBesoinFiche(fiche.get());
+		bs.setFiche(fiche.get());
 
 		besionDesignationRepository.save(bs);
 
@@ -150,12 +150,12 @@ public class BesoinFicheMetier {
 			}
 		}
 
-		Optional<BesoinFiche> fiche = ficheBesoinRepository.findById(bs.getBesoinFiche().getId());
+		Optional<BesoinFiche> fiche = ficheBesoinRepository.findById(bs.getFiche().getId());
 
 		if (!fiche.isPresent())
 			throw new NotFoundException("Fiche introuvable!");
 
-		bs.setBesoinFiche(fiche.get());
+		bs.setFiche(fiche.get());
 		bs.setId(id);
 
 		besionDesignationRepository.save(bs);
@@ -232,7 +232,7 @@ public class BesoinFicheMetier {
 					ds.setDocument(doc);
 					ds.setIntitule(doc.getIntitule());
 					ds.setDisponibilite(false);
-					ds.setDocFiche(dic);
+					ds.setFiche(dic);
 					dic.getDocDesignations().add(ds);
 				});
 				dic.setDate(date);

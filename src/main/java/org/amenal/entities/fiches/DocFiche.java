@@ -26,6 +26,6 @@ public class DocFiche extends Fiche implements Serializable {
 	private String alpha = "g";
 
 
-	@OneToMany(mappedBy = "docFiche" , cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "fiche" , cascade = CascadeType.ALL)
 	private List<DocDesignation> docDesignations = new ArrayList<DocDesignation>();
 }

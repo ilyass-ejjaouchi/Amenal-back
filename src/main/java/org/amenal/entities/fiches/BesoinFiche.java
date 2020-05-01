@@ -24,7 +24,7 @@ public class BesoinFiche extends Fiche implements Serializable {
 	private String alpha = "e";
 
 
-	@OneToMany(mappedBy = "besoinFiche")
+	@OneToMany(mappedBy = "fiche")
 	private List<BesoinDesignation> besoinDesignations;
 
 }

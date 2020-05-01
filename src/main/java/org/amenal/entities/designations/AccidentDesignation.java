@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 
 import org.amenal.entities.fiches.AccidentFiche;
+import org.amenal.entities.fiches.Fiche;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +22,4 @@ public class AccidentDesignation extends Designation {
 	private String objet;
 	private LocalTime heure;
 	
-	@ManyToOne
-	private AccidentFiche accidentFiche;
-
 }

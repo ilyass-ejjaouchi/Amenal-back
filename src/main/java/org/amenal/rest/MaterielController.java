@@ -14,6 +14,7 @@ import org.amenal.rest.representation.MaterielPresentation;
 import org.amenal.rest.representation.OuvrierPresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,27 +33,27 @@ public class MaterielController {
 
 	@RequestMapping(value = "", method = RequestMethod.POST)
 
+	@PreAuthorize("@authoritiesService.hasAuthority('ADMIN')")
 	public ResponseEntity<Void> addMateriel(@Valid @RequestBody MaterielCommande matCmd) throws URISyntaxException {
 		 materielMetier.ajouterMateriel(matCmd);
 		return ResponseEntity.created(new URI("/materiels/")).build();
 	}
 
+	@PreAuthorize(" @authoritiesService.hasAuthority('ADMIN') ")
 	@RequestMapping(value = "", method = RequestMethod.GET)
-
 	public List<MaterielPresentation> ListeMateriel() throws URISyntaxException {
 		return materielMetier.ListerMateriel();
 	}
 
-	
+	@PreAuthorize("@authoritiesService.hasAuthority('ADMIN')")
 	  @RequestMapping(value = "/{matId}", method = RequestMethod.DELETE) 
 	  public void deleteMateriel(@PathVariable Integer matId ) throws URISyntaxException {
 		  materielMetier.SupprimerMateriel(matId);
 	  
 	  }
 	 
-	
+	@PreAuthorize("@authoritiesService.hasAuthority('ADMIN')")
 	@RequestMapping(value = "/{matID}", method = RequestMethod.PUT)
-
 	public ResponseEntity<Void> updateMateriel(@PathVariable Integer matID, @Valid @RequestBody MaterielCommande matCmd)
 			throws URISyntaxException {
 		materielMetier.modifierMateriel(matCmd, matID);

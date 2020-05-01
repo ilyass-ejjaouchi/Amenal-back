@@ -1,6 +1,5 @@
 package org.amenal.entities.designations;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +14,7 @@ import javax.persistence.OneToMany;
 
 import org.amenal.entities.Article;
 import org.amenal.entities.Fournisseur;
+import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.ReceptionFiche;
 
 import lombok.Getter;
@@ -31,15 +31,15 @@ public class ReceptionDesignation extends Designation {
 	private Integer id;
 	private String libelle;
 	private String unitee;
-	private String categorie; 
+	private String categorie;
 	private Double quantite;
 	private String fournisseurNom;
 	private String observation;
-	
-	@OneToMany(mappedBy="receptionDesignationOuv" , cascade = CascadeType.REMOVE)
+
+	@OneToMany(mappedBy = "receptionDesignationOuv", cascade = CascadeType.REMOVE)
 	List<OuvrierDesignation> ouvrierDesignations = new ArrayList<OuvrierDesignation>();
-	
-	@OneToMany(mappedBy="receptionDesignationLoc" , cascade = CascadeType.REMOVE)
+
+	@OneToMany(mappedBy = "receptionDesignationLoc", cascade = CascadeType.REMOVE)
 	List<LocationDesignation> locationDesignations = new ArrayList<LocationDesignation>();
 
 	@ManyToOne
@@ -47,15 +47,5 @@ public class ReceptionDesignation extends Designation {
 
 	@ManyToOne
 	private Fournisseur recFournisseur;
-	
-	@ManyToOne
-	private ReceptionFiche receptionfiche;
-
-	@Override
-	public String toString() {
-		return "ReceptionDesignation [id=" + id + ", libelle=" + libelle + ", unite=" + unitee + "]";
-	}
-	
-	
 
 }

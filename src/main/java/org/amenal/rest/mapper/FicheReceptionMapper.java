@@ -59,7 +59,7 @@ public interface FicheReceptionMapper {
 						ReceptionDesignationPresentation ds = new ReceptionDesignationPresentation();
 						ds.setDesignation(ouvDs.getQualification());
 						ds.setUnite("H");
-						ds.setQuantite(ouvDs.getTravail().doubleValue());
+						ds.setQuantite(ouvDs.getTravail()== null ? -1 : ouvDs.getTravail().doubleValue());
 						ds.setFournisseurNom("PAS DE FOURNISSEUR");
 						ds.setObservation("Rien a signaler");
 						cat.getReceptionDesignation().add(ds);

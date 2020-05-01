@@ -90,7 +90,7 @@ public class FicheVisiteurMetier {
 		if (!ff.isPresent())
 			throw new BadRequestException("la fiche est inrouvable");
 
-		ds.setVisiteurFiche(ff.get());
+		ds.setFiche(ff.get());
 		if (vstCmd.getVisiteurId() != null) {
 			Optional<Visiteur> vs = visiteurRepository.findById(vstCmd.getVisiteurId());
 			if (!vs.isPresent())
@@ -110,7 +110,7 @@ public class FicheVisiteurMetier {
 		if (!ff.isPresent())
 			throw new BadRequestException("la fiche est introuvable");
 
-		ds.setVisiteurFiche(ff.get());
+		ds.setFiche(ff.get());
 		if (ds.getVisiteur() != null) {
 			Optional<Visiteur> vs = visiteurRepository.findById(vstCmd.getVisiteurId());
 			if (!vs.isPresent())
@@ -243,7 +243,7 @@ public class FicheVisiteurMetier {
 					ds.setDocument(doc);
 					ds.setIntitule(doc.getIntitule());
 					ds.setDisponibilite(false);
-					ds.setDocFiche(dic);
+					ds.setFiche(dic);
 					dic.getDocDesignations().add(ds);
 				});
 

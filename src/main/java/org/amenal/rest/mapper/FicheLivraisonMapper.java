@@ -42,7 +42,6 @@ public interface FicheLivraisonMapper {
 			if (!livDs.isEmpty()) {
 				c.setCategorie(livDs.get(0).getCategorieLv());
 				cats.add(c);
-				System.out.println("ddddddddddddddddddddddddddddddd : "+cats.get(0).getCategorie());
 				int i = 0;
 				for (LivraisonDesignation d : livDs) {
 					if (d.getCategorieLv().equals(cats.get(i).getCategorie())) {

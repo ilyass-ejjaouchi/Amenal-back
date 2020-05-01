@@ -14,7 +14,7 @@ public interface BesoinDesignationMapper {
 
 	BesoinDesignationPresentation toRepresentation(BesoinDesignation o);
 
-	@Mapping(target = "besoinFiche", source = "e.idFiche", qualifiedByName = "toFiche")
+	@Mapping(target = "fiche", source = "e.idFiche", qualifiedByName = "toFiche")
 	BesoinDesignation toEntity(BesoinDesignationCommande e);
 
 	@Named("toFiche")

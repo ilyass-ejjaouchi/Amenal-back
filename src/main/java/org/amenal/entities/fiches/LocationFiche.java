@@ -29,7 +29,7 @@ public class LocationFiche extends Fiche implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 
-	@OneToMany(mappedBy="locationFiche" , cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy="fiche" , cascade=CascadeType.REMOVE)
 	private List<LocationDesignation> locationDesignations ;
 	
 

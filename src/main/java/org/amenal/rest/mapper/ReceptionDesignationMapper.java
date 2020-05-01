@@ -15,7 +15,7 @@ import org.mapstruct.Named;
 public interface ReceptionDesignationMapper {
 	
 	
-	@Mapping(target = "receptionfiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
+	@Mapping(target = "fiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
 
 	ReceptionDesignation toEntity(ReceptionDesignationCommande e);
 

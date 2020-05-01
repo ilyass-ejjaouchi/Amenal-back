@@ -561,11 +561,11 @@ public class ReceptionFicheMetier {
 		Optional<ReceptionDesignation> ds = receptionDesignationRepository.findById(Rec);
 		if (!ds.isPresent())
 			throw new NotFoundException("La ligne [ " + Rec + " ] est introuvable !");
-		else if (ds.get().getReceptionfiche().getIsValidated())
+		else if (ds.get().getFiche().getIsValidated())
 			throw new BadRequestException("La fiche est deja valider!");
 
 		List<LivraisonDesignation> ll = livraisonDesignationRepository
-				.findDesignationByArticleAndProjet(ds.get().getArticle(), ds.get().getReceptionfiche().getProjet());
+				.findDesignationByArticleAndProjet(ds.get().getArticle(), ds.get().getFiche().getProjet());
 
 		if (!ll.isEmpty())
 			throw new BadRequestException(

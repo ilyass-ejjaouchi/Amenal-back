@@ -15,21 +15,21 @@ import org.springframework.data.repository.query.Param;
 
 public interface OuvrierDesignationRepository extends JpaRepository<OuvrierDesignation, Integer> {
 
-	@Query("select ds.ouvrier from OuvrierDesignation ds WHERE ds.OuvrierFiche.id=:ficheID ")
+	@Query("select ds.ouvrier from OuvrierDesignation ds WHERE ds.fiche.id=:ficheID ")
 	List<Ouvrier> findOuvrierByFiche(@Param("ficheID") Integer ficheID);
 
 	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier.id=:ouvID ")
 	List<OuvrierDesignation> findDesignationByOuvrierID(@Param("ouvID") Integer ouvID);
 
-	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier.id=:ouvID and OuvrierFiche.isValidated = false ")
+	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier.id=:ouvID and fiche.isValidated = false ")
 	List<OuvrierDesignation> findDesignationByOuvrierIDAndFicheNotValid(@Param("ouvID") Integer ouvID);
 	
-	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier=:ouv and ds.OuvrierFiche.isValidated = false and ds.OuvrierFiche.projet=:p")
+	@Query("select ds from OuvrierDesignation ds WHERE ds.ouvrier=:ouv and ds.fiche.isValidated = false and ds.fiche.projet=:p")
 	List<OuvrierDesignation> findDesignationByOuvrierIDAndProjetAndFicheNotValid(@Param("ouv") Ouvrier ouv,
 			@Param("p") Projet p);
 
 	@Query("select quali  as qual , sum(ds.travail) as qt  from OuvrierDesignation ds join ds.ouvrier.qualification quali WHERE"
-			+ " ds.OuvrierFiche.projet.id=:projetID AND ds.travail IS NOT NULL AND ds.OuvrierFiche.date =:date group by  quali ")
+			+ " ds.fiche.projet.id=:projetID AND ds.travail IS NOT NULL AND ds.fiche.date =:date group by  quali ")
 	List<Map<String, Object>> findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
 			@Param("date") LocalDate date);
 

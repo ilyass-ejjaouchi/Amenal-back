@@ -20,6 +20,7 @@ import javax.persistence.OneToMany;
 
 import org.amenal.entities.fiches.Fiche;
 import org.amenal.entities.fiches.FicheTypeEnum;
+import org.amenal.entities.security.AppUser;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -72,6 +73,9 @@ public class Projet implements Serializable {
 			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
 					@JoinColumn(name = "fk_visiteur", nullable = true) })
 	private List<Visiteur> visiteurs = new ArrayList<Visiteur>();
+	
+	
+	
 
 	public void addOuvrier(Ouvrier ouvrier) {
 		// TODO Auto-generated method stub

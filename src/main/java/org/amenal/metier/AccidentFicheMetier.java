@@ -80,7 +80,7 @@ public class AccidentFicheMetier {
 		AccidentDesignation acc = new AccidentDesignation();
 		acc.setObjet(cmd.getObjet().toUpperCase());
 		acc.setHeure(cmd.getHeure());
-		acc.setAccidentFiche(accFiche.get());
+		acc.setFiche(accFiche.get());
 		accidentDesignationRepository.save(acc);
 
 	}
@@ -95,7 +95,7 @@ public class AccidentFicheMetier {
 		AccidentDesignation acc = new AccidentDesignation();
 		acc.setObjet(cmd.getObjet().toUpperCase());
 		acc.setHeure(cmd.getHeure());
-		acc.setAccidentFiche(accFiche.get());
+		acc.setFiche(accFiche.get());
 		acc.setId(id);
 		accidentDesignationRepository.save(acc);
 	}
@@ -155,7 +155,7 @@ public class AccidentFicheMetier {
 					ds.setDocument(doc);
 					ds.setIntitule(doc.getIntitule());
 					ds.setDisponibilite(false);
-					ds.setDocFiche(dic);
+					ds.setFiche(dic);
 					dic.getDocDesignations().add(ds);
 				});
 

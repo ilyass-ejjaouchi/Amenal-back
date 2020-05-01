@@ -82,7 +82,7 @@ public class LocationFicheMetier {
 	public LocationDesignation addLigneDesignation(@Valid LocationDesignationCommande dsCmd) {
 		// TODO Auto-generated method stub
 		LocationDesignation locDs = locationDesignationMapper.toEntity(dsCmd);
-		Integer ficheId = locDs.getLocationFiche().getId();
+		Integer ficheId = locDs.getFiche().getId();
 		Optional<LocationFiche> fiche = locationFicheRepository.findById(ficheId);
 		Optional<Article> article = articleRepository.findById(locDs.getMateriel().getId());
 		Optional<Fournisseur> fr = fournisseurRepository.findById(locDs.getFournisseur().getId());
@@ -100,7 +100,7 @@ public class LocationFicheMetier {
 		locDs.setLibelle(article.get().getDesignation());
 		locDs.setUnite(article.get().getUnite().getUnite());
 		locDs.setFournisseurNom(fr.get().getFournisseurNom());
-		locDs.setLocationFiche(fiche.get());
+		locDs.setFiche(fiche.get());
 		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
@@ -114,7 +114,7 @@ public class LocationFicheMetier {
 
 			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate(),fiche.get().getProjet());
 
-			rec.setReceptionfiche(f);
+			rec.setFiche(f);
 
 			receptionDesignationRepository.save(rec);
 			locDs.setReceptionDesignationLoc(rec);
@@ -152,7 +152,7 @@ public class LocationFicheMetier {
 		if (!ds.isPresent())
 			throw new NotFoundException("La ligne [ " + locDsId + " ] est introuvable !");
 
-		if (ds.get().getLocationFiche().getIsValidated())
+		if (ds.get().getFiche().getIsValidated())
 			throw new BadRequestException("La fiche est deja valide");
 
 		if (ds.get().getReceptionDesignationLoc().getOuvrierDesignations().size() == 1) {
@@ -165,7 +165,7 @@ public class LocationFicheMetier {
 		// TODO Auto-generated method stub
 
 		LocationDesignation locDs = locationDesignationMapper.toEntity(dsCmd);
-		Integer ficheId = locDs.getLocationFiche().getId();
+		Integer ficheId = locDs.getFiche().getId();
 		Optional<LocationFiche> fiche = locationFicheRepository.findById(ficheId);
 		Optional<Article> article = articleRepository.findById(locDs.getMateriel().getId());
 		Optional<Fournisseur> fr = fournisseurRepository.findById(locDs.getFournisseur().getId());
@@ -183,7 +183,7 @@ public class LocationFicheMetier {
 		locDs.setLibelle(article.get().getDesignation());
 		locDs.setUnite(article.get().getUnite().getUnite());
 		locDs.setFournisseurNom(fr.get().getFournisseurNom());
-		locDs.setLocationFiche(fiche.get());
+		locDs.setFiche(fiche.get());
 		locDs.setMateriel(article.get());
 		locDs.setFournisseur(fr.get());
 
@@ -198,7 +198,7 @@ public class LocationFicheMetier {
 			ReceptionFiche f = receptionFicheRepository.findByDateAndProjet(fiche.get().getDate(),fiche.get().getProjet());
 
 
-			rec.setReceptionfiche(f);
+			rec.setFiche(f);
 
 			receptionDesignationRepository.save(rec);
 			locDs.setReceptionDesignationLoc(rec);

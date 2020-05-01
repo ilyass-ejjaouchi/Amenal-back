@@ -99,8 +99,8 @@ public class LivraisonFicheMetier {
 		if (!dst.isPresent())
 			throw new NotFoundException("La destination [ " + ds.getArticleLvr().getId() + " ] est introuvable!");
 
-		LivraisonDesignation dss = livraisonDesignationRepository.findByArticleLvrAndDestinationAndLivraisonFicheId(
-				art.get(), dst.get(), ds.getLivraisonFiche().getId());
+		LivraisonDesignation dss = livraisonDesignationRepository.findByArticleLvrAndDestinationAndFicheId(
+				art.get(), dst.get(), ds.getFiche().getId());
 
 		if (dss == null) {
 			ds.setArticleLvr(art.get());
@@ -125,8 +125,8 @@ public class LivraisonFicheMetier {
 		if (!dst.isPresent())
 			throw new NotFoundException("La destination [ " + ds.getArticleLvr().getId() + " ] est introuvable!");
 
-		LivraisonDesignation dss = livraisonDesignationRepository.findByArticleLvrAndDestinationAndLivraisonFicheId(
-				art.get(), dst.get(), ds.getLivraisonFiche().getId());
+		LivraisonDesignation dss = livraisonDesignationRepository.findByArticleLvrAndDestinationAndFicheId(
+				art.get(), dst.get(), ds.getFiche().getId());
 
 		if (dss == null) {
 			ds.setArticleLvr(art.get());
@@ -202,7 +202,7 @@ public class LivraisonFicheMetier {
 					ds.setDocument(doc);
 					ds.setIntitule(doc.getIntitule());
 					ds.setDisponibilite(false);
-					ds.setDocFiche(dic);
+					ds.setFiche(dic);
 					dic.getDocDesignations().add(ds);
 				});
 				dic.setProjet(p);

@@ -25,7 +25,7 @@ public class LivraisonFiche extends Fiche{
 	private String alpha = "d";
 
 
-	@OneToMany(mappedBy = "livraisonFiche" , cascade=CascadeType.REMOVE)
+	@OneToMany(mappedBy = "fiche" , cascade=CascadeType.REMOVE)
 	private List<LivraisonDesignation> livraisonDesignations;
 
 }

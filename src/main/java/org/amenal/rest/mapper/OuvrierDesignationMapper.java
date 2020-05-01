@@ -14,7 +14,7 @@ import org.mapstruct.Named;
 public interface OuvrierDesignationMapper {
 
 	
-	@Mapping(target = "ouvrierFiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
+	@Mapping(target = "fiche", source = "e.idFiche" ,qualifiedByName="toFiche" )
 	@Mapping(target = "ouvrier", source = "e.idOuvrier" ,qualifiedByName="toOuvrier" )
 	OuvrierDesignation toEntity(OuvrierDesignationCommande e);
 	
