@@ -48,13 +48,13 @@ public class DocumentController {
 		this.documentFicheMetier.updateDocumentDesignationDisponibilite( did);
 	}
 	
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize(" @authoritiesService.hasAuthority('ADMIN')")
 	@RequestMapping(value = "/{did}", method = RequestMethod.PUT)
 	public void updateDocument( @Valid @RequestBody String intitule,@PathVariable Integer did) throws URISyntaxException {
 		this.documentFicheMetier.UpdateDocument(intitule, did);
 	}
 
-	@PreAuthorize("hasAuthority('ADMIN')")
+	@PreAuthorize(" @authoritiesService.hasAuthority('ADMIN')")
 	@RequestMapping(value = "/{did}", method = RequestMethod.DELETE)
 	public void deleteDocument( @PathVariable Integer did) throws URISyntaxException {
 		this.documentFicheMetier.DeleteDocument(did);
