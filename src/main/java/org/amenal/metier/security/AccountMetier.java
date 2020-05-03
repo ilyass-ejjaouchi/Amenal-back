@@ -109,6 +109,7 @@ public class AccountMetier {
 			asso.setProjet(p.get());
 			asso.setUser(user);
 			asso.setRole(role);
+			System.out.println(asso.getUser().getUsername()+"   "+asso.getRole().getRole());
 			projetAppUserRoleAssoRepository.save(asso);
 		}
 	}

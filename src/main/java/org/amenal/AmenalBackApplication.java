@@ -41,7 +41,7 @@ public class AmenalBackApplication {
 
 		return args -> {
 
-		/*	AppRole admin = new AppRole();
+			AppRole admin = new AppRole();
 			admin.setRole("ADMIN");
 			appRoleRepository.save(admin);
 
@@ -57,7 +57,7 @@ public class AmenalBackApplication {
 			rootUser.setUsername("root");
 			rootUser.setPassword(bCryptPasswordEncoder.encode("root"));
 
-			appUserRepository.save(rootUser);*/
+			appUserRepository.save(rootUser);
 
 		};
 	}
