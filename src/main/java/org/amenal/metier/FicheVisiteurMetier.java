@@ -107,6 +107,7 @@ public class FicheVisiteurMetier {
 		
 		int i = 1;
 		for (Row row : dataSheet) {
+			
 			if (i > 1) {
 				Visiteur vst = new Visiteur();
 
