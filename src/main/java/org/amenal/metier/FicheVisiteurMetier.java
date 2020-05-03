@@ -120,7 +120,7 @@ public class FicheVisiteurMetier {
 					throw new BadRequestException(
 							"la colonne ORGANISEME doit etre en format chacractaire (" + i + ",1)");
 
-				if (visiteurRepository.findByNomAndOrganime(vst.getNom(), vst.getOrganisme()) == null)
+				if (visiteurRepository.findByNomAndOrganisme(vst.getNom(), vst.getOrganisme()) == null)
 					visiteurRepository.save(vst);
 			}
 			i++;
