@@ -97,6 +97,12 @@ public class AccountMetier {
 	}
 
 	public void grantRoleOfProjetToUser(UserRoleProjetCommande cmd) {
+		
+		for(AppRole role : roleRepository.findAll()) {
+			System.out.println();
+			System.out.println(role.getRole());
+
+		}
 
 		ProjetAppUserRoleAsso asso = projetAppUserRoleAssoRepository
 				.findByUserUsernameAndProjetIdAndRoleRole(cmd.getUsername(), cmd.getPid(), cmd.getRole());
