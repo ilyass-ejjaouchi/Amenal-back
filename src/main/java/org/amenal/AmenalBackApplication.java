@@ -55,6 +55,7 @@ public class AmenalBackApplication {
 			AppUser rootUser = new AppUser();
 			rootUser.setRoot(true);
 			rootUser.setUsername("root");
+			rootUser.setPasswordDoted("....");
 			rootUser.setPassword(bCryptPasswordEncoder.encode("root"));
 
 			appUserRepository.save(rootUser);
