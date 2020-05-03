@@ -41,20 +41,23 @@ public class AmenalBackApplication {
 
 		return args -> {
 
-		/*	AppRole admin = new AppRole();
+			AppRole admin = new AppRole();
 			admin.setRole("ADMIN");
 			appRoleRepository.save(admin);
 
 			AppRole user = new AppRole();
 			admin.setRole("USER");
 			appRoleRepository.save(user);
+			AppRole vist = new AppRole();
+			admin.setRole("VISITEUR");
+			appRoleRepository.save(vist);
 
 			AppUser rootUser = new AppUser();
 			rootUser.setRoot(true);
 			rootUser.setUsername("root");
 			rootUser.setPassword(bCryptPasswordEncoder.encode("root"));
 
-			appUserRepository.save(rootUser);*/
+			appUserRepository.save(rootUser);
 
 		};
 	}
