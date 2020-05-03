@@ -47,12 +47,17 @@ public class AccountMetier {
 		List<UserProjetRolePresentation> usersPrs = new ArrayList<UserProjetRolePresentation>();
 
 		for (AppUser u : users) {
+
+			
+			System.out.println();
+			System.out.println(u.getUsername());
 			
 			UserProjetRolePresentation user = new UserProjetRolePresentation();
 			user.setUsername(u.getUsername());
 			List<RoleProjetPresentation> rprs = new ArrayList<RoleProjetPresentation>();
 			
 			for (ProjetAppUserRoleAsso r : u.getRoles()) {
+				System.out.println(r.getRole().getRole());
 				RoleProjetPresentation rr = new RoleProjetPresentation();
 				rr.setId(r.getId());
 				rr.setProjet(r.getProjet().getAbreveation());
