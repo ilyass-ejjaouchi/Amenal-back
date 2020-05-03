@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 
 import org.amenal.entities.Projet;
+import org.amenal.metier.MaterielMetier;
 import org.amenal.metier.OuvrierMetier;
 import org.amenal.rest.commande.ProjetCommande;
 import org.apache.poi.EncryptedDocumentException;
@@ -28,8 +29,11 @@ public class ImportXslController {
 
 	@Autowired
 	OuvrierMetier ouvrierMetier;
+	
+	@Autowired
+	MaterielMetier materielMetier;
 
-	@RequestMapping(value = "", method = RequestMethod.POST)
+	@RequestMapping(value = "/ouvriers", method = RequestMethod.POST)
 	public ResponseEntity<Void> importerOuvrier(@RequestParam("excelFile") MultipartFile excelFile)
 			throws URISyntaxException {
 		
@@ -39,7 +43,19 @@ public class ImportXslController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return ResponseEntity.created(new URI("/xsl/ouvrier")).build();
+		return ResponseEntity.created(new URI("/xsl/ouvriers")).build();
+	}
+	@RequestMapping(value = "/materiels", method = RequestMethod.POST)
+	public ResponseEntity<Void> importerMateriel(@RequestParam("excelFile") MultipartFile excelFile)
+			throws URISyntaxException {
+		
+		try {
+			materielMetier.emportExcelFile(excelFile);
+		} catch (EncryptedDocumentException | InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.created(new URI("/xsl/materiels")).build();
 	}
 
 }

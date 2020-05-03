@@ -11,5 +11,5 @@ public interface VisiteurRepository extends JpaRepository<Visiteur, Integer>{
 	
 	@Query("select v from Visiteur v join v.projets p where p.id =:id")
 	List<Visiteur> findByProjetId(@Param("id") Integer id);
-
+	Visiteur findByNomAndOrganime(String nom , String org);
 }

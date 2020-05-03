@@ -28,10 +28,10 @@ public class Article {
 	private Integer id;
 	private String designation;
 	private Boolean stockable;
-	@ManyToOne
-	@JoinColumn(name = "UNITE_ID")
+	@ManyToOne(cascade=CascadeType.PERSIST)
+	@JoinColumn(name = "UNITE_ID" )
 	private Unite unite;
-	@ManyToOne(cascade=CascadeType.DETACH)
+	@ManyToOne(cascade= {CascadeType.DETACH , CascadeType.PERSIST})
 	@JoinColumn(name = "FK_CAT_ID")
 	private CategorieArticle categorie;
 

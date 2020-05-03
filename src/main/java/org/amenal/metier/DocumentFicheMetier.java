@@ -1,5 +1,6 @@
 package org.amenal.metier;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,6 +21,7 @@ import org.amenal.dao.LivraisonFicheRepository;
 import org.amenal.dao.ProjetRepository;
 import org.amenal.dao.ReceptionFicheRepository;
 import org.amenal.dao.VisiteurFicheRepository;
+import org.amenal.entities.Destination;
 import org.amenal.entities.Document;
 import org.amenal.entities.Projet;
 import org.amenal.entities.designations.DocDesignation;
@@ -36,9 +38,17 @@ import org.amenal.entities.fiches.VisiteurFiche;
 import org.amenal.exception.BadRequestException;
 import org.amenal.rest.mapper.DocumentMapper;
 import org.amenal.rest.representation.DocumentRepresentation;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -73,7 +83,35 @@ public class DocumentFicheMetier {
 
 	@Autowired
 	AccidentFicherepository accidentFicherepository;
-	
+
+	public void emportExcelFile(MultipartFile excelFile) throws EncryptedDocumentException, InvalidFormatException {
+
+		Workbook workbook;
+		try {
+			new WorkbookFactory();
+			workbook = WorkbookFactory.create(excelFile.getInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new BadRequestException("format de fichier non supporter!");
+		}
+		Sheet dataSheet = workbook.getSheetAt(0);
+
+		int i = 1;
+		for (Row row : dataSheet) {
+			if (i > 1 && documentRepository.findByIntitule(row.getCell(0).getStringCellValue().toUpperCase()) == null) {
+				Document doc = new Document();
+
+				if (row.getCell(0).getCellTypeEnum() == CellType.STRING)
+					doc.setIntitule(row.getCell(0).getStringCellValue());
+				else
+					throw new BadRequestException(
+							"la colonne INTITULE  dois etre en format chacractaire (" + i + ",1)");
+
+				documentRepository.save(doc);
+			}
+			i++;
+		}
+	}
 
 	public void AddDocument(String intitule) {
 		Document doc = documentRepository.findByIntitule(intitule.trim().toUpperCase());

@@ -75,8 +75,6 @@ public class OuvrierMetier {
 			// TODO Auto-generated catch block
 			throw new BadRequestException("format de fichier non supporter!");
 		}
-		System.out.println("STTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTS");
-
 		Sheet dataSheet = workbook.getSheetAt(0);
 
 		int i = 1;

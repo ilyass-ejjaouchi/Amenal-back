@@ -1,5 +1,6 @@
 package org.amenal.metier;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,9 +24,17 @@ import org.amenal.rest.commande.CategorieArticleCommande;
 import org.amenal.rest.mapper.ArticleMapper;
 import org.amenal.rest.mapper.CategorieArticleMapper;
 import org.amenal.rest.representation.CategorieArticlePresentation;
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
@@ -54,6 +63,84 @@ public class ArticleMetier {
 
 	@Autowired
 	CategorieArticleMapper categorieArticleMapper;
+	
+	@SuppressWarnings("deprecation")
+	public void emportExcelFile(MultipartFile excelFile) throws EncryptedDocumentException, InvalidFormatException {
+
+		Workbook workbook;
+		try {
+			new WorkbookFactory();
+			workbook = WorkbookFactory.create(excelFile.getInputStream());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			throw new BadRequestException("format de fichier non supporter!");
+		}
+		Sheet dataSheet = workbook.getSheetAt(0);
+
+		int i = 1;
+		for (Row row : dataSheet) {
+			if (i > 1
+					&& articleRepository.findByDesignation(row.getCell(0).getStringCellValue().toUpperCase()) == null) {
+				Article article = new Article();
+
+				if (row.getCell(0).getCellTypeEnum() == CellType.STRING)
+					article.setDesignation(row.getCell(0).getStringCellValue());
+				else
+					throw new BadRequestException(
+							"la colonne DESIGNATION dois etre en format chacractaire (" + i + ",1)");
+				if (row.getCell(1).getCellTypeEnum() == CellType.STRING) {
+
+					String unt = row.getCell(1).getStringCellValue().toUpperCase();
+
+					Unite unt$ = uniteRepository.findByUnite(unt);
+
+					if (unt$ == null) {
+						unt$ = new Unite();
+						unt$.setUnite(unt);
+					}
+
+					article.setUnite(unt$);
+
+				} else
+					throw new BadRequestException("la colonne UNITE dois etre en format chacractaire (" + i + ",2)");
+				if (row.getCell(2).getCellTypeEnum() == CellType.STRING) {
+
+					String cat = row.getCell(2).getStringCellValue().toUpperCase();
+
+					CategorieArticle cat$ = categorieArticleRepository.findByCategorie(cat);
+					if (cat$ == null) {
+						cat$ = new CategorieArticle();
+						cat$.setCategorie(cat);
+					}
+
+					cat$.setShowCat(true);
+
+					article.setCategorie(cat$);
+				} else
+					throw new BadRequestException(
+							"la colonne CATEGORIE dois etre en format chacractaire (" + i + ",3)");
+				if (row.getCell(3).getCellTypeEnum() == CellType.NUMERIC) {
+
+					Integer stockable = (int) row.getCell(3).getNumericCellValue();
+					if (stockable == 1)
+						article.setStockable(true);
+					else if (stockable == 0)
+						article.setStockable(false);
+					else
+						throw new BadRequestException("la colonne STOCKABLE dois etre entre 0 ou 1 (" + i + ",4)");
+
+				} else
+					throw new BadRequestException("la colonne STOCKABLE dois etre entre 0 ou 1 (" + i + ",4)");
+
+				article.setShowArt(true);
+				articleRepository.save(article);
+
+			}
+			i++;
+
+		}
+
+	}
 
 	public Integer addCategorieArticle(CategorieArticleCommande CatCmd) {
 
