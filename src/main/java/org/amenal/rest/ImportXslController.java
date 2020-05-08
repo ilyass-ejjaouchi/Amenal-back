@@ -6,6 +6,12 @@ import java.net.URISyntaxException;
 import javax.validation.Valid;
 
 import org.amenal.entities.Projet;
+import org.amenal.entities.designations.Designation;
+import org.amenal.metier.ArticleMetier;
+import org.amenal.metier.DestinationMetier;
+import org.amenal.metier.DocumentFicheMetier;
+import org.amenal.metier.FicheVisiteurMetier;
+import org.amenal.metier.FournisseurMetier;
 import org.amenal.metier.MaterielMetier;
 import org.amenal.metier.OuvrierMetier;
 import org.amenal.rest.commande.ProjetCommande;
@@ -32,6 +38,75 @@ public class ImportXslController {
 	
 	@Autowired
 	MaterielMetier materielMetier;
+	
+	@Autowired 
+	DocumentFicheMetier documentFicheMetier;
+	
+	@Autowired
+	FicheVisiteurMetier ficheVisiteurMetier;
+	
+	@Autowired
+	FournisseurMetier fournisseurMetier;
+	
+	@Autowired
+	ArticleMetier articleMetier;
+	
+	@Autowired
+	DestinationMetier destinationMetier;
+	
+	@RequestMapping(value = "/destinations", method = RequestMethod.POST)
+	public ResponseEntity<Void> importerDestinations(@RequestParam("excelFile") MultipartFile excelFile)
+			throws URISyntaxException {
+		
+		try {
+			destinationMetier.emportExcelFile(excelFile);
+		} catch (EncryptedDocumentException | InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.created(new URI("/xsl/articles")).build();
+	}
+	
+	@RequestMapping(value = "/articles", method = RequestMethod.POST)
+	public ResponseEntity<Void> importerArticle(@RequestParam("excelFile") MultipartFile excelFile)
+			throws URISyntaxException {
+		
+		try {
+			articleMetier.emportExcelFile(excelFile);
+		} catch (EncryptedDocumentException | InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.created(new URI("/xsl/articles")).build();
+	}
+	
+	
+	@RequestMapping(value = "/visiteurs", method = RequestMethod.POST)
+	public ResponseEntity<Void> importerVisiteur(@RequestParam("excelFile") MultipartFile excelFile)
+			throws URISyntaxException {
+		
+		try {
+			ficheVisiteurMetier.emportExcelFile(excelFile);
+		} catch (EncryptedDocumentException | InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.created(new URI("/xsl/visiteurs")).build();
+	}
+	
+	
+	@RequestMapping(value = "/documents", method = RequestMethod.POST)
+	public ResponseEntity<Void> importerDocument(@RequestParam("excelFile") MultipartFile excelFile)
+			throws URISyntaxException {
+		
+		try {
+			documentFicheMetier.emportExcelFile(excelFile);
+		} catch (EncryptedDocumentException | InvalidFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return ResponseEntity.created(new URI("/xsl/documents")).build();
+	}
 
 	@RequestMapping(value = "/ouvriers", method = RequestMethod.POST)
 	public ResponseEntity<Void> importerOuvrier(@RequestParam("excelFile") MultipartFile excelFile)
