@@ -500,9 +500,12 @@ public class ProjetMetier {
 				vst.setProjet(p);
 				fiches.add(vst);
 				break;
-			case ACT:{
-				
-			}
+			case ACT:
+				ActiviteFiche act = new ActiviteFiche();
+				act.setDate(LocalDate.now());
+				act.setProjet(p);
+				fiches.add(act);
+				break;
 			default:
 				break;
 			}
