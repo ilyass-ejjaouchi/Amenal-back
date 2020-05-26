@@ -24,7 +24,7 @@ public class VisiteurDesignationController {
 	@PreAuthorize(" @authoritiesService.hasAuthorityFiche(#pid ,'USER')")
 	@RequestMapping(value = "/projets/{pid}/visiteurs", method = RequestMethod.GET)
 	List<VisiteurPresentation> listerVisiteurAssoToProjet(@PathVariable Integer pid) {
-		return ficheVisiteurMetier.listerVisiteur(pid);
+		return ficheVisiteurMetier.listerVisiteurAssoToProjet(pid);
 	}
 
 	@PreAuthorize(" @authoritiesService.hasAuthorityFiche(#vstCmd.idFiche ,'USER')")

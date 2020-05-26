@@ -29,7 +29,7 @@ public interface OuvrierDesignationRepository extends JpaRepository<OuvrierDesig
 			@Param("p") Projet p);
 
 	@Query("select quali  as qual , sum(ds.travail) as qt  from OuvrierDesignation ds join ds.ouvrier.qualification quali WHERE"
-			+ " ds.fiche.projet.id=:projetID AND ds.travail IS NOT NULL AND ds.fiche.date =:date group by  quali ")
+			+ " ds.fiche.projet.id=:projetID AND ds.travail IS NOT NULL AND ds.fiche.date =:date group by quali ")
 	List<Map<String, Object>> findDesignationByDateAndProjet(@Param("projetID") Integer projetID,
 			@Param("date") LocalDate date);
 

@@ -37,9 +37,9 @@ public class Designation implements Serializable {
 	private Integer id;
 	
 	private int nbFile = 0;
-	private Boolean valid;
+	protected Boolean valid;
 	@ManyToOne
-	private Fiche fiche;
+	protected Fiche fiche;
 
 	
 	

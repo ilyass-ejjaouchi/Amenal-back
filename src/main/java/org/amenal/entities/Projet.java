@@ -74,6 +74,12 @@ public class Projet implements Serializable {
 					@JoinColumn(name = "fk_visiteur", nullable = true) })
 	private List<Visiteur> visiteurs = new ArrayList<Visiteur>();
 	
+	@ManyToMany(cascade = {CascadeType.REFRESH})
+	@JoinTable(name = "projet_sousLot", joinColumns = {
+			@JoinColumn(name = "fk_projet", nullable = true) }, inverseJoinColumns = {
+					@JoinColumn(name = "fk_sousLot", nullable = true) })
+	private List<SousLot> sousLots = new ArrayList<SousLot>();
+	
 	
 	
 

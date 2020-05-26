@@ -27,6 +27,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Stock {
+	
+	public static final String OUVRIER ="MAIN D'OEUVRE";
+	public static final String LOCATION ="LOCATION";
+	
+	
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

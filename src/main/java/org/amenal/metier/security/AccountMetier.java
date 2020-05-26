@@ -48,14 +48,13 @@ public class AccountMetier {
 
 		for (AppUser u : users) {
 
-			
 			System.out.println();
 			System.out.println(u.getUsername());
-			
+
 			UserProjetRolePresentation user = new UserProjetRolePresentation();
 			user.setUsername(u.getUsername());
 			List<RoleProjetPresentation> rprs = new ArrayList<RoleProjetPresentation>();
-			
+
 			for (ProjetAppUserRoleAsso r : u.getRoles()) {
 				System.out.println(r.getRole().getRole());
 				RoleProjetPresentation rr = new RoleProjetPresentation();
@@ -64,16 +63,22 @@ public class AccountMetier {
 				rr.setRole(r.getRole().getRole());
 				rprs.add(rr);
 			}
-			
+
 			user.setRoles(rprs);
 			usersPrs.add(user);
 		}
 
-		return usersPrs;    
+		return usersPrs;
 	}
 
 	public void supprimerUser(Integer id) {
-		userRepository.deleteById(id);
+		Optional<AppUser> user = userRepository.findById(id);
+
+		if (user.get().getRoles().stream().map(u -> u.getRole().getRole()).collect(Collectors.toList())
+				.contains("ROOT")) {
+			throw new BadRequestException("Vous ne pouvez pas supprimer le ROOT user");
+		} else
+			userRepository.deleteById(id);
 	}
 
 	public void AddUser(RegistrationForm data) {
@@ -97,8 +102,8 @@ public class AccountMetier {
 	}
 
 	public void grantRoleOfProjetToUser(UserRoleProjetCommande cmd) {
-		
-		for(AppRole role : roleRepository.findAll()) {
+
+		for (AppRole role : roleRepository.findAll()) {
 			System.out.println();
 			System.out.println(role.getRole());
 
@@ -115,7 +120,7 @@ public class AccountMetier {
 			asso.setProjet(p.get());
 			asso.setUser(user);
 			asso.setRole(role);
-			System.out.println(asso.getUser().getUsername()+"   "+asso.getRole().getRole());
+			System.out.println(asso.getUser().getUsername() + "   " + asso.getRole().getRole());
 			projetAppUserRoleAssoRepository.save(asso);
 		}
 	}

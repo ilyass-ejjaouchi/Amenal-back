@@ -54,10 +54,11 @@ public class UniteMetier {
 		if (!u.getArticles().isEmpty()) {
 			Boolean dlt = false;
 			for (Article a : u.getArticles()) {
-				if (a.getShowArt()) {
-					dlt = true;
-					break;
-				}
+				if (a.getShowArt() != null)
+					if (a.getShowArt()) {
+						dlt = true;
+						break;
+					}
 			}
 			if (dlt)
 				throw new BadRequestException("l'unite [ " + unite + " ] Est deja associer a des articles!");

@@ -226,7 +226,7 @@ public class FicheVisiteurMetier {
 		visiteurRepository.deleteById(id);
 	}
 
-	public List<VisiteurPresentation> getListVisiteur(Integer pid) {
+	public List<VisiteurPresentation> listerVisiteurAssoToProjet(Integer pid) {
 		return this.visiteurRepository.findByProjetId(pid).stream().map(o -> visiteurMapper.toRepresentation(o))
 				.collect(Collectors.toList());
 	}

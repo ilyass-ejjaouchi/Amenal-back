@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.amenal.config.security.dto.AppUserAuthenticationToken;
 import org.amenal.config.security.dto.ProjetAuthority;
 import org.amenal.dao.AccidentFicherepository;
+import org.amenal.dao.ActiviteFicheRepository;
 import org.amenal.dao.DocFicheRepository;
 import org.amenal.dao.FicheBesoinRepository;
 import org.amenal.dao.FicheRepository;
@@ -29,6 +30,7 @@ import org.amenal.entities.Projet;
 import org.amenal.entities.designations.OuvrierDesignation;
 import org.amenal.entities.designations.ReceptionDesignation;
 import org.amenal.entities.fiches.AccidentFiche;
+import org.amenal.entities.fiches.ActiviteFiche;
 import org.amenal.entities.fiches.BesoinFiche;
 import org.amenal.entities.fiches.DocFiche;
 import org.amenal.entities.fiches.Fiche;
@@ -43,6 +45,7 @@ import org.amenal.exception.BadRequestException;
 import org.amenal.rest.commande.FicheCommande;
 import org.amenal.rest.commande.ProjetCommande;
 import org.amenal.rest.mapper.FicheAccidentMapper;
+import org.amenal.rest.mapper.FicheActiviteMapper;
 import org.amenal.rest.mapper.FicheBesoinMapper;
 import org.amenal.rest.mapper.FicheDocumentMapper;
 import org.amenal.rest.mapper.FicheLivraisonMapper;
@@ -138,6 +141,12 @@ public class ProjetMetier {
 
 	@Autowired
 	FicheVisiteurMapper ficheVisiteurMapper;
+
+	@Autowired
+	FicheActiviteMapper ficheActiviteMapper;
+
+	@Autowired
+	ActiviteFicheRepository activiteFicheRepository;
 
 	private static Boolean createStck;
 
@@ -288,14 +297,15 @@ public class ProjetMetier {
 					ff = ficheLivraisonMapper.toRepresentation((LivraisonFiche) x);
 
 					return ff;
-				} else if (x instanceof DocFiche) {
+				} else if (x instanceof DocFiche)
 					return ficheDocumentMapper.toRepresentation((DocFiche) x);
-
-				} else if (x instanceof BesoinFiche)
+				else if (x instanceof BesoinFiche)
 					return ficheBesoinMapper.toRepresentation((BesoinFiche) x);
 				else if (x instanceof VisiteurFiche)
 					return ficheVisiteurMapper.toRepresentation((VisiteurFiche) x);
-				else
+				else if (x instanceof ActiviteFiche) {
+					return ficheActiviteMapper.toRepresentation((ActiviteFiche) x);
+				} else
 					return null;
 
 			}).collect(Collectors.toList());
@@ -401,6 +411,13 @@ public class ProjetMetier {
 			return vstFiche.stream().map(o -> ficheVisiteurMapper.toRepresentation(o)).collect(Collectors.toList());
 
 		}
+		case "ACTIVITE": {
+
+			List<ActiviteFiche> actFiche = activiteFicheRepository.findByProjetAndTypeFicheAndDate(idProjet, type,
+					date);
+			return actFiche.stream().map(o -> ficheActiviteMapper.toRepresentation(o)).collect(Collectors.toList());
+
+		}
 		default:
 			break;
 		}
@@ -483,6 +500,9 @@ public class ProjetMetier {
 				vst.setProjet(p);
 				fiches.add(vst);
 				break;
+			case ACT:{
+				
+			}
 			default:
 				break;
 			}

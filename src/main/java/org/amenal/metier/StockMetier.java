@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.amenal.dao.ActiviteDesignationRepository;
 import org.amenal.dao.LivraisonFicheRepository;
 import org.amenal.dao.LocationDesignationRepository;
 import org.amenal.dao.OuvrierDesignationRepository;
@@ -23,8 +24,10 @@ import org.amenal.dao.StockRepository;
 import org.amenal.dao.pojo.StockDs;
 import org.amenal.entities.Article;
 import org.amenal.entities.CategorieArticle;
+import org.amenal.entities.Entree;
 import org.amenal.entities.Projet;
 import org.amenal.entities.QualificationOuvrier;
+import org.amenal.entities.designations.EntreeDesignation;
 import org.amenal.entities.designations.Stock;
 import org.amenal.entities.designations.StockDesignation;
 import org.amenal.entities.fiches.StockFiche;
@@ -67,6 +70,9 @@ public class StockMetier {
 
 	@Autowired
 	LivraisonFicheRepository livraisonFicheRepository;
+
+	@Autowired
+	ActiviteDesignationRepository activiteDesignationRepository;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -125,9 +131,11 @@ public class StockMetier {
 		for (Stock s : OldlistDs) {
 			entityManager.detach(s);
 		}
+		System.out.println("projet : " + projetId + "  date" + date);
 
 		/************** OUVRIER **************************/
 		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
+		System.out.println("****************************  " + dd.size());
 
 		Stock stockOuv = OldlistDs.stream().filter(l -> {
 			return l.getCategorie().equals("MAIN D'OEUVRE");
@@ -141,6 +149,7 @@ public class StockMetier {
 					System.out.println("fffff : " + ((QualificationOuvrier) l.get("qual")).getCode());
 					System.out.println();
 					dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
+					dp.setEntreeType(Entree.OUVRIER);
 					dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
 					dp.setQuantite(((Double) l.get("qt")));
 					dp.setUnite("H");
@@ -170,6 +179,7 @@ public class StockMetier {
 			dd.forEach(l -> {
 				StockDesignation dp = new StockDesignation();
 				dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
+				dp.setEntreeType(Entree.OUVRIER);
 				dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
 				dp.setQuantite(((Double) l.get("qt")).doubleValue());
 				dp.setQuantite(Double.valueOf((new DecimalFormat("##.##").format((Double) l.get("qt")))));
@@ -200,6 +210,8 @@ public class StockMetier {
 					Article mat = (Article) l.get("mat");
 
 					dp.setDesignation(mat.getDesignation());
+					dp.setEntreeType(Entree.ARTICLE);
+
 					dp.setArticle(mat);
 					dp.setUnite(mat.getUnite().getUnite());
 					dp.setQuantite(((Double) l.get("somme")));
@@ -231,6 +243,7 @@ public class StockMetier {
 				Article mat = (Article) l.get("mat");
 
 				dp.setDesignation(mat.getDesignation());
+				dp.setEntreeType(Entree.ARTICLE);
 				dp.setArticle(mat);
 				dp.setUnite(mat.getUnite().getUnite());
 				dp.setQuantite(((Double) l.get("somme")));
@@ -258,6 +271,7 @@ public class StockMetier {
 					Article art = s.getArticle();
 					StockDesignation dp = new StockDesignation();
 					dp.setArticle(art);
+					dp.setEntreeType(Entree.ARTICLE);
 					dp.setDesignation(art.getDesignation());
 					dp.setQuantite(s.getQuantite());
 					dp.setUnite(art.getUnite().getUnite());
@@ -282,6 +296,7 @@ public class StockMetier {
 					Article art = s.getArticle();
 					StockDesignation dp = new StockDesignation();
 					dp.setArticle(art);
+					dp.setEntreeType(Entree.ARTICLE);
 					dp.setDesignation(art.getDesignation());
 					dp.setQuantite(s.getQuantite());
 					dp.setUnite(art.getUnite().getUnite());
@@ -334,6 +349,8 @@ public class StockMetier {
 			}
 		}
 
+		/* REMOVE LIVRAISON ITEM FROM STOCK */
+
 		List<Map<String, Object>> lvrDs = livraisonFicheRepository.findLivraisonDesignationByDate(date, projetId);
 
 		List<StockDesignation> dsToRemove = new ArrayList<StockDesignation>();
@@ -364,157 +381,53 @@ public class StockMetier {
 		if (!stkToRemove.isEmpty())
 			OldlistDs.removeAll(stkToRemove);
 
-		return OldlistDs;
+		/* REMOVE FICHE_ACTIVITE ITEM FROM STOCK */
 
-	}
+		/*
+		 * Map<String, List<EntreeDesignation>> result = entres.stream()
+		 * .collect(Collectors.groupingBy(map -> ((String) map.get("type")),
+		 * Collectors.mapping(map -> ((EntreeDesignation) map.get("e")),
+		 * Collectors.toList())));
+		 */
+		stkToRemove = new ArrayList<Stock>();
+		dsToRemove = new ArrayList<StockDesignation>();
 
-	public List<StockDesignationPresentation> getStockLigneDesignationForFicheBsn(Integer projetId, LocalDate date) {
+		List<EntreeDesignation> entrees = activiteDesignationRepository.getentreeficheAct(date, projetId);
 
-		int index = -1;
-
-		List<Stock> OldlistDs = stockRepository.findByprojetIdAndDate(projetId, date.minusDays(1));
-		List<StockDesignation> stockBsn = new ArrayList<StockDesignation>();
-		if (OldlistDs == null)
-			OldlistDs = new ArrayList<Stock>();
-
-		for (Stock s : OldlistDs)
-			entityManager.detach(s);
-
-		/************** OUVRIER **************************/
-		List<Map<String, Object>> dd = ouvrierDesignationRepository.findDesignationByDateAndProjet(projetId, date);
-
-		Stock stockOuv = OldlistDs.stream().filter(l -> {
-			return l.getCategorie().equals("MAIN D'OEUVRE");
-		}).findFirst().orElse(null);
-
-		if (stockOuv != null) {
-			if (!dd.isEmpty()) {
-				index++;
-				dd.forEach(l -> {
-					StockDesignation dp = new StockDesignation();
-					dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
-					dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
-					dp.setQuantite(((Double) l.get("qt")));
-					dp.setUnite("H");
-					dp.setBesionType("ouvrier");
-					StockDesignation dpp = stockOuv.getStockDesignations().stream().filter(ll -> {
-						return ll.getQualifOuvrier().getId() == dp.getQualifOuvrier().getId();
-					}).findFirst().orElse(null);
-
-					if (dpp != null)
-						dp.setQuantite(dpp.getQuantite() + dp.getQuantite());
-
-					stockBsn.add(dp);
-				});
-
-			}
-		} else if (!dd.isEmpty()) {
-			index++;
-			dd.forEach(l -> {
-				StockDesignation dp = new StockDesignation();
-				dp.setDesignation(((QualificationOuvrier) l.get("qual")).getCode());
-				dp.setQualifOuvrier(((QualificationOuvrier) l.get("qual")));
-				dp.setQuantite(((Double) l.get("qt")).doubleValue());
-				dp.setUnite("H");
-				dp.setStockable(false);
-
-				stockBsn.add(dp);
-			});
-
-		}
-
-		/****************** LOCATION *********************/
-
-		List<Map<String, Object>> stockLoc = locationDesignationRepository.findDesignationByDateAndProjet(projetId,
-				date);
-		Stock oldStockLoc = OldlistDs.stream().filter(l -> {
-			return l.getCategorie().equals("LOCATION");
-		}).findFirst().orElse(null);
-
-		if (oldStockLoc != null) {
-			if (!stockLoc.isEmpty())
-				stockLoc.forEach(l -> {
-
-					StockDesignation dp = new StockDesignation();
-					Article mat = (Article) l.get("mat");
-					dp.setDesignation(mat.getDesignation());
-					dp.setArticle(mat);
-					dp.setUnite(mat.getUnite().getUnite());
-					dp.setQuantite(((Double) l.get("somme")));
-					dp.setBesionType("article");
-
-					StockDesignation dpp = oldStockLoc.getStockDesignations().stream().filter(ll -> {
-						return ll.getArticle().getId() == dp.getArticle().getId();
-					}).findFirst().orElse(null);
-
-					if (dpp != null)
-						dp.setQuantite(dpp.getQuantite() + dp.getQuantite());
-
-					stockBsn.add(dp);
-
-				});
-
-		} else if (!stockLoc.isEmpty()) {
-			index++;
-
-			stockLoc.forEach(l -> {
-				StockDesignation dp = new StockDesignation();
-				Article mat = (Article) l.get("mat");
-				dp.setDesignation(mat.getDesignation());
-				dp.setArticle(mat);
-				dp.setUnite(mat.getUnite().getUnite());
-				dp.setQuantite(((Double) l.get("somme")));
-				dp.setStockable(false);
-				dp.setBesionType("article");
-				stockBsn.add(dp);
-			});
-		}
-
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("LOCATION");
-		list.add("MAIN D'OEUVRE");
-
-		List<StockDesignation> OldlistDss = OldlistDs.stream().filter(l -> {
-			return !list.contains(l.getCategorie());
-		}).map(l -> l.getStockDesignations()).flatMap(Collection::stream).collect(Collectors.toList());
-
-		for (StockDesignation s : OldlistDss)
-			entityManager.detach(s);
-
-		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
-
-		List<Map<String, Object>> lvrDs = livraisonFicheRepository.findLivraisonDesignationByDate(date, projetId);
-
-		if (!stockRec.isEmpty()) {
-			for (StockDs s : stockRec) {
-				StockDesignation ds = OldlistDss.stream().filter(l -> {
-					return l.getArticle().getId() == s.getArticle().getId();
-				}).findFirst().orElse(null);
-
-				if (ds != null) {
-					ds.setDesignation(s.getArticle().getDesignation());
-					ds.setQuantite(ds.getQuantite() + s.getQuantite());
-				} else {
-					Article art = s.getArticle();
-					ds = new StockDesignation();
-					ds.setArticle(art);
-					ds.setDesignation(art.getDesignation());
-					ds.setQuantite(s.getQuantite());
-					ds.setUnite(art.getUnite().getUnite());
+		List<StockDesignation> stkcDss = OldlistDs.stream().map(s -> s.getStockDesignations())
+				.flatMap(Collection::stream).collect(Collectors.toList());
+		if (!entrees.isEmpty()) {
+			for (StockDesignation x : stkcDss) {
+				for (EntreeDesignation ee : entrees) {
+					if (ee.getType().equals(Entree.ARTICLE)) {
+						if (x.getStock().getCategorie() != "MAIN D'OEUVRE")
+							if (ee.getArticle().getId() == x.getArticle().getId())
+								x.setQuantite(Double.valueOf(
+										(new DecimalFormat("##.##").format(x.getQuantite() - ee.getQuantite()))));
+					} else if (ee.getType().equals(Entree.OUVRIER)) {
+						if (x.getStock().getCategorie() == "MAIN D'OEUVRE")
+							if (ee.getQualification().getId() == x.getQualifOuvrier().getId())
+								x.setQuantite(Double.valueOf(
+										(new DecimalFormat("##.##").format(x.getQuantite() - ee.getQuantite()))));
+					}
 				}
-				if (!lvrDs.isEmpty())
-					for (Map<String, Object> m : lvrDs)
-						if (ds.getArticle().getId() == m.get("artId"))
-							ds.setQuantite(Double.valueOf(
-									(new DecimalFormat("##.##").format(ds.getQuantite() - (Double) m.get("qt")))));
-
-				if (ds.getQuantite() > 0)
-					stockBsn.add(ds);
-
+				if (x.getQuantite() < 0)
+					dsToRemove.add(x);
 			}
+
+			/* REMOVE QUANTITES <0 */
+			for (Stock stk : OldlistDs) {
+				if (!dsToRemove.isEmpty()) {
+					stk.getStockDesignations().removeAll(dsToRemove);
+					if (!stk.getStockDesignations().isEmpty())
+						stkToRemove.add(stk);
+				}
+			}
+			if (!stkToRemove.isEmpty())
+				OldlistDs.removeAll(stkToRemove);
 		}
 
-		return stockBsn.stream().map(o -> stockDesignationMapper.toRepresentation(o)).collect(Collectors.toList());
+		return OldlistDs;
 
 	}
 
@@ -529,17 +442,12 @@ public class StockMetier {
 			for (StockDesignation s : OldlistDs) {
 				entityManager.detach(s);
 			}
-		System.out.println("receptionDesignationRepository");
-		System.out.println("receptionDesignationRepository");
-
-		System.out.println("receptionDesignationRepository");
 
 		List<StockDs> stockRec = receptionDesignationRepository.findDesignationByDateAndProjet(projetId, date);
 
 		List<Map<String, Object>> lvrDs = livraisonFicheRepository.findLivraisonDesignationByDate(date, projetId);
-		System.out.println("livraisonFicheRepository");
-		System.out.println("livraisonFicheRepository");
-		System.out.println("livraisonFicheRepository");
+
+		List<EntreeDesignation> entrees = activiteDesignationRepository.getentreeficheAct(date, projetId);
 
 		if (!stockRec.isEmpty()) {
 			for (StockDs s : stockRec) {
@@ -567,8 +475,24 @@ public class StockMetier {
 							if (ds.getQuantite() <= 0)
 								OldlistDs.remove(ds);
 						}
+				if (!entrees.isEmpty()) {
+					for (EntreeDesignation ee : entrees) {
+						if (ee.getType().equals(Entree.ARTICLE)) {
+							if (ee.getArticle().getId() == ds.getId())
+								ds.setQuantite(Double.valueOf(
+										(new DecimalFormat("##.##").format(ds.getQuantite() - ee.getQuantite()))));
+						}
+						if (ds.getQuantite() <= 0)
+							OldlistDs.remove(ds);
+					}
+				}
 			}
 		}
+		
+		System.out.println(" ***************** ");
+		System.out.println(OldlistDs.size());
+		System.out.println(" ***************** ");
+
 
 		return OldlistDs.stream().map(o -> stockDesignationMapper.toRepresentation(o)).collect(Collectors.toList());
 

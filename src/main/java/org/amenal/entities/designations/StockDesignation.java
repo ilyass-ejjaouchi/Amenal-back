@@ -48,7 +48,7 @@ public class StockDesignation {
 	Article article;
 	
 	@Transient
-	String BesionType;
+	String entreeType;
 	
 	@ManyToOne(cascade= CascadeType.ALL)
 	private Stock stock;
