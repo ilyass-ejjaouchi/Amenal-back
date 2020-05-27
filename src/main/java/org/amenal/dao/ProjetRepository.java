@@ -28,7 +28,7 @@ public interface ProjetRepository extends JpaRepository<Projet, Integer> {
 	@Query("select p.documents from Projet p where p.id = :projetID ")
 	List<Document> findDocumentByProjetID(@Param("projetID") Integer projetID);
 
-	@Query("select distinct sLot.lot as lot from Projet p join p.sousLots sLot where p.id = :projetID AND sLot.id not IN ("
+	@Query("select distinct sLot.lot from Projet p join p.sousLots sLot where p.id = :projetID AND sLot.id not IN ("
 			+ " select sLotDs.sousLot.id from ActiviteDesignation ds join ds.sousLotDesignations sLotDs where ds.fiche.id = :ficheID  ) "
 			+ "order by sLot.lot ")
 	List<Lot> findLotByProjet(@Param("projetID") Integer projetID, @Param("ficheID") Integer fId);
