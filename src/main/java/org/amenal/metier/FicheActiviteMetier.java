@@ -74,7 +74,7 @@ public class FicheActiviteMetier {
 		
 		List<Lot> lots =projetRepository.findLotByProjet(projetId, fid);
 		
-		if(!lots.isEmpty())
+		if(lots.isEmpty())
 			lots = new ArrayList<Lot>();
 
 		return lots.stream().map(o -> {
