@@ -71,13 +71,19 @@ public class FicheActiviteMetier {
 	}
 
 	public List<LotAssoPresentation> listLotParProjet(Integer projetId, Integer fid) {
+		
+		List<Lot> lots =projetRepository.findLotByProjet(projetId, fid);
+		
+		if(!lots.isEmpty())
+			lots = new ArrayList<Lot>();
 
-		return projetRepository.findLotByProjet(projetId, fid).stream().map(o -> {
+		return lots.stream().map(o -> {
 			LotAssoPresentation ll = new LotAssoPresentation();
 			ll.setId(o.getId());
 			ll.setLot(o.getDesignation());
 			return ll;
 		}).collect(Collectors.toList());
+		
 
 	}
 

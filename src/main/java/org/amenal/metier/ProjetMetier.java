@@ -509,6 +509,7 @@ public class ProjetMetier {
 			default:
 				break;
 			}
+			
 		});
 		if (createStck) {
 			StockFiche stockFiche = new StockFiche();

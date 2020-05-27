@@ -40,7 +40,7 @@ public class AmenalBackApplication {
 			BCryptPasswordEncoder bCryptPasswordEncoder) {
 
 		return args -> {
-
+/*
 			AppRole admin = new AppRole();
 			admin.setRole("ADMIN");
 			appRoleRepository.save(admin);
@@ -58,7 +58,7 @@ public class AmenalBackApplication {
 			rootUser.setPasswordDoted("....");
 			rootUser.setPassword(bCryptPasswordEncoder.encode("root"));
 
-			appUserRepository.save(rootUser);
+			appUserRepository.save(rootUser);*/
 		};
 	}
 
