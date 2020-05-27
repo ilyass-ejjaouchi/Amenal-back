@@ -63,7 +63,7 @@ public class ArticleMetier {
 
 	@Autowired
 	CategorieArticleMapper categorieArticleMapper;
-	
+
 	@SuppressWarnings("deprecation")
 	public void emportExcelFile(MultipartFile excelFile) throws EncryptedDocumentException, InvalidFormatException {
 
@@ -167,7 +167,7 @@ public class ArticleMetier {
 
 		CategorieArticle ca = categorieArticleRepository.findByCategorie(cc.getCategorie());
 
-		if (ca != null && ca.getId()!=id)
+		if (ca != null && ca.getId() != id)
 			if (ca.getShowCat())
 				throw new BadRequestException("La categorie est deja ajouter!");
 			else {
@@ -226,8 +226,8 @@ public class ArticleMetier {
 
 		Article article$ = articleRepository.findByDesignation(article.getDesignation());
 
-		if (article$ != null && article$.getId()!=id) {
-			if (article$.getShowArt() )
+		if (article$ != null && article$.getId() != id) {
+			if (article$.getShowArt())
 				throw new BadRequestException("cette article est deja ajouter!");
 			else {
 				article$.setShowArt(true);
@@ -348,8 +348,6 @@ public class ArticleMetier {
 
 		Article article = articleMapper.toEntity(articleCmd);
 
-		article.setUnite(unite);
-
 		Article art = articleRepository.findByDesignation(article.getDesignation());
 
 		if (art != null) {
@@ -362,6 +360,8 @@ public class ArticleMetier {
 			}
 
 		} else {
+			article.setUnite(unite);
+			article.setCategorie(cat.get());
 			article.setShowArt(true);
 
 			return articleRepository.save(article).getId();
